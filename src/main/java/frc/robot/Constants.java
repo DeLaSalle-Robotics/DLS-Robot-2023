@@ -19,6 +19,10 @@ public final class Constants {
     public static final int drive_falcon_1 = 2; //Drivetrain Right
     public static final int drive_falcon_2 = 3; //Drivetrain Right
     public static final int drive_falcon_3 = 4; //Drivetrain Left
+    public static final int upFalconID = 5; // Falcon driving elevator
+    public static final int outFalconID = 6; // Falcon driving arm extension
+    public static final int wrist775ID = 7; // ID for wrist motor
+    
     public static final int intake_neo = 5;     //Indexer motor
     public static final int shooter_falcon0 = 6;  //Shooter Inverted
     public static final int shooter_falcon1 = 7;  //Shooter
@@ -35,8 +39,11 @@ public final class Constants {
     public static int climber_encoder = 1;             //Climber encoder, not used.
 
     public static int drive_PDP = 1;           //Power Distribution Panal address
+    
+    //Robot Mechanics
     public static double gearRatio = 10.71;    //Gear ratio, needed for characterization of drivetrain
     public static double wheelRadius = 3;      //Wheel size, needed for characterization of drivetrain.
+    public static double stage1Length = 24.5; //
 
     //PID
     public static double IntakePID_kP = 2;                      //Intake angle Kp value
@@ -63,8 +70,17 @@ public final class Constants {
     public static double ksVoltsSecondsPerMeter = 5.0;
     public static double kVoltsSecondsSquaredPerMeter = 1.0;
 
+    //Values for characterization of wrist
+    public static final double WristkSVolts = 0;
+    public static final double kVWristVoltSecondsPerRotation = 0;
+    public static final double WristConstants_kP = 0;
+    public static final double WristConstants_kI = 0;
+    public static final double WristConstants_kD = 0;
+    public static final double kVVoltSecondsPerRotation = 0;
+
     public static final DifferentialDriveKinematics kinematics =
-    new DifferentialDriveKinematics(Units.inchesToMeters(26)); //Wheel base taken from CAD drawing.
+    new DifferentialDriveKinematics(Units.inchesToMeters(26)); //Wheel base taken from CAD drawing.   
+    
     //Sets the maximium velocities and accelerations
     public static double maxVelocityMetersPerSecond = 3;
     public static double maxAccelerationMetersPerSecondSq = 3;
@@ -83,4 +99,5 @@ public final class Constants {
 
     public static double ShooterSpeedSlope = 50; //Need to determine by trial and error
     public static double ShooterSpeedIntercept = 1000; //Need to determine by trial and error
+    public static double kWristToleranceRPS;
 }

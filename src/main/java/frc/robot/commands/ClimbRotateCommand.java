@@ -4,14 +4,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.Grasper;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class ClimbRotateCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ClimberSubsystem m_ClimberSubsystem;
+  private final Grasper m_ClimberSubsystem;
   private final DoubleSupplier rotateSpeed;
 
   /**
@@ -19,7 +19,7 @@ public class ClimbRotateCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ClimbRotateCommand(ClimberSubsystem subsystem, DoubleSupplier _rotateSpeed) {
+  public ClimbRotateCommand(Grasper subsystem, DoubleSupplier _rotateSpeed) {
     m_ClimberSubsystem = subsystem;
     rotateSpeed = _rotateSpeed;
     // Use addRequirements() here to declare subsystem dependencies.

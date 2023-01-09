@@ -7,7 +7,7 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ShooterSubsystem;
 
 import java.util.function.DoubleSupplier;
@@ -19,14 +19,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class Auto_Intake_Lower extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final IntakeSubsystem m_intakeSubsystem;
+  private final Arm m_intakeSubsystem;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Auto_Intake_Lower(IntakeSubsystem subsystem ) {
+  public Auto_Intake_Lower(Arm subsystem ) {
     m_intakeSubsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);

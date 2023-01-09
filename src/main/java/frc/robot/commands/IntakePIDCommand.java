@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Arm;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class IntakePIDCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final IntakeSubsystem m_intakeSubsystem;
+  private final Arm m_intakeSubsystem;
   private final DoubleSupplier setpoint;
   private double starttimer;
   private double startposition;
@@ -23,7 +23,7 @@ public class IntakePIDCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakePIDCommand(IntakeSubsystem subsystem, DoubleSupplier _setpoint) {
+  public IntakePIDCommand(Arm subsystem, DoubleSupplier _setpoint) {
     m_intakeSubsystem = subsystem;
     setpoint = _setpoint;
     // Use addRequirements() here to declare subsystem dependencies.

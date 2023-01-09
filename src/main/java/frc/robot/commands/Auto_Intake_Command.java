@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ShooterSubsystem;
 
 import java.util.function.DoubleSupplier;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class Auto_Intake_Command extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final IntakeSubsystem m_intakeSubsystem;
+  private final Arm m_intakeSubsystem;
   private final Double intakeSpeed;
   private Double startingTime;
   private Double seconds;
@@ -31,7 +31,7 @@ public class Auto_Intake_Command extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public Auto_Intake_Command(IntakeSubsystem subsystem, Double _intakeSpeed, Double _seconds) {
+  public Auto_Intake_Command(Arm subsystem, Double _intakeSpeed, Double _seconds) {
     m_intakeSubsystem = subsystem;
     intakeSpeed = _intakeSpeed;
     seconds = _seconds;

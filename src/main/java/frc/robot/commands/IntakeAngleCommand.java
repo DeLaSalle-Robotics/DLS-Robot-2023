@@ -4,7 +4,7 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Arm;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class IntakeAngleCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final IntakeSubsystem m_intakeSubsystem;
+  private final Arm m_intakeSubsystem;
   private final DoubleSupplier angleSpeed;
   private final BooleanSupplier IntakeIndex;
 
@@ -22,7 +22,7 @@ public class IntakeAngleCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakeAngleCommand(IntakeSubsystem subsystem, DoubleSupplier _angleSpeed, BooleanSupplier _IntakeIndex) {
+  public IntakeAngleCommand(Arm subsystem, DoubleSupplier _angleSpeed, BooleanSupplier _IntakeIndex) {
     m_intakeSubsystem = subsystem;
     angleSpeed = _angleSpeed;
     IntakeIndex = _IntakeIndex;

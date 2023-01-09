@@ -4,14 +4,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Arm;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class IndexCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final IntakeSubsystem m_intakeSubsystem;
+  private final Arm m_intakeSubsystem;
   private final DoubleSupplier indexerSpeed;
 
   /**
@@ -19,7 +19,7 @@ public class IndexCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IndexCommand(IntakeSubsystem subsystem, DoubleSupplier _indexerSpeed) {
+  public IndexCommand(Arm subsystem, DoubleSupplier _indexerSpeed) {
     m_intakeSubsystem = subsystem;
     indexerSpeed = _indexerSpeed;
     // Use addRequirements() here to declare subsystem dependencies.

@@ -4,14 +4,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.Grasper;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** This command is designed to control the climbing arms via a winch */
 public class ClimbWinchCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ClimberSubsystem m_ClimberSubsystem;
+  private final Grasper m_ClimberSubsystem;
   private final DoubleSupplier winchSpeed;
 
   /**
@@ -19,7 +19,7 @@ public class ClimbWinchCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ClimbWinchCommand(ClimberSubsystem subsystem, DoubleSupplier _winchSpeed) {
+  public ClimbWinchCommand(Grasper subsystem, DoubleSupplier _winchSpeed) {
     m_ClimberSubsystem = subsystem;
     winchSpeed = _winchSpeed;
     // Use addRequirements() here to declare subsystem dependencies.

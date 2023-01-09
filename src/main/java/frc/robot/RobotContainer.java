@@ -29,9 +29,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   //Subsystems
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  private final Arm m_intakeSubsystem = new Arm();
+  private final Grasper m_climberSubsystem = new Grasper();
   
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);

@@ -4,14 +4,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.Grasper;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class WinchPIDCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ClimberSubsystem m_climberSubsystem;
+  private final Grasper m_climberSubsystem;
   private final double setPoint;
   private DoubleSupplier speed;
 
@@ -20,7 +20,7 @@ public class WinchPIDCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public WinchPIDCommand(ClimberSubsystem subsystem, DoubleSupplier _speed, Double _setPoint) {
+  public WinchPIDCommand(Grasper subsystem, DoubleSupplier _speed, Double _setPoint) {
     m_climberSubsystem = subsystem;
     speed = _speed;
     setPoint = _setPoint;
