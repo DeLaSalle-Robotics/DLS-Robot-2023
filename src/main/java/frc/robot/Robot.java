@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     arduinoOutput.set(false); // Sets the digital output to false
     //One job of the robotcontainer is to set the autonomous Command
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(trajectory);
+    //m_autonomousCommand = m_robotContainer.getAutonomousCommand(trajectory);
 
     // If there is an autonomous command, schedule it.
     if (m_autonomousCommand != null) {
