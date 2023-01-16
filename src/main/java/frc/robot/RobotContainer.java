@@ -31,7 +31,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final Arm m_intakeSubsystem = new Arm();
   private final Grasper m_climberSubsystem = new Grasper();
-  
+  private final vision m_vision = new vision();
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);
   private JoystickButton controller_A = new JoystickButton(controller, 1);
@@ -65,9 +65,9 @@ public class RobotContainer {
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
                                                             () -> joystickA.getY(),
                                                             () -> joystickB.getY()));
-    m_intakeSubsystem.setDefaultCommand(new IntakeAngleCommand(m_intakeSubsystem, 
-                                                              () -> controller.getLeftY (), 
-                                                              () -> controller.getXButton()));
+    //m_intakeSubsystem.setDefaultCommand(new IntakeAngleCommand(m_intakeSubsystem, 
+     //                                                         () -> controller.getLeftY (), 
+    //                                                          () -> controller.getXButton()));
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
   }
@@ -80,45 +80,13 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    //There is unique button logic that one should consider when assigning buttons.
-    // Commands that drive a motor need a constant supply of new values. This 
-    // is a safety feature to make sure the robot is doing what you want it to, but can
-    // be annoying to deal with.
-    controller_A.whileHeld(new IndexCommand(m_intakeSubsystem, () -> 0.4));
-    controller_B.whileHeld(new IndexCommand(m_intakeSubsystem, () -> -0.4));
-    //controller_Y.whileHeld(new IntakePIDCommand(m_intakeSubsystem, () -> Constants.IntakePID_UpSetpoint));
-    controller_Y.whileHeld(new IntakePIDCommand(m_intakeSubsystem, () -> Constants.IntakePID_IntakeSetpoint));
-
-    //controller_leftbumper.whileHeld(new IntakeIndexCommand(m_intakeSubsystem, () -> -0.5, () -> -1.0));
-    controller_X.whileHeld(new IntakeIndexCommand(m_intakeSubsystem, () -> 0.5, () -> 1.0));
-
-    controller_rightbumper.whenHeld(new ShootCommand_Analog(m_shooterSubsystem, () -> 0.5));
-    controller_leftbumper.whenHeld(new ShootCommand_Analog(m_shooterSubsystem, () -> 0.94));
-
-    joystickA_6.whenPressed(new ClimbRotateCommand(m_climberSubsystem, () -> 1));
-    joystickA_6.whenReleased(new ClimbRotateCommand(m_climberSubsystem, () -> 0));
-    joystickA_7.whenPressed(new ClimbRotateCommand(m_climberSubsystem, () -> -1));
-    joystickA_7.whenReleased(new ClimbRotateCommand(m_climberSubsystem, () -> 0));
-
-    joystickA_8.whenPressed(new ClimbWinchCommand(m_climberSubsystem, () -> 0.5));
-    joystickA_8.whenReleased(new ClimbWinchCommand(m_climberSubsystem, () -> 0));
-    joystickA_9.whenPressed(new ClimbWinchCommand(m_climberSubsystem, () -> -0.5));
-    joystickA_9.whenReleased(new ClimbWinchCommand(m_climberSubsystem, () -> 0));
-    joystickB_7.whenPressed(new ResetEncodersCommand(m_climberSubsystem));
-    joystickA_10.whenPressed(new Auto_FullShoot_CommandGroup(m_intakeSubsystem, m_shooterSubsystem, 0.94));
-    joystickA_11.whenPressed(new Auto_FullShoot_CommandGroup(m_intakeSubsystem, m_shooterSubsystem, 0.5));
-    //joystickA_3.whenPressed(new SwitchVideoCommand(m_cameraSubsystem));
-    joystickA_3.whenPressed(new WinchPIDCommand(m_climberSubsystem, () -> 1.0, 0.0));
-    joystickA_4.whenPressed(new WinchPIDCommand(m_climberSubsystem, () -> 1.0, 293069.0));
-    joystickA_5.whenPressed(new WinchPIDCommand(m_climberSubsystem, () -> 1.0, 356685.0));
+    
   }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand(Trajectory trajectory) {
+  public void getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     /*return new ParallelCommandGroup(new ParallelRaceGroup(
       new Auto_Index_Command(m_intakeSubsystem, 0.3, 4.0, 2.0),
@@ -126,20 +94,6 @@ public class RobotContainer {
      new Auto_Intake_Lower(m_intakeSubsystem));*/
 
     //This autonomus command does not use trajectories, but was able to hit a two ball automomous score.
-    return new SequentialCommandGroup(
-      new Auto_FullShoot_CommandGroup(m_intakeSubsystem, m_shooterSubsystem, 0.5),
-      new Auto_Drive_Command(m_drivetrainSubsystem, -0.5, 0.2),
-      new Auto_Index_Command(m_intakeSubsystem, 0.0, 0.5, 0.0),
-      new ParallelRaceGroup(
-        new Auto_Drive_Command(m_drivetrainSubsystem, -0.5, 3.0),
-        new IntakeIndexCommand(m_intakeSubsystem, () -> 0.5, () -> 0.8)
-      ),
-      new ParallelRaceGroup(
-        new IntakeIndexCommand(m_intakeSubsystem, () -> 0.0, () -> 0.0),
-        new Auto_Drive_Command(m_drivetrainSubsystem, 0.0, 0.0)
-      ),
-      new Auto_Index_Command(m_intakeSubsystem, -0.35, 0.1, 0.0),
-      new Auto_FullShoot_CommandGroup(m_intakeSubsystem, m_shooterSubsystem, 0.94)
-      );
+    
   }
 }

@@ -36,22 +36,22 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
   private final PowerDistribution examplePD = new PowerDistribution();
 
-  private final DifferentialDriveOdometry m_odometry;
+  //private final DifferentialDriveOdometry m_odometry;
 
   //Defining the drivetrain subsystem
-  public DrivetrainSubsystem() {
+  //public DrivetrainSubsystem() {
     
-    _talon0.configFactoryDefault();
-    _talon1.configFactoryDefault();
-    _talon2.configFactoryDefault();
-    _talon3.configFactoryDefault();
-    _rightMotor.setInverted(true);
+  //  _talon0.configFactoryDefault();
+  //  _talon1.configFactoryDefault();
+  //  _talon2.configFactoryDefault();
+  //  _talon3.configFactoryDefault();
+  //  _rightMotor.setInverted(true);
     //Defining encoders from each side of the robot.
-    _talon0.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 30);
-    _talon1.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 30);
+  //  _talon0.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 30);
+  //  _talon1.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 30);
     
-    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()));
-  }
+    //m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()));
+//  }
 
 
 //Drivetrain Methods:
@@ -74,26 +74,26 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
  
 
-  @Override
-  public void periodic() {
+  //@Override
+//  public void periodic() {
     // This method will be called once per scheduler run and update the position and orientation of the robot.
-    m_odometry.update(
-      Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
-      countToDistanceMeters(_talon0.getSelectedSensorPosition()),
-      countToDistanceMeters(_talon1.getSelectedSensorPosition())
-    );
-  }
+//    m_odometry.update(
+//      Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
+//      countToDistanceMeters(_talon0.getSelectedSensorPosition()),
+//      countToDistanceMeters(_talon1.getSelectedSensorPosition())
+//    );
+//  }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
 
-  public Pose2d getPose() {
+// public Pose2d getPose() {
     //Method to return the current position in meters from origin
-    return m_odometry.getPoseMeters();
-  }
-
+//    return m_odometry.getPoseMeters();
+//  }
+//
   public double getHeading() {
     //Method returns heading in degrees from original heading.
     return m_gyro.getGyroAngleZ();
@@ -113,11 +113,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     _rightMotor.setVoltage(rightVolts);
   }
 
-  public void resetOdometry(Pose2d pose) {
+//  public void resetOdometry(Pose2d pose) {
     //Method to reset the odometry, performed as part of the intitialization protocol. Not implimented.
-    resetEncoders();
-    m_odometry.resetPosition(pose, Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()));
-  }
+//    resetEncoders();
+//    m_odometry.resetPosition(pose, Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()));
+//  }
 
   public void resetEncoders() {
     //Method to reset the encoder positions.

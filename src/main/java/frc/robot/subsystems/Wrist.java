@@ -35,7 +35,7 @@ public class Wrist extends PIDSubsystem {
 
     getController().setTolerance(Constants.kWristToleranceRPS);
 // initalize whatever the gyro? Probably best in robotcontainer.
-    m_wristGyro.setDistancePerPulse(Constants.kEncoderDistancePerPulse); // Whatever we use to measure the wrist angle
+//    m_wristGyro.setDistancePerPulse(Constants.kEncoderDistancePerPulse); // Whatever we use to measure the wrist angle
 
     setSetpoint(target);
 
@@ -51,21 +51,29 @@ is what the @Override does.
 */
   public void useOutput(double output, double setpoint) {
 
-    __wristControl.setVoltage(output + m_wristFeedforward.calculate(setpoint));
+//    __wristControl.setVoltage(output + m_wristFeedforward.calculate(setpoint));
 
   }
 
 
   @Override
+  protected double getMeasurement() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+
+
 /*
  * Similar to the useOutput method, we need to specify the means of controlling the wrist.
  * 
- */
+ 
   public double getMeasurement() {
 
-    return m_wristEncoder.getAngle();
+//    return m_wristEncoder.getAngle();
 
   }
+
 
 
   public boolean atSetpoint() {
@@ -76,7 +84,7 @@ is what the @Override does.
 
   //These constants were initially for tuning a PID controller. This was not properly implemented
     
-}
+
 
 //Subsystem Methods:
   public void controlWrist(double speed) {
@@ -95,4 +103,5 @@ is what the @Override does.
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
+  */
 }
