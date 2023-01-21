@@ -4,24 +4,31 @@
 
 package frc.robot.subsystems;
 
+// Phoenix
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+// SparkMax
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+// Wipilibj
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+// Constants
 import frc.robot.Constants;
+
 
 public class Arm extends SubsystemBase {
   private final WPI_TalonFX _upFalcon = new WPI_TalonFX(Constants.upFalconID);
   private final WPI_TalonFX _outFalcon = new WPI_TalonFX(Constants.outFalconID);
  
-  //Some sort of gyro scope to set grasper position
-  private final DutyCycleEncoder _intakeArmEncoder = new DutyCycleEncoder(Constants.intakeArmEncoderChannel);
+  // Encoder for arm position/orientation
+  private final DutyCycleEncoder _armPosEncoder = new DutyCycleEncoder(Constants.intakeArmEncoderChannel);
 
  //Declaring the Subsystem \/
  public Arm() {
@@ -41,17 +48,22 @@ public class Arm extends SubsystemBase {
 }
 
 
+  public void ResetArmEncoder(){
+    // Resets the encoder distance to 0 - Useful for fixing things n' stuff
+    _armPosEncoder.reset();
+  }
 
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
     _upFalcon.set(ControlMode.PercentOutput, speed);
+    _outFalcon.set(ControlMode.PercentOutput, (speed * -1.0)); // Inverse of upFalcon
   }
 
-  public double ArmAngle(Double speed) {
-    //This method returns the arm angle in degrees
-    double vertical_dist = _upFalcon.getSelectedSensorPosition();
-    double vertical_radian = Math.asin(vertical_dist/Constants.stage1Length);
-    return(Math.toDegrees(vertical_radian));
+  public double ArmAngle() {
+    // This method returns the arm angle in degrees
+    double armPos = _armPosEncoder.get(); // Returns in rotations - multiply by 360 to convert to degrees
+    double armDegrees = armPos * 360;
+    return armDegrees;
   }
 
   public void ArmExtend(Double speed) {
@@ -61,14 +73,13 @@ public class Arm extends SubsystemBase {
 
   public double getArmEncoder() {
     //This method returns the position of the encoder
-    return(_intakeArmEncoder.getAbsolutePosition());
+    return(_armPosEncoder.getAbsolutePosition());
   }
 
  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
   }
 
   @Override

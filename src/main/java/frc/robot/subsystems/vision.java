@@ -6,12 +6,17 @@ package frc.robot.subsystems;
 
 
 
-
+// Wpilibj
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+// Networktables
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+// Constants
 import frc.robot.Constants;
 
 
@@ -50,6 +55,7 @@ public class vision extends SubsystemBase{
     sum += array[i];
   }
 
+  // Don't divide by 0
   if (values == 0){
     values = 1;
   }
@@ -58,12 +64,27 @@ public class vision extends SubsystemBase{
   return sum / values;
  }
 
+ // Swap between pipelines
+ public void setPipeline(int pipe){
+    // Limelight table
+    NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
+    
+    // Set the pipeline to pipe
+    // (Checks if the param is within range to avoid errors)
+    if (pipe >= 0 && pipe <= 9){
+      limelight.getEntry("pipeline").setNumber(pipe);
+    }
+  }
+
+
  
  
  @Override
   public void periodic() {
     // This method will be called once per scheduler run
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
+    // Retrieve limelight data
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry ta = table.getEntry("ta");
@@ -102,12 +123,12 @@ public class vision extends SubsystemBase{
     SmartDashboard.putNumber("LimelightArea", area);
     SmartDashboard.putNumber("LimelightLength", length);   
     
-    // Post unaveraged values to smart dashboard
+    /* Post unaveraged values to smart dashboard (debug)
     SmartDashboard.putNumber("LimelightXEx", xRaw);
     SmartDashboard.putNumber("LimelightYEx", yRaw);
     SmartDashboard.putNumber("LimelightAreaEx", areaRaw);
     SmartDashboard.putNumber("LimelightLengthEx", lengthRaw);
-
+    */
   }
 
 /*
