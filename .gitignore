@@ -7,3 +7,4 @@
 build/jni/release/wpimath.pdb
 build/jni/release/wpimathjni.pdb
 .DSStore
+.gradle/
