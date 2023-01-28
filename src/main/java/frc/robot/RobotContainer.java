@@ -66,7 +66,7 @@ public class RobotContainer {
     // the referenced value. Usually a joystick, but can be a constant.
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
                                                             () -> joystickA.getY(),
-                                                            () -> joystickB.getY()));
+                                                            () -> (joystickB.getY() * -1)));
     //m_intakeSubsystem.setDefaultCommand(new IntakeAngleCommand(m_intakeSubsystem, 
      //                                                         () -> controller.getLeftY (), 
     //                                                          () -> controller.getXButton()));
@@ -82,6 +82,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     controller_A.onTrue(m_testCommand);
+    
   }
 
   /**

@@ -9,16 +9,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.vision;
 
 /** An example command that uses an example subsystem. */
-public class TestCommand extends CommandBase {
+public class ChangePipe extends CommandBase {
 
-  private double counter = 0.0;
-  private boolean coolean = false; // Used to stop the command so it doesn't run every tick
+  private double pipe = 0.0;
+  private boolean coolean2 = false; // Used to stop the command so it doesn't run every tick
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TestCommand() {
+  public ChangePipe() {
     
   }
 
@@ -30,21 +30,23 @@ public class TestCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Controller Test", counter);
-    counter++;
-    System.out.println("Counter incremented");
-    coolean = true;
+    pipe = (pipe + 1) % 3;
+    SmartDashboard.putNumber("Current Pipeline", pipe);
+    
+    System.out.println("Pipeline Changed");
+    coolean2 = true;
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    coolean = false;
+    coolean2 = false;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return coolean;
+    return coolean2;
   }
 }
