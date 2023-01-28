@@ -51,7 +51,7 @@ public class Arm extends SubsystemBase {
 
   public void ResetArmEncoder(){
     // Resets the encoder distance to 0 - Useful for fixing things n' stuff
-    _armPosEncoder.reset();
+    _armEncoder.reset();
   }
 
   public void ArmMove(Double speed) {
@@ -67,7 +67,7 @@ public class Arm extends SubsystemBase {
   public double ArmAngle() {
     //This method returns the arm angle in degrees
     double encoderReading = _armEncoder.getAbsolutePosition();
-    double vertical_radian = Math.asin(vertical_dist/Constants.stage1Length);
+    double vertical_radian = Math.asin(encoderReading/Constants.stage1Length);
     return(Math.toDegrees(vertical_radian));
   }
 
@@ -78,7 +78,7 @@ public class Arm extends SubsystemBase {
 
   public double getArmEncoder() {
     //This method returns the position of the encoder
-    return(_armPosEncoder.getAbsolutePosition());
+    return(_armEncoder.getAbsolutePosition());
   }
 
  
