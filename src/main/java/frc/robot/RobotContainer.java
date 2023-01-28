@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -33,7 +34,8 @@ public class RobotContainer {
   private final Arm m_intakeSubsystem = new Arm();
   private final Grasper m_climberSubsystem = new Grasper();
   private final vision m_vision = new vision();
-  private final TestCommand m_testCommand = new TestCommand();
+  private final MiniArm m_miniArm = new MiniArm();
+  private final TestCommand m_testCommand = new TestCommand(m_miniArm, null);
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);
   private Trigger controller_A = new JoystickButton(controller, 1);
@@ -67,6 +69,7 @@ public class RobotContainer {
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
                                                             () -> joystickA.getY(),
                                                             () -> (joystickB.getY() * -1)));
+    m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
     //m_intakeSubsystem.setDefaultCommand(new IntakeAngleCommand(m_intakeSubsystem, 
      //                                                         () -> controller.getLeftY (), 
     //                                                          () -> controller.getXButton()));
@@ -82,7 +85,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     controller_A.onTrue(m_testCommand);
-    
+    controller_B.onTrue(Commands.runOnce(m_miniArm::ResetArmEncoder, m_miniArm));
   }
 
   /**

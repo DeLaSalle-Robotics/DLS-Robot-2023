@@ -5,7 +5,7 @@ package frc.robot;
 import java.nio.file.Path;
 import java.io.IOException;
 import edu.wpi.first.wpilibj.Filesystem;
-
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalOutput; //This class allows digital signals to be set out, useful to communicate with ardurino
 import edu.wpi.first.wpilibj.DriverStation; //This class is necessary to control the robot.
 
@@ -47,7 +47,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
+    DataLogManager.start();
+    
     try {
       Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
       trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);

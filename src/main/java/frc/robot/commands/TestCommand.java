@@ -6,20 +6,27 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.vision;
+import frc.robot.subsystems.MiniArm;
+import java.util.function.DoubleSupplier;
 
 /** An example command that uses an example subsystem. */
 public class TestCommand extends CommandBase {
 
   private double counter = 0.0;
   private boolean coolean = false; // Used to stop the command so it doesn't run every tick
+
+  private final MiniArm m_miniarm;
+  private final DoubleSupplier joystickValue;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TestCommand() {
-    
+  public TestCommand(MiniArm subsystem, DoubleSupplier joystickVal) {
+    m_miniarm = subsystem;
+    joystickValue = joystickVal;
+    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -30,21 +37,26 @@ public class TestCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    m_miniarm.ArmMove(joystickValue.getAsDouble());
+    m_miniarm.ArmAngle();
+    m_miniarm.ArmVelocity();
+    /*
     SmartDashboard.putNumber("Controller Test", counter);
     counter++;
     System.out.println("Counter incremented");
-    coolean = true;
+    */
+    //coolean = true;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    coolean = false;
+    //coolean = false;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return coolean;
+    return true;
   }
 }

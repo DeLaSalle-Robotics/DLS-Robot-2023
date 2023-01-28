@@ -28,7 +28,7 @@ public class Arm extends SubsystemBase {
   private final WPI_TalonFX _armFalconL = new WPI_TalonFX(Constants.armFalconLeftID);
   private final WPI_TalonFX _armExtend = new WPI_TalonFX(Constants.armExtendID);
   //A through bore encorder that reports the arm position.
-  private final DutyCycleEncoder _armEncoder = new DutyCycleEncoder(Constants.intakeArmEncoderChannel);
+  //private final DutyCycleEncoder _armEncoder = new DutyCycleEncoder(Constants.intakeArmEncoderChannel);
 
  //Declaring the Subsystem \/
  public Arm() {
@@ -51,7 +51,7 @@ public class Arm extends SubsystemBase {
 
   public void ResetArmEncoder(){
     // Resets the encoder distance to 0 - Useful for fixing things n' stuff
-    _armEncoder.reset();
+    //_armEncoder.reset();
   }
 
   public void ArmMove(Double speed) {
@@ -64,22 +64,22 @@ public class Arm extends SubsystemBase {
   }
 
 
-  public double ArmAngle() {
-    //This method returns the arm angle in degrees
-    double encoderReading = _armEncoder.getAbsolutePosition();
-    double vertical_radian = Math.asin(encoderReading/Constants.stage1Length);
-    return(Math.toDegrees(vertical_radian));
-  }
+  // public double ArmAngle() {
+  //   //This method returns the arm angle in degrees
+  //  // double encoderReading = _armEncoder.getAbsolutePosition();
+  //   double vertical_radian = Math.asin(encoderReading/Constants.stage1Length);
+  //   return(Math.toDegrees(vertical_radian));
+  // }
 
   public void ArmExtend(Double speed) {
     //This method sets the speed of the arm extension motor
     _armExtend.set(speed);
   }
 
-  public double getArmEncoder() {
-    //This method returns the position of the encoder
-    return(_armEncoder.getAbsolutePosition());
-  }
+  // public double getArmEncoder() {
+  //   //This method returns the position of the encoder
+  //   return(_armEncoder.getAbsolutePosition());
+  // }
 
   public double[] predictVelAndAccel(double _time, double[] velArray, double[] accelArray){
     // Takes in time and returns what the velocity and acceleration should be
@@ -91,8 +91,8 @@ public class Arm extends SubsystemBase {
   }
 
   public double[][] getPredictions(double endAngle, double endLength) {
-    double startAngle = ArmAngle();
-    double startLength = getArmEncoder(); // Check this
+    double startAngle = 0; //ArmAngle();
+    double startLength = 0;// getArmEncoder(); // Check this
 
     // Get constant length to trapezoid
     double constTimeAccel = Constants.maxVelocityMetersPerSecond / Constants.maxAccelerationMetersPerSecondSq;

@@ -70,8 +70,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
 
   private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
   private ADIS16448_IMUSim m_gyroSim = new ADIS16448_IMUSim(m_gyro);
-  private final PowerDistribution examplePD = new PowerDistribution();
-
+  
   private final DifferentialDriveOdometry m_odometry;
   private Field2d m_field = new Field2d();
   
@@ -203,11 +202,6 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
       sim_leftMotor.setIntegratedSensorRawPosition(
       distanceToNativeUnits(0.0
       ));
-  }
-
-  public double getCurrentMotorCurrent() {
-    //Method to measure current going to one of the drive motors. Never implemented. 
-    return examplePD.getCurrent(Constants.drive_PDP);
   }
 
   private double countToDistanceMeters(double sensorCounts) {
