@@ -24,21 +24,22 @@ import frc.robot.Constants;
 
 
 public class Arm extends SubsystemBase {
-  private final WPI_TalonFX _upFalcon = new WPI_TalonFX(Constants.upFalconID);
-  private final WPI_TalonFX _outFalcon = new WPI_TalonFX(Constants.outFalconID);
- 
-  // Encoder for arm position/orientation
-  private final DutyCycleEncoder _armPosEncoder = new DutyCycleEncoder(Constants.intakeArmEncoderChannel);
+  private final WPI_TalonFX _armFalconR = new WPI_TalonFX(Constants.armFalconRightID);
+  private final WPI_TalonFX _armFalconL = new WPI_TalonFX(Constants.armFalconLeftID);
+  private final WPI_TalonFX _armExtend = new WPI_TalonFX(Constants.armExtendID);
+  //A through bore encorder that reports the arm position.
+  private final DutyCycleEncoder _armEncoder = new DutyCycleEncoder(Constants.intakeArmEncoderChannel);
 
  //Declaring the Subsystem \/
  public Arm() {
-  _upFalcon.configFactoryDefault(); //Resets any preexisting settings - good practice to prevent things from breaking unexpectedly.
-  _upFalcon.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our climber. Other option is coast.
-  _upFalcon.setSelectedSensorPosition(0.0); //Setting the encoder position to 0: may want to tie this to a limit switch?
-  _outFalcon.configFactoryDefault(); //Resets any preexisting settings - good practice to prevent things from breaking unexpectedly.
-  _outFalcon.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our climber. Other option is coast.
-  _outFalcon.setSelectedSensorPosition(0.0); //Setting the encoder position to 0: may want to tie this to a limit switch?
-
+  _armFalconR.configFactoryDefault(); //Resets any preexisting settings - good practice to prevent things from breaking unexpectedly.
+  _armFalconR.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our arm. Other option is coast.
+  _armFalconL.configFactoryDefault(); //Resets any preexisting settings - good practice to prevent things from breaking unexpectedly.
+  _armFalconL.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our arm. Other option is coast.
+  _armFalconR.follow(_armFalconL);
+  _armFalconR.setInverted(true); // Not sure if this is right
+  _armExtend.configFactoryDefault();
+  _armExtend.setNeutralMode(NeutralMode.Brake);
 
    //Putting the PID constants on the SmartDashboard is a good way to tune them.
    //Although it is not ideal to leave them there for the competion.
@@ -55,20 +56,24 @@ public class Arm extends SubsystemBase {
 
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
-    _upFalcon.set(ControlMode.PercentOutput, speed);
-    _outFalcon.set(ControlMode.PercentOutput, (speed * -1.0)); // Inverse of upFalcon
+    _armFalconL.set(ControlMode.PercentOutput, speed);
   }
 
+  public void ArmMoveVolts(Double volt){
+    _armFalconL.setVoltage(volt);
+  }
+
+
   public double ArmAngle() {
-    // This method returns the arm angle in degrees
-    double armPos = _armPosEncoder.get(); // Returns in rotations - multiply by 360 to convert to degrees
-    double armDegrees = armPos * 360;
-    return armDegrees;
+    //This method returns the arm angle in degrees
+    double encoderReading = _armEncoder.getAbsolutePosition();
+    double vertical_radian = Math.asin(vertical_dist/Constants.stage1Length);
+    return(Math.toDegrees(vertical_radian));
   }
 
   public void ArmExtend(Double speed) {
     //This method sets the speed of the arm extension motor
-    _outFalcon.set(speed);
+    _armExtend.set(speed);
   }
 
   public double getArmEncoder() {

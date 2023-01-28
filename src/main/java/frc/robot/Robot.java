@@ -83,7 +83,6 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    arduinoOutput.set(false); // Sets the digital output to false
     //One job of the robotcontainer is to set the autonomous Command
     //m_autonomousCommand = m_robotContainer.getAutonomousCommand(trajectory);
 
