@@ -1,0 +1,21 @@
+arm
+	 
+2 falcons - :D
+1 Neo - 
+throguh bore encoder - :D
+
+
+Intake	       
+Neo550/SparkMax 
+	spin at set speed 
+Pneumatic
+
+
+Wrist
+Window motor
+Enconder or limitswitch
+
+
+ALL NEOS HAVE A SPARK MAX ATACHED
+
+no

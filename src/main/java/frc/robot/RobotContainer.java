@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -32,28 +33,29 @@ public class RobotContainer {
   private final Arm m_intakeSubsystem = new Arm();
   private final Grasper m_climberSubsystem = new Grasper();
   private final vision m_vision = new vision();
+  private final TestCommand m_testCommand = new TestCommand();
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);
-  private JoystickButton controller_A = new JoystickButton(controller, 1);
-  private JoystickButton controller_B = new JoystickButton(controller, 2);
-  private JoystickButton controller_X = new JoystickButton(controller, 3);
-  private JoystickButton controller_Y = new JoystickButton(controller, 4);
-  private JoystickButton controller_leftbumper = new JoystickButton(controller, 5);
-  private JoystickButton controller_rightbumper = new JoystickButton(controller, 6);
-  //private JoystickButton controller_leftstickbutton = new JoystickButton(controller, 9);
-  //private JoystickButton controller_rightstickbutton = new JoystickButton(controller, 10);
+  private Trigger controller_A = new JoystickButton(controller, 1);
+  private Trigger controller_B = new JoystickButton(controller, 2);
+  private Trigger controller_X = new JoystickButton(controller, 3);
+  private Trigger controller_Y = new JoystickButton(controller, 4);
+  private Trigger controller_leftbumper = new JoystickButton(controller, 5);
+  private Trigger controller_rightbumper = new JoystickButton(controller, 6);
+  //private Trigger controller_leftstickbutton = new JoystickButton(controller, 9);
+  //private Trigger controller_rightstickbutton = new JoystickButton(controller, 10);
   private Joystick joystickA = new Joystick(1);
   private Joystick joystickB = new Joystick(2);
-  private JoystickButton joystickA_6 = new JoystickButton(joystickA, 6);
-  private JoystickButton joystickA_7 = new JoystickButton(joystickA, 7);
-  private JoystickButton joystickA_8 = new JoystickButton(joystickA, 8);
-  private JoystickButton joystickA_9 = new JoystickButton(joystickA, 9);
-  private JoystickButton joystickA_10 = new JoystickButton(joystickA, 10);
-  private JoystickButton joystickA_11 = new JoystickButton(joystickA, 11);
-  private JoystickButton joystickA_3 = new JoystickButton(joystickA, 3);
-  private JoystickButton joystickA_4 = new JoystickButton(joystickA, 4);
-  private JoystickButton joystickA_5 = new JoystickButton(joystickA, 5);
-  private JoystickButton joystickB_7 = new JoystickButton(joystickB, 7);
+  private Trigger joystickA_6 = new JoystickButton(joystickA, 6);
+  private Trigger joystickA_7 = new JoystickButton(joystickA, 7);
+  private Trigger joystickA_8 = new JoystickButton(joystickA, 8);
+  private Trigger joystickA_9 = new JoystickButton(joystickA, 9);
+  private Trigger joystickA_10 = new JoystickButton(joystickA, 10);
+  private Trigger joystickA_11 = new JoystickButton(joystickA, 11);
+  private Trigger joystickA_3 = new JoystickButton(joystickA, 3);
+  private Trigger joystickA_4 = new JoystickButton(joystickA, 4);
+  private Trigger joystickA_5 = new JoystickButton(joystickA, 5);
+  private Trigger joystickB_7 = new JoystickButton(joystickB, 7);
 ;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -79,8 +81,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
-    
+    controller_A.onTrue(m_testCommand);
   }
 
   /**

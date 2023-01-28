@@ -4,17 +4,24 @@
 
 package frc.robot.subsystems;
 
+// Phoenix
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+// SparkMax
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+// Wipilibj
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+// Constants
 import frc.robot.Constants;
+
 
 public class Arm extends SubsystemBase {
   private final WPI_TalonFX _armFalconR = new WPI_TalonFX(Constants.armFalconRightID);
@@ -42,6 +49,10 @@ public class Arm extends SubsystemBase {
 }
 
 
+  public void ResetArmEncoder(){
+    // Resets the encoder distance to 0 - Useful for fixing things n' stuff
+    _armPosEncoder.reset();
+  }
 
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
@@ -67,14 +78,13 @@ public class Arm extends SubsystemBase {
 
   public double getArmEncoder() {
     //This method returns the position of the encoder
-    return(_intakeArmEncoder.getAbsolutePosition());
+    return(_armPosEncoder.getAbsolutePosition());
   }
 
  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
   }
 
   @Override
