@@ -5,6 +5,16 @@
         "header": {
           "open": true
         }
+      },
+      "Talon FX[1]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[2]": {
+        "header": {
+          "open": true
+        }
       }
     }
   },
@@ -12,6 +22,16 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d"
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "Field": {
+          "open": true
+        },
+        "open": true
+      }
     }
   }
 }
