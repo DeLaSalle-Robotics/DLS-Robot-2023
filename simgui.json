@@ -1,0 +1,17 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "ADIS16448[4]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d"
+    }
+  }
+}
