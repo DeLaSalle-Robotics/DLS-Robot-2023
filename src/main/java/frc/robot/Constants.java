@@ -23,7 +23,15 @@ public final class Constants {
     public static final int armFalconLeftID = 6; // Falcon driving elevator
     public static final int armExtendID = 7; // Falcon driving arm extension
     public static final int wrist775ID = 10; // ID for wrist motor
+    
+    //MiniArmConstants
     public static final int miniFalcon = 8; // ID for test arm
+    public static final double miniArmKp = 1.0;
+    public static final double miniArmKi = 0.0;
+    public static final double miniArmKd = 0.0;
+    public static final double miniArmMaxRotVel = 1.0;
+    public static final double miniArmMaxRotAccel = 5.0;
+    public static final double angleTolerance = 1;
 
     public static final int intake_neo = 5;     //Indexer motor
     public static final int shooter_falcon0 = 6;  //Shooter Inverted
