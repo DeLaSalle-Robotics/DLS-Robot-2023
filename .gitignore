@@ -9,4 +9,5 @@ build/jni/release/wpimathjni.pdb
 .DSStore
 .gradle/
 build/
-.wpilog
+*.wpilog
+bin/
