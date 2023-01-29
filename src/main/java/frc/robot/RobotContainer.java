@@ -88,6 +88,13 @@ public class RobotContainer {
     controller_B.onTrue(Commands.runOnce(m_miniArm::ResetArmEncoder, m_miniArm));
     controller_X.onTrue(new MiniArmProfileCommand(180, m_miniArm));
     controller_Y.onTrue(new MiniArmProfileCommand(0, m_miniArm));
+
+    /*
+     * It is possible to string commands together from one button press. This might be useful for the
+     * intake where we engage the pneumatics after the intake wheels are stopped. Example code:
+     * exampleButtion.onTrue(Commands.run(m_grasper::RunIntake, m_grasper))
+     * .onFalse(Commands.run(m_grasper::CloseJaws, m_grasper));
+     */
   }
 
   /**

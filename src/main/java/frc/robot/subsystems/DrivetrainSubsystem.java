@@ -105,14 +105,17 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
   public void drive(double leftSpeed, double rightSpeed) {
     //Sends speeds to tank drive. Considered implementing a reverse driving capacity, but eventually abandoned that.
     // Note: tankdrive is a method of the DifferentialDrive class.
-    if (!reverse) {
-      _drivetrain.tankDrive(leftSpeed, rightSpeed);
-    }
-    else {
-      _drivetrain.tankDrive(leftSpeed, rightSpeed);
-    }
+    _drivetrain.tankDrive(leftSpeed, rightSpeed);
+
   }
 
+  public void drive_Arcade(double speed, double rotation) {
+    //Sends speeds to tank drive. Considered implementing a reverse driving capacity, but eventually abandoned that.
+    // Note: tankdrive is a method of the DifferentialDrive class.
+    _drivetrain.arcadeDrive(speed, rotation);
+
+  }
+  
   public void reverse() {
     //Toggle reverse mode. Not implemented.
     reverse = !reverse;
@@ -128,7 +131,8 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
       countToDistanceMeters(_talon0.getSelectedSensorPosition()),
       countToDistanceMeters(_talon1.getSelectedSensorPosition())
     );
-  }
+    m_field.setRobotPose(m_odometry.getPoseMeters());
+    }
 
   @Override
   public void simulationPeriodic() {
@@ -137,7 +141,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     sim_rightMotor.setBusVoltage(RobotController.getBatteryVoltage());
 
     m_driveSim.setInputs(sim_leftMotor.getMotorOutputLeadVoltage(),
-                        -sim_rightMotor.getMotorOutputLeadVoltage());
+                        sim_rightMotor.getMotorOutputLeadVoltage());
 
     m_driveSim.update(0.02);
 
@@ -157,7 +161,9 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
                     velocityToNativeUnits(
                       m_driveSim.getRightVelocityMetersPerSecond()
                     ));
-    m_gyroSim.setGyroAngleZ(m_driveSim.getHeading().getDegrees());}
+    m_gyroSim.setGyroAngleZ(m_driveSim.getHeading().getDegrees());
+    
+  }
 
  public Pose2d getPose() {
     //Method to return the current position in meters from origin
@@ -199,7 +205,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     sim_rightMotor.setIntegratedSensorRawPosition(
       distanceToNativeUnits(0.0
       ));
-      sim_leftMotor.setIntegratedSensorRawPosition(
+    sim_leftMotor.setIntegratedSensorRawPosition(
       distanceToNativeUnits(0.0
       ));
   }
