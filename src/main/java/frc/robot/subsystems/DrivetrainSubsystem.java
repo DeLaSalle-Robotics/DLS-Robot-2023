@@ -44,8 +44,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
 
   private final DifferentialDrive _drivetrain = new DifferentialDrive(_leftMotor, _rightMotor);
-  private boolean reverse = false;
-
+  
   private double kWheelRadiusInches = 3;
   private double kSensorGearRatio = 9.29;
   private double kCountsPerRev = 2048;
@@ -116,10 +115,14 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
 
   }
   
-  public void reverse() {
-    //Toggle reverse mode. Not implemented.
-    reverse = !reverse;
+  public void drive_Curve(double speed, double rotation, boolean turnInPlace) {
+    //Sends speeds to tank drive. Considered implementing a reverse driving capacity, but eventually abandoned that.
+    // Note: tankdrive is a method of the DifferentialDrive class.
+    _drivetrain.curvatureDrive(speed, rotation, turnInPlace);
+
   }
+
+
 
  
 

@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.DrivetrainSubsystem;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -14,16 +16,18 @@ public class DriveCommand extends CommandBase {
   private final DrivetrainSubsystem m_drivesubsystem;
   private final DoubleSupplier leftDrive;
   private final DoubleSupplier rightDrive;
-
+  private final BooleanSupplier turnInPlace;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveCommand(DrivetrainSubsystem subsystem, DoubleSupplier _leftDrive, DoubleSupplier _rightDrive) {
+  public DriveCommand(DrivetrainSubsystem subsystem, DoubleSupplier _leftDrive, DoubleSupplier _rightDrive,
+  BooleanSupplier _turnInPlace) {
     m_drivesubsystem = subsystem;
     leftDrive = _leftDrive;
     rightDrive = _rightDrive;
+    turnInPlace = _turnInPlace;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -37,6 +41,7 @@ public class DriveCommand extends CommandBase {
   public void execute() {
     m_drivesubsystem.drive(leftDrive.getAsDouble(), rightDrive.getAsDouble());
     //m_drivesubsystem.drive_Arcade(leftDrive.getAsDouble(), rightDrive.getAsDouble());
+    //m_drivesubsystem.drive_Curve(leftDrive.getAsDouble(), rightDrive.getAsDouble(), turnInPlace.getAsBoolean());
   }
 
   // Called once the command ends or is interrupted.
