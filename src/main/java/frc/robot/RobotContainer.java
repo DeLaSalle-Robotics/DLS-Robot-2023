@@ -71,7 +71,7 @@ public class RobotContainer {
                                                             () -> (joystickB.getY() * -1),
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
-    m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
+   //m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
     //m_intakeSubsystem.setDefaultCommand(new IntakeAngleCommand(m_intakeSubsystem, 
      //                                                         () -> controller.getLeftY (), 
     //                                                          () -> controller.getXButton()));
@@ -88,8 +88,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     controller_A.onTrue(m_testCommand);
     controller_B.onTrue(Commands.runOnce(m_miniArm::ResetArmEncoder, m_miniArm));
-    controller_X.onTrue(new MiniArmProfileCommand(180, 1, m_miniArm));
-    controller_Y.onTrue(new MiniArmProfileCommand(0, 1, m_miniArm));
+    controller_X.onTrue(new MiniArmProfileCommand(180, 1.0, m_miniArm));
+    controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
 
     /*
      * It is possible to string commands together from one button press. This might be useful for the
