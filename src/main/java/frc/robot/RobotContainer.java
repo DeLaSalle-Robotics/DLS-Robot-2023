@@ -71,7 +71,7 @@ public class RobotContainer {
                                                             () -> (joystickB.getY() * -1),
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
-   //m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
+     m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
     //m_intakeSubsystem.setDefaultCommand(new IntakeAngleCommand(m_intakeSubsystem, 
      //                                                         () -> controller.getLeftY (), 
     //                                                          () -> controller.getXButton()));
