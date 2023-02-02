@@ -90,6 +90,15 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     _talon2.follow(_talon2);
     _talon3.setInverted(InvertType.FollowMaster);
     _talon2.setInverted(InvertType.FollowMaster);
+
+    //These configurations are meant to smooth the driving by slowing acceleration a bit.
+    _talon0.configNeutralDeadband(0.001);
+    _talon1.configNeutralDeadband(0.001);
+    _talon0.configOpenloopRamp(0.5);
+    _talon1.configOpenloopRamp(0.5);
+    _talon0.configClosedloopRamp(0);
+    _talon1.configClosedloopRamp(0);
+
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
     nativeUnitsToDistanceMeters(_talon0.getSelectedSensorPosition()),
     nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition())
