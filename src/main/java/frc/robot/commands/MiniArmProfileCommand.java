@@ -8,7 +8,9 @@ import frc.robot.subsystems.MiniArm;
 
 public class MiniArmProfileCommand extends ProfiledPIDCommand {
     
-    public MiniArmProfileCommand(double targetAngleDegrees, MiniArm m_miniArm) {
+    public MiniArmProfileCommand(double targetAngleDegrees, double armLength, MiniArm m_miniArm) {
+        //We will likely need another ProfiledPIDController to length the Arm - simple fix for now is to pass it into the command.
+     
         super(new ProfiledPIDController(
             Constants.miniArmKp, 
             Constants.miniArmKi, 
@@ -18,7 +20,7 @@ public class MiniArmProfileCommand extends ProfiledPIDCommand {
                 Constants.miniArmMaxRotAccel)),
             m_miniArm::ArmAngle, 
             Math.toRadians(targetAngleDegrees), 
-            (output, setpoint) -> m_miniArm.ArmMoveVolts(output), 
+            (output ,setpoint) -> m_miniArm.ArmMoveVolts(output), 
             m_miniArm);
 
         getController().

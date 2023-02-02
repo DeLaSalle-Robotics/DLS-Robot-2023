@@ -5,7 +5,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.subsystems.MiniArm;
 import java.util.function.DoubleSupplier;
 
@@ -17,7 +19,7 @@ public class TestCommand extends CommandBase {
 
   private final MiniArm m_miniarm;
   private final DoubleSupplier joystickValue;
-
+  public static final String kArmPositionKey = "ArmPosition";
   /**
    * Creates a new ExampleCommand.
    *
@@ -37,6 +39,9 @@ public class TestCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double armPositionDeg = Preferences.getDouble(kArmPositionKey, Constants.armPositionDeg);
+    m_miniarm.goToAngle(armPositionDeg);
+    
     m_miniarm.ArmMove(joystickValue.getAsDouble());
     m_miniarm.ArmAngle();
     m_miniarm.ArmVelocity();
