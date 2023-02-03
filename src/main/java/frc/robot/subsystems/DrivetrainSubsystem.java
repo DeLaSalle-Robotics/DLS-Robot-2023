@@ -99,8 +99,8 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     //Defining encoders from each side of the robot.
     _talon0.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
     _talon1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
-    _talon3.follow(_talon1);
-    _talon2.follow(_talon2);
+    _talon0.follow(_talon3);
+    _talon1.follow(_talon2);
     _talon3.setInverted(InvertType.FollowMaster);
     _talon2.setInverted(InvertType.FollowMaster);
 
