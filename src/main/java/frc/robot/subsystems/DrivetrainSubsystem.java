@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -13,13 +15,22 @@ import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -28,6 +39,8 @@ import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 //import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -187,6 +200,10 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     return m_gyro.getGyroAngleZ();
   }
 
+  public double getTurnRate() {
+    return m_gyro.getRate();
+  }
+  
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     //Method that returns the wheel speeds in a DifferentialDriveWheelSpeeds object. Uses a helper function to convert countPerTime to m/s
     return new DifferentialDriveWheelSpeeds(
@@ -199,6 +216,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     //Method that sets the voltage to the motors. Used to control position and velocity. Not Implimented.
     _leftMotor.setVoltage(leftVolts);
     _rightMotor.setVoltage(rightVolts);
+    _drivetrain.feed();
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -221,6 +239,18 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
       distanceToNativeUnits(0.0
       ));
   }
+
+  public double getAverageEncoderDistance() {
+    return (_talon0.getSelectedSensorPosition() + _talon1.getSelectedSensorPosition()) / 2;
+  }
+
+public void setMaxOutput(double maxOutput){
+  _drivetrain.setMaxOutput(maxOutput);
+}
+
+public void zeroHeading() {
+  m_gyro.reset();
+}
 
   private double countToDistanceMeters(double sensorCounts) {
     //Method to convert encoder counts into distance in m
@@ -258,4 +288,73 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     double positionMeters = wheelRotations * (2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches));
     return positionMeters;
   }
+
+public Command getAutonomousCommand() {
+  // Create a voltage constraint to ensure we don't accelerate too fast
+
+  var autoVoltageConstraint =
+  new DifferentialDriveVoltageConstraint(
+      new SimpleMotorFeedforward(
+          Constants.ksVolts,
+          Constants.kvVoltsSecondsPerMeter,
+          Constants.kaVoltsSecondsSquaredPerMeter),
+      Constants.kinematics,
+      10);
+
+// Create config for trajectory
+
+TrajectoryConfig config =
+  new TrajectoryConfig(
+          Constants.maxVelocityMetersPerSecond,
+          Constants.maxAccelerationMetersPerSecondSq)
+      // Add kinematics to ensure max speed is actually obeyed
+      .setKinematics(Constants.kinematics)
+      // Apply the voltage constraint
+      .addConstraint(autoVoltageConstraint);
+
+
+// An example trajectory to follow.  All units in meters.
+
+this.resetOdometry(new Pose2d(0,0,new Rotation2d(0)));
+Trajectory exampleTrajectory =
+  TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(0, 0, new Rotation2d(0)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(3, 0, new Rotation2d(0)),
+      // Pass config
+      config);
+
+
+RamseteCommand ramseteCommand =
+  new RamseteCommand(
+      exampleTrajectory,
+      this::getPose,
+      new RamseteController(Constants.ramsete_b, Constants.ramsete_z),
+      new SimpleMotorFeedforward(
+          Constants.ksVolts,
+          Constants.kvVoltsSecondsPerMeter,
+          Constants.kaVoltsSecondsSquaredPerMeter),
+      Constants.kinematics,
+      this::getWheelSpeeds,
+      new PIDController(Constants.kPDriveVel, 0, 0),
+      new PIDController(Constants.kPDriveVel, 0, 0),
+      // RamseteCommand passes volts to the callback
+      this::driveVolts,
+      this);
+
+
+// Reset odometry to the starting pose of the trajectory.
+
+this.resetOdometry(exampleTrajectory.getInitialPose());
+
+
+// Run path following command, then stop at the end.
+
+return ramseteCommand.andThen(() -> this.driveVolts(0, 0));
+
 }
+}
+

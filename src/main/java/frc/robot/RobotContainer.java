@@ -56,7 +56,7 @@ public class RobotContainer {
   private Trigger joystickA_11 = new JoystickButton(joystickA, 11);
   private Trigger joystickA_3 = new JoystickButton(joystickA, 3);
   private Trigger joystickA_4 = new JoystickButton(joystickA, 4);
-  private Trigger joystickA_5 = new JoystickButton(joystickA, 5);
+  private Trigger joystickA_1 = new JoystickButton(joystickA, 1);
   private Trigger joystickB_7 = new JoystickButton(joystickB, 7);
 ;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -91,6 +91,7 @@ public class RobotContainer {
     controller_X.onTrue(new MiniArmProfileCommand(180, 1.0, m_miniArm));
     controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
     joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickB.getX(), () -> joystickB.getY()));
+    joystickA_1.onTrue(Commands.runOnce(m_drivetrainSubsystem::getAutonomousCommand, m_drivetrainSubsystem));
     /*
      * It is possible to string commands together from one button press. This might be useful for the
      * intake where we engage the pneumatics after the intake wheels are stopped. Example code:

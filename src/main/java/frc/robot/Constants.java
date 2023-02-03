@@ -80,10 +80,14 @@ public final class Constants {
     public static int shooterTimeOut = 30; //in milliseconds
 
 
-    //Values for characterization of drivetrain
+    //Values for characterization of drivetrain <--MUST BE DETERMINED FOR OUR ROBOT!
+    //Feedforward
     public static double ksVolts = 0.3;
-    public static double ksVoltsSecondsPerMeter = 5.0;
-    public static double kVoltsSecondsSquaredPerMeter = 1.0;
+    public static double kvVoltsSecondsPerMeter = 5.0;
+    public static double kaVoltsSecondsSquaredPerMeter = 1.0;
+    //Feedback
+    public static double kPDriveVel = 3; 
+
 
     //Values for characterization of wrist
     public static final double WristkSVolts = 0;
@@ -98,11 +102,12 @@ public final class Constants {
     
     //Sets the maximium velocities and accelerations
     public static double maxVelocityMetersPerSecond = 3;
-    public static double maxAccelerationMetersPerSecondSq = 3;
+    public static double maxAccelerationMetersPerSecondSq = 10000;
 
     public static double ramsete_b = 2;
     public static double ramsete_z = 0.7;
-    public static double kPDrive = 5; // Needs to be validated   
+   
+
     
     public static double Shooter_Kp = 1;
     public static double Shooter_Ki = 0;
