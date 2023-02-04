@@ -68,7 +68,7 @@ public class RobotContainer {
     // the referenced value. Usually a joystick, but can be a constant.
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
                                                             () -> joystickA.getY(),
-                                                            () -> (joystickB.getY() * -1),
+                                                            () -> joystickB.getY(),
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
      m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
@@ -90,7 +90,11 @@ public class RobotContainer {
     controller_B.onTrue(Commands.runOnce(m_miniArm::ResetArmEncoder, m_miniArm));
     controller_X.onTrue(new MiniArmProfileCommand(180, 1.0, m_miniArm));
     controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
+<<<<<<< HEAD
     joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getX(), () -> (joystickB.getY() * -1)));
+=======
+    joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getY(), () -> joystickB.getX()));
+>>>>>>> 3499095cd06a96db26cdcdeed9ee931b1eb47615
     joystickA_1.onTrue(Commands.runOnce(m_drivetrainSubsystem::getAutonomousCommand, m_drivetrainSubsystem));
     /*
      * It is possible to string commands together from one button press. This might be useful for the

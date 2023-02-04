@@ -39,8 +39,8 @@ public class TestCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double armPositionDeg = Preferences.getDouble(kArmPositionKey, Constants.armPositionDeg);
-    m_miniarm.goToAngle(armPositionDeg);
+    //double armPositionDeg = Preferences.getDouble(kArmPositionKey, Constants.armPositionDeg);
+    //m_miniarm.goToAngle(armPositionDeg);
     
     m_miniarm.ArmMove(joystickValue.getAsDouble());
     m_miniarm.ArmAngle();

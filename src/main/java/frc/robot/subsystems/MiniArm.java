@@ -129,7 +129,8 @@ private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
     _armFalcon.set(ControlMode.PercentOutput, speed);
-    
+    this.ArmAngle();
+    SmartDashboard.putNumber("Est. ArmVolts",12*speed);
   }
 
 public void goToAngle(double armPositionDeg) {
