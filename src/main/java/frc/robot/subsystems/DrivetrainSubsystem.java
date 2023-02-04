@@ -45,16 +45,16 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DrivetrainSubsystem extends SubsystemBase {  
-  private final WPI_TalonFX _talon0 = new WPI_TalonFX(Constants.drive_falcon_0);
-  private final WPI_TalonFX _talon1 = new WPI_TalonFX(Constants.drive_falcon_1);
-  private final WPI_TalonFX _talon2 = new WPI_TalonFX(Constants.drive_falcon_2);
-  private final WPI_TalonFX _talon3 = new WPI_TalonFX(Constants.drive_falcon_3);
+  private final WPI_TalonFX _talon1 = new WPI_TalonFX(Constants.drive_falcon_0);
+  private final WPI_TalonFX _talon2 = new WPI_TalonFX(Constants.drive_falcon_1);
+  private final WPI_TalonFX _talon3 = new WPI_TalonFX(Constants.drive_falcon_2);
+  private final WPI_TalonFX _talon4 = new WPI_TalonFX(Constants.drive_falcon_3);
 
-  private final MotorControllerGroup _leftMotor = new MotorControllerGroup(_talon0, _talon3);
-  private final MotorControllerGroup _rightMotor = new MotorControllerGroup(_talon1, _talon2);
+  private final MotorControllerGroup _leftMotor = new MotorControllerGroup(_talon1, _talon4);
+  private final MotorControllerGroup _rightMotor = new MotorControllerGroup(_talon2, _talon3);
 
- private final TalonFXSimCollection sim_leftMotor = _talon0.getSimCollection();
-private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
+ private final TalonFXSimCollection sim_leftMotor = _talon1.getSimCollection();
+private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
 
   private final DifferentialDrive _drivetrain = new DifferentialDrive(_leftMotor, _rightMotor);
   
@@ -89,32 +89,32 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
   //Defining the drivetrain subsystem
   public DrivetrainSubsystem() {
     
-    _talon0.configFactoryDefault();
     _talon1.configFactoryDefault();
     _talon2.configFactoryDefault();
     _talon3.configFactoryDefault();
-    _leftMotor.setInverted(true);
-    _talon2.setInverted(InvertType.InvertMotorOutput);
+    _talon4.configFactoryDefault();
+    //_leftMotor.setInverted(true);
+    //_talon2.setInverted(InvertType.InvertMotorOutput);
 
     //Defining encoders from each side of the robot.
-    _talon0.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
     _talon1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
-    _talon3.follow(_talon1);
-    _talon2.follow(_talon2);
+    _talon2.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    _talon4.follow(_talon1);
+    _talon3.follow(_talon2);
+    _talon4.setInverted(InvertType.FollowMaster);
     _talon3.setInverted(InvertType.FollowMaster);
-    _talon2.setInverted(InvertType.FollowMaster);
 
     //These configurations are meant to smooth the driving by slowing acceleration a bit.
-    _talon0.configNeutralDeadband(0.001);
     _talon1.configNeutralDeadband(0.001);
-    _talon0.configOpenloopRamp(0.5);
+    _talon2.configNeutralDeadband(0.001);
     _talon1.configOpenloopRamp(0.5);
-    _talon0.configClosedloopRamp(0);
+    _talon2.configOpenloopRamp(0.5);
+    _talon1.configClosedloopRamp(0);
     _talon1.configClosedloopRamp(0);
 
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
-    nativeUnitsToDistanceMeters(_talon0.getSelectedSensorPosition()),
-    nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition())
+    nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition()),
+    nativeUnitsToDistanceMeters(_talon2.getSelectedSensorPosition())
     );
 
     SmartDashboard.putData("Field", m_field);
@@ -153,8 +153,8 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     // This method will be called once per scheduler run and update the position and orientation of the robot.
     m_odometry.update(
       Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
-      countToDistanceMeters(_talon0.getSelectedSensorPosition()),
-      countToDistanceMeters(_talon1.getSelectedSensorPosition())
+      countToDistanceMeters(_talon1.getSelectedSensorPosition()),
+      countToDistanceMeters(_talon2.getSelectedSensorPosition())
     );
     m_field.setRobotPose(m_odometry.getPoseMeters());
     }
@@ -207,8 +207,8 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     //Method that returns the wheel speeds in a DifferentialDriveWheelSpeeds object. Uses a helper function to convert countPerTime to m/s
     return new DifferentialDriveWheelSpeeds(
-      countPerTimeToMetersPerSecond(_talon0.getSelectedSensorVelocity()),
-      countPerTimeToMetersPerSecond(_talon1.getSelectedSensorVelocity())
+      countPerTimeToMetersPerSecond(_talon1.getSelectedSensorVelocity()),
+      countPerTimeToMetersPerSecond(_talon2.getSelectedSensorVelocity())
     );
   }
 
@@ -223,15 +223,15 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
     //Method to reset the odometry, performed as part of the intitialization protocol. Not implimented.
     resetEncoders();
     m_odometry.resetPosition(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
-    nativeUnitsToDistanceMeters(_talon0.getSelectedSensorPosition()),
     nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition()),
+    nativeUnitsToDistanceMeters(_talon2.getSelectedSensorPosition()),
     pose);
     }
 
   public void resetEncoders() {
     //Method to reset the encoder positions.
-    _talon0.setSelectedSensorPosition(0);
     _talon1.setSelectedSensorPosition(0);
+    _talon2.setSelectedSensorPosition(0);
     sim_rightMotor.setIntegratedSensorRawPosition(
       distanceToNativeUnits(0.0
       ));
@@ -241,7 +241,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon1.getSimCollection();
   }
 
   public double getAverageEncoderDistance() {
-    return (_talon0.getSelectedSensorPosition() + _talon1.getSelectedSensorPosition()) / 2;
+    return (_talon1.getSelectedSensorPosition() + _talon2.getSelectedSensorPosition()) / 2;
   }
 
 public void setMaxOutput(double maxOutput){
