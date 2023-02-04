@@ -32,10 +32,11 @@ public class RobotContainer {
   //Subsystems
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final Arm m_intakeSubsystem = new Arm();
-  private final Grasper m_climberSubsystem = new Grasper();
+  private final Grasper m_grasper = new Grasper();
   private final vision m_vision = new vision();
   private final MiniArm m_miniArm = new MiniArm();
   private final TestCommand m_testCommand = new TestCommand(m_miniArm, null);
+  private final ArmVoltTest m_armVoltTest = new ArmVoltTest(m_miniArm);
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);
   private Trigger controller_A = new JoystickButton(controller, 1);
@@ -86,15 +87,14 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    controller_A.onTrue(m_testCommand);
+    // controller_A.onTrue(new TestCommand(m_miniArm, () -> controller.getLeftY()));
     controller_B.onTrue(Commands.runOnce(m_miniArm::ResetArmEncoder, m_miniArm));
+    //controller_A.onTrue(Commands.runOnce(m_grasper::closeGrasp, m_grasper));
+    //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));
     controller_X.onTrue(new MiniArmProfileCommand(180, 1.0, m_miniArm));
     controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
-<<<<<<< HEAD
+    controller_leftbumper.whileTrue(new ArmVoltTest(m_miniArm));
     joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getX(), () -> (joystickB.getY() * -1)));
-=======
-    joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getY(), () -> joystickB.getX()));
->>>>>>> 3499095cd06a96db26cdcdeed9ee931b1eb47615
     joystickA_1.onTrue(Commands.runOnce(m_drivetrainSubsystem::getAutonomousCommand, m_drivetrainSubsystem));
     /*
      * It is possible to string commands together from one button press. This might be useful for the
