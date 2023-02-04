@@ -98,15 +98,10 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
 
     //Defining encoders from each side of the robot.
     _talon1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
-<<<<<<< HEAD
     _talon2.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
     _talon4.follow(_talon1);
     _talon3.follow(_talon2);
     _talon4.setInverted(InvertType.FollowMaster);
-=======
-    _talon0.follow(_talon3);
-    _talon1.follow(_talon2);
->>>>>>> 3499095cd06a96db26cdcdeed9ee931b1eb47615
     _talon3.setInverted(InvertType.FollowMaster);
 
     //These configurations are meant to smooth the driving by slowing acceleration a bit.
