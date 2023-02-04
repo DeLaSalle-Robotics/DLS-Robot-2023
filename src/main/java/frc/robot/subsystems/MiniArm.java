@@ -161,9 +161,10 @@ public void goToAngle(double armPositionDeg) {
   return(feedForward);
   }
 
-  public void ArmMoveVolts(Double volt){
+  public void ArmMoveVolts(double volt){
     var m_feedForward = this.getFeedForward(this.ArmAngle(), this.ArmLength());
-    _armFalcon.setVoltage(volt + m_feedForward);
+    _armFalcon.setVoltage(volt);
+    SmartDashboard.putNumber("Arm FeedForward", m_feedForward);
     SmartDashboard.putNumber("Arm Volts", volt);
   }
 
@@ -204,14 +205,12 @@ public void goToAngle(double armPositionDeg) {
   public void incrementVolts() {
     currentVoltage += incrementAmount;
     ArmAngle();
-    _armFalcon.setVoltage(currentVoltage);
-    SmartDashboard.putNumber("Voltage", currentVoltage);
+    this.ArmMoveVolts(currentVoltage);
   }
   public void stopVolts() {
     currentVoltage = 0;
     ArmAngle();
-    _armFalcon.setVoltage(currentVoltage);
-    SmartDashboard.putNumber("Voltage", currentVoltage);
+    this.ArmMoveVolts(currentVoltage);
   }
   @Override
   public void simulationPeriodic() {

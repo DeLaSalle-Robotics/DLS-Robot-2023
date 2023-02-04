@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.MiniArm;
 
 /** An example command that uses an example subsystem. */
-public class ArmVoltTest extends CommandBase {
+public class ArmVoltQuasistatic extends CommandBase {
   private final MiniArm m_miniarm;
 
   /**
@@ -16,7 +16,7 @@ public class ArmVoltTest extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArmVoltTest(MiniArm subsystem) {
+  public ArmVoltQuasistatic(MiniArm subsystem) {
     m_miniarm = subsystem;
     addRequirements(m_miniarm);
   }
@@ -24,19 +24,19 @@ public class ArmVoltTest extends CommandBase {
   /*// Called once when the command is initially scheduled.
   @Override
   public void initialize() {
-    
-  }*/
+
+  }*/ 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_miniarm.incrementVolts();
+    m_miniarm.ArmMoveVolts(0.9);
   }
 
   // Called once when the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_miniarm.stopVolts();
+    m_miniarm.ArmMoveVolts(0.0);
   }
 
   /*// Returns true when the command should end.

@@ -36,7 +36,7 @@ public class RobotContainer {
   private final vision m_vision = new vision();
   private final MiniArm m_miniArm = new MiniArm();
   private final TestCommand m_testCommand = new TestCommand(m_miniArm, null);
-  private final ArmVoltTest m_armVoltTest = new ArmVoltTest(m_miniArm);
+  private final ArmVoltStatic m_armVoltTest = new ArmVoltStatic(m_miniArm);
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);
   private Trigger controller_A = new JoystickButton(controller, 1);
@@ -93,7 +93,8 @@ public class RobotContainer {
     //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));
     controller_X.onTrue(new MiniArmProfileCommand(180, 1.0, m_miniArm));
     controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
-    controller_leftbumper.whileTrue(new ArmVoltTest(m_miniArm));
+    controller_leftbumper.whileTrue(new ArmVoltStatic(m_miniArm));
+    controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_miniArm));
     joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getX(), () -> (joystickB.getY() * -1)));
     joystickA_1.onTrue(Commands.runOnce(m_drivetrainSubsystem::getAutonomousCommand, m_drivetrainSubsystem));
     /*
