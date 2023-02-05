@@ -15,7 +15,7 @@ import java.util.function.DoubleSupplier;
 public class TestCommand extends CommandBase {
 
   private double counter = 0.0;
-  private boolean coolean = false; // Used to stop the command so it doesn't run every tick
+  public static boolean coolean = true; // Used to stop the command so it doesn't run every tick
 
   private final MiniArm m_miniarm;
   private final DoubleSupplier joystickValue;
@@ -34,34 +34,28 @@ public class TestCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //double armPositionDeg = Preferences.getDouble(kArmPositionKey, Constants.armPositionDeg);
-    //m_miniarm.goToAngle(armPositionDeg);
     
     m_miniarm.ArmMove(joystickValue.getAsDouble());
     m_miniarm.ArmAngle();
     m_miniarm.ArmVelocity();
-    /*
-    SmartDashboard.putNumber("Controller Test", counter);
-    counter++;
-    System.out.println("Counter incremented");
-    */
-    //coolean = true;
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //coolean = false;
+
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

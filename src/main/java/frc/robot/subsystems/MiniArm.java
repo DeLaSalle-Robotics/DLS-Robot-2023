@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import frc.robot.commands.TestCommand;
+
 // Phoenix
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -82,8 +84,8 @@ private static double armPositionDeg = 75.0;
      true,
      VecBuilder.fill(2 * Math.PI /2048.0)
      );
-private final PIDController m_controller = new PIDController(kArmKp, 0, 0);
-private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
+  private final PIDController m_controller = new PIDController(kArmKp, 0, 0);
+  private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
      //Mechanism 2d Testing
      private final Mechanism2d m_mech2d = new Mechanism2d(60,60);
@@ -119,7 +121,7 @@ private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
  m_armTower.setColor(new Color8Bit(Color.kBlue));
 
 }
-
+  
 
   public void ResetArmEncoder(){
     // Resets the encoder distance to 0 - Useful for fixing things n' stuff
@@ -128,7 +130,7 @@ private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
-    _armFalcon.set(ControlMode.PercentOutput, speed);
+    _armFalcon.set(ControlMode.PercentOutput, speed * 0.5);
     this.ArmAngle();
     SmartDashboard.putNumber("Est. ArmVolts",12*speed);
   }
@@ -143,25 +145,26 @@ public void goToAngle(double armPositionDeg) {
     m_controller.calculate(m_encoder.getDistance(), Units.degreesToRadians(armPositionDeg));
     _armFalcon.setVoltage(pidOutput);
 }
-private double ArmComCalc(double armLength){
-  double Arm_Com = armLength; //Function to convert armlength to Center of Mass distance from pivot
-  return Arm_Com;
-}
+  private double ArmComCalc(double armLength){
+    double Arm_Com = armLength; //Function to convert armlength to Center of Mass distance from pivot
+    return Arm_Com;
+  }
 
-public double getFeedForward(double armAngle, double armLength){
-  double Arm_Com = ArmComCalc(this.ArmLength());  //Get the Center of Mass (Com)
-  double feedForward = Constants.arm_Kg * Math.cos(armAngle) * Arm_Com+ //Static Torque Component
-                      Constants.arm_Ks +                                //Static Motor Component
-                      Constants.arm_Kv * this.ArmVelocity() +           //Torque of friction
-                      Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02; //Angular Momentum Calculation
-  priorArmVelocity = this.ArmVelocity();
-  //double feedForward = 0.0;
-return(feedForward);
-}
+  public double getFeedForward(double armAngle, double armLength){
+    double Arm_Com = ArmComCalc(this.ArmLength());  //Get the Center of Mass (Com)
+    double feedForward = Constants.arm_Kg * Math.cos(armAngle) * Arm_Com+ //Static Torque Component
+                        Constants.arm_Ks +                                //Static Motor Component
+                        Constants.arm_Kv * this.ArmVelocity() +           //Torque of friction
+                        Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02; //Angular Momentum Calculation
+    priorArmVelocity = this.ArmVelocity();
+    //double feedForward = 0.0;
+  return(feedForward);
+  }
 
-  public void ArmMoveVolts(Double volt){
+  public void ArmMoveVolts(double volt){
     var m_feedForward = this.getFeedForward(this.ArmAngle(), this.ArmLength());
-    _armFalcon.setVoltage(volt + m_feedForward);
+    _armFalcon.setVoltage(volt);
+    SmartDashboard.putNumber("Arm FeedForward", m_feedForward);
     SmartDashboard.putNumber("Arm Volts", volt);
   }
 
@@ -194,7 +197,21 @@ return(feedForward);
     // Read Preferences for Arm setpoint and kP on entering Teleop
     
   }
-
+  boolean testingKs;
+  double startAngle;
+  double currentVoltage = 0;
+  double incrementAmount = 0.002;
+  
+  public void incrementVolts() {
+    currentVoltage += incrementAmount;
+    ArmAngle();
+    this.ArmMoveVolts(currentVoltage);
+  }
+  public void stopVolts() {
+    currentVoltage = 0;
+    ArmAngle();
+    this.ArmMoveVolts(currentVoltage);
+  }
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
