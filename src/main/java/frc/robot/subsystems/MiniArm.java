@@ -132,7 +132,6 @@ private static double armPositionDeg = 75.0;
     //This method sets the speed of the active intake mechanism
     _armFalcon.set(ControlMode.PercentOutput, speed * 0.5);
     this.ArmAngle();
-    SmartDashboard.putNumber("Est. ArmVolts",12*speed);
   }
 
 public void goToAngle(double armPositionDeg) {

@@ -43,9 +43,7 @@ public class Arm extends SubsystemBase {
 
    //Putting the PID constants on the SmartDashboard is a good way to tune them.
    //Although it is not ideal to leave them there for the competion.
-  SmartDashboard.putNumber("Controller P", Constants.IntakePID_kP);
-  SmartDashboard.putNumber("Controller I", Constants.IntakePID_kI);
-  SmartDashboard.putNumber("Controller D", Constants.IntakePID_kD);
+  
 }
 
 

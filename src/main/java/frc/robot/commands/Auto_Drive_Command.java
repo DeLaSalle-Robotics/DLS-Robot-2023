@@ -51,7 +51,6 @@ public class Auto_Drive_Command extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_driveSubsystem.drive(0.0, 0.0);
-    System.out.println("Auto Drive End");
   }
 
   // Returns true when the command should end.

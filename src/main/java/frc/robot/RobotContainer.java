@@ -63,8 +63,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     //The SmartDashboard is a handy tool to display and store variables.
-    SmartDashboard.putNumber("Shooter Speed", 0);
-    SmartDashboard.putNumber("AutoShootPower", Constants.Auto_Shooter_Speed);
     //Some subsystems have default commands. The () -> denotes a continous supply of data from 
     // the referenced value. Usually a joystick, but can be a constant.
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 

@@ -27,9 +27,6 @@ public class vision extends SubsystemBase{
 
   //Putting the PID constants on the SmartDashboard is a good way to tune them.
   //Although it is not ideal to leave them there for the competion.
-  SmartDashboard.putNumber("Controller P", Constants.IntakePID_kP);
-  SmartDashboard.putNumber("Controller I", Constants.IntakePID_kI);
-  SmartDashboard.putNumber("Controller D", Constants.IntakePID_kD);
   
  }
 
@@ -118,17 +115,8 @@ public class vision extends SubsystemBase{
     double length = getAverage(tllist);
     
     //post to smart dashboard periodically
-    SmartDashboard.putNumber("LimelightX", x);
-    SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightArea", area);
-    SmartDashboard.putNumber("LimelightLength", length);   
     
-    /* Post unaveraged values to smart dashboard (debug)
-    SmartDashboard.putNumber("LimelightXEx", xRaw);
-    SmartDashboard.putNumber("LimelightYEx", yRaw);
-    SmartDashboard.putNumber("LimelightAreaEx", areaRaw);
-    SmartDashboard.putNumber("LimelightLengthEx", lengthRaw);
-    */
+    
   }
 
 /*
