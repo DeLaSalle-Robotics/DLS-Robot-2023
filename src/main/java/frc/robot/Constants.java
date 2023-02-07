@@ -23,7 +23,9 @@ public final class Constants {
     public static final int armFalconLeftID = 6; // Falcon driving elevator
     public static final int armExtendID = 7; // Falcon driving arm extension
     public static final int wrist775ID = 10; // ID for wrist motor
-    
+    public static int intakeArmEncoderChannel = 0;     //Intake encoder input
+    public static final int climber_snowblower = 12; //Controls climber arm position.
+
     //MiniArmConstants
     public static final int miniFalcon = 8; // ID for test arm
     public static final double miniArmKp = 10;
@@ -32,27 +34,12 @@ public final class Constants {
     public static final double miniArmMaxRotVel = 5.0;
     public static final double miniArmMaxRotAccel = 10.0;
     public static final double arm_Kg = 0.09;
-    public static final double arm_Ks = 0;
-    public static final double arm_Kv = 0.36;
+    public static final double arm_Ks = 0.656;
+    public static final double arm_Kv = 0.151;
     public static final double arm_Ka = 0;
     public static final double angleTolerance = 1;
     public static final double armPositionDeg = 75.0; //Default arm position
-
-    public static final int intake_neo = 5;     //Indexer motor
-    public static final int shooter_falcon0 = 6;  //Shooter Inverted
-    public static final int shooter_falcon1 = 7;  //Shooter
-    public static final int climber_falcon = 8;   //Climber motor
-    public static final int intake_snowblower = 9; //Controlls intake angle
-    public static final int intake_775 = 10;       //Spins the intake
-    public static final int shooter_snowblower = 11; //Was to control hood angle, never used.
-    public static final int climber_snowblower = 12; //Controls climber arm position.
-
-    //Input
-    public static int shooter_lowerswitchchannel = 5;  //limit switch input not used.
-    public static int shooter_upperswitchchannel = 2;  //Limit switch input, not used.
-    public static int intakeArmEncoderChannel = 0;     //Intake encoder input
-    public static int climber_encoder = 1;             //Climber encoder, not used.
-
+ 
     public static int drive_PDP = 1;           //Power Distribution Panal address
     
     //Robot Mechanics
@@ -60,33 +47,13 @@ public final class Constants {
     public static double wheelRadius = 3;      //Wheel size, needed for characterization of drivetrain.
     public static double stage1Length = 24.5; //
 
-    //PID
-    public static double IntakePID_kP = 2;                      //Intake angle Kp value
-    public static double IntakePID_kI = 1;                      //Intake angle Ki value - not used
-    public static double IntakePID_kD = 1;                      //Intake angle Kd value - not used
-    public static double IntakePID_kS = 1;                      //Intake angle Ks value - not used
-    public static double IntakePID_kV = 1;                      //Intake angle Kv value - not used
-    public static double IntakePID_UpSetpoint = 0.554;
-    public static double IntakePID_IntakeSetpoint = 0.13;
-    public static double IntakePID_UptakeSetpoint = 0.165;
-    //
-    //public static double targetUpperShooterSpeed = 0.3; //CHANGE THIS
-    public static int ShooterPIDIdx = 0;
-    public static double ShooterKf = 0;
-    public static double ShooterKp = 0;
-    public static double ShooterKi = 0;
-    public static double ShooterKd = 0;
-    public static double Auto_Shooter_Speed = 0.5;
-    public static int shooterTimeOut = 30; //in milliseconds
-
-
     //Values for characterization of drivetrain <--MUST BE DETERMINED FOR OUR ROBOT!
     //Feedforward
-    public static double ksVolts = 0.3;
-    public static double kvVoltsSecondsPerMeter = 5.0;
-    public static double kaVoltsSecondsSquaredPerMeter = 1.0;
+    public static double ksVolts = 0.0761;
+    public static double kvVoltsSecondsPerMeter = 2.4472;
+    public static double kaVoltsSecondsSquaredPerMeter = 0.1517;
     //Feedback
-    public static double kPDriveVel = 3; 
+    public static double kPDriveVel = 0.155; 
 
 
     //Values for characterization of wrist
@@ -102,7 +69,7 @@ public final class Constants {
     
     //Sets the maximium velocities and accelerations
     public static double maxVelocityMetersPerSecond = 3;
-    public static double maxAccelerationMetersPerSecondSq = 10000;
+    public static double maxAccelerationMetersPerSecondSq = 10;
 
     public static double ramsete_b = 2;
     public static double ramsete_z = 0.7;
