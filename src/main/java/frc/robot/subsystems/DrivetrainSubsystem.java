@@ -170,7 +170,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
                         sim_rightMotor.getMotorOutputLeadVoltage());
     SmartDashboard.putNumber("LeftSimMotor", sim_leftMotor.getMotorOutputLeadVoltage());
     SmartDashboard.putNumber("RightSimMotor", sim_rightMotor.getMotorOutputLeadVoltage());
-    
+
     m_driveSim.update(0.02);
 
     sim_leftMotor.setIntegratedSensorRawPosition(
@@ -242,6 +242,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
     sim_leftMotor.setIntegratedSensorRawPosition(
       distanceToNativeUnits(0.0
       ));
+      System.out.println("Resetting Encoders");
   }
 
   public double getAverageEncoderDistance() {
@@ -250,6 +251,13 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
 
 public void setMaxOutput(double maxOutput){
   _drivetrain.setMaxOutput(maxOutput);
+}
+
+public void setNewPose(Pose2d pose){
+  this.resetEncoders();
+  m_odometry.resetPosition(new Rotation2d(0),0.0, 0.0, pose);
+  m_field.setRobotPose(pose);
+  
 }
 
 public void zeroHeading() {
@@ -305,58 +313,59 @@ public Command getAutonomousCommand() {
       Constants.kinematics,
       10);
 
-  // Create config for trajectory
+// Create config for trajectory
 
-  TrajectoryConfig config =
-    new TrajectoryConfig(
-            Constants.maxVelocityMetersPerSecond,
-            Constants.maxAccelerationMetersPerSecondSq)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(Constants.kinematics)
-        // Apply the voltage constraint
-        .addConstraint(autoVoltageConstraint);
+TrajectoryConfig config =
+  new TrajectoryConfig(
+          Constants.maxVelocityMetersPerSecond,
+          Constants.maxAccelerationMetersPerSecondSq)
+      // Add kinematics to ensure max speed is actually obeyed
+      .setKinematics(Constants.kinematics)
+      // Apply the voltage constraint
+      .addConstraint(autoVoltageConstraint);
 
 
-  // An example trajectory to follow.  All units in meters.
+// An example trajectory to follow.  All units in meters.
 
-  this.resetOdometry(new Pose2d(0,0 ,new Rotation2d(0)));
-  Trajectory exampleTrajectory =
-    TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(5, 5, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
-        // Pass config
-        config);
-  
-  RamseteCommand ramseteCommand =
-    new RamseteCommand(
-        exampleTrajectory,
-        this::getPose,
-        new RamseteController(Constants.ramsete_b, Constants.ramsete_z),
-        new SimpleMotorFeedforward(
-            Constants.ksVolts,
-            Constants.kvVoltsSecondsPerMeter,
-            Constants.kaVoltsSecondsSquaredPerMeter),
-        Constants.kinematics,
-        this::getWheelSpeeds,
-        new PIDController(Constants.kPDriveVel, 0, 0),
-        new PIDController(Constants.kPDriveVel, 0, 0),
-        // RamseteCommand passes volts to the callback
-        this::driveVolts,
-        this);
+this.resetOdometry(new Pose2d(0,0,new Rotation2d(0)));
+Trajectory exampleTrajectory =
+  TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(0, 0, new Rotation2d(0)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(3, 0, new Rotation2d(0)),
+      // Pass config
+      config);
+
+
+RamseteCommand ramseteCommand =
+  new RamseteCommand(
+      exampleTrajectory,
+      this::getPose,
+      new RamseteController(Constants.ramsete_b, Constants.ramsete_z),
+      new SimpleMotorFeedforward(
+          Constants.ksVolts,
+          Constants.kvVoltsSecondsPerMeter,
+          Constants.kaVoltsSecondsSquaredPerMeter),
+      Constants.kinematics,
+      this::getWheelSpeeds,
+      new PIDController(Constants.kPDriveVel, 0, 0),
+      new PIDController(Constants.kPDriveVel, 0, 0),
+      // RamseteCommand passes volts to the callback
+      this::driveVolts,
+      this);
   System.out.println("Ramsete Command Made");
 
-  // Reset odometry to the starting pose of the trajectory.
+// Reset odometry to the starting pose of the trajectory.
 
-  this.resetOdometry(exampleTrajectory.getInitialPose());
+this.resetOdometry(exampleTrajectory.getInitialPose());
 
 
-  // Run path following command, then stop at the end.
+// Run path following command, then stop at the end.
 
-  return ramseteCommand.andThen(() -> this.driveVolts(0, 0));
+return ramseteCommand.andThen(() -> this.driveVolts(0, 0));
 
 }
 
