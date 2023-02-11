@@ -87,8 +87,7 @@ public class TrajectoryFollower extends CommandBase{
 
         SmartDashboard.putNumber("Left Speed Target", leftSpeedSetpoint);
         SmartDashboard.putNumber("Right Speed Target", rightSpeedSetpoint);
-        SmartDashboard.putNumber("Left Speed", m_speeds.get().leftMetersPerSecond);
-        SmartDashboard.putNumber("Right Speed", m_speeds.get().rightMetersPerSecond);
+       
 
         double leftOutput;
         double rightOutput;

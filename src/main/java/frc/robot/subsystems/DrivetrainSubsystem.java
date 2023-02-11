@@ -42,20 +42,22 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+
+
 //import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DrivetrainSubsystem extends SubsystemBase {  
-  private final WPI_TalonFX _talon1 = new WPI_TalonFX(Constants.drive_falcon_0);
-  private final WPI_TalonFX _talon2 = new WPI_TalonFX(Constants.drive_falcon_1);
-  private final WPI_TalonFX _talon3 = new WPI_TalonFX(Constants.drive_falcon_2);
-  private final WPI_TalonFX _talon4 = new WPI_TalonFX(Constants.drive_falcon_3);
+  WPI_TalonFX _talon1 = new WPI_TalonFX(Constants.drive_falcon_0);
+  WPI_TalonFX _talon2 = new WPI_TalonFX(Constants.drive_falcon_1);
+  WPI_TalonFX _talon3 = new WPI_TalonFX(Constants.drive_falcon_2);
+  WPI_TalonFX _talon4 = new WPI_TalonFX(Constants.drive_falcon_3);
 
-  private final MotorControllerGroup _leftMotor = new MotorControllerGroup(_talon1, _talon4);
-  private final MotorControllerGroup _rightMotor = new MotorControllerGroup(_talon2, _talon3);
+  MotorControllerGroup _leftMotor = new MotorControllerGroup(_talon1, _talon4);
+  MotorControllerGroup _rightMotor = new MotorControllerGroup(_talon2, _talon3);
 
- private final TalonFXSimCollection sim_leftMotor = _talon1.getSimCollection();
-private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
+ TalonFXSimCollection sim_leftMotor = _talon1.getSimCollection();
+ TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
 
   private final DifferentialDrive _drivetrain = new DifferentialDrive(_leftMotor, _rightMotor);
   
@@ -76,16 +78,17 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
                                       // Apply the voltage constraint
                                       .addConstraint(autoVoltageConstraint);
 
+
   private double kWheelRadiusInches = 3;
-  private double kSensorGearRatio = 10.7;
+  private double kSensorGearRatio = 10.71;
   private double kCountsPerRev = 2048;
-  private double k100msPerSecond = 0.1;
+  private double k100msPerSecond = 10;
   
   private DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
     DCMotor.getFalcon500(2),
     kSensorGearRatio, // Gear ratio
     10.0,  // Moment of interia kgm^2
-    60.0, // Robot mass kg
+    18.1, // Robot mass kg
     Units.inchesToMeters(kWheelRadiusInches), //Wheel radius converted to meters
     0.75, // distance between right and left wheels (m) 
     
@@ -124,6 +127,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
     _talon4.setInverted(InvertType.FollowMaster);
     _talon3.setInverted(InvertType.FollowMaster);
 
+    /*/
     //These configurations are meant to smooth the driving by slowing acceleration a bit.
     _talon1.configNeutralDeadband(0.001);
     _talon2.configNeutralDeadband(0.001);
@@ -131,7 +135,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
     _talon2.configOpenloopRamp(0.5);
     _talon1.configClosedloopRamp(0);
     _talon1.configClosedloopRamp(0);
-
+*/
     this.resetEncoders();
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
     nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition()),
@@ -165,8 +169,6 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
 
   }
 
-
-
  
 
   @Override
@@ -177,6 +179,12 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
       countToDistanceMeters(_talon1.getSelectedSensorPosition()),
       countToDistanceMeters(_talon2.getSelectedSensorPosition())
     );
+    SmartDashboard.putNumber("Left Speed", this.getWheelSpeeds().leftMetersPerSecond);
+    SmartDashboard.putNumber("Right Speed", this.getWheelSpeeds().rightMetersPerSecond);
+    SmartDashboard.putNumber("Left EncoderVel", _talon1.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Right EncoderVel", _talon2.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Heading", this.getHeading());
+
     m_field.setRobotPose(m_odometry.getPoseMeters());
     }
 
@@ -209,7 +217,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
                     velocityToNativeUnits(
                       m_driveSim.getRightVelocityMetersPerSecond()
                     ));
-    m_gyroSim.setGyroAngleZ(m_driveSim.getHeading().getDegrees());
+    m_gyroSim.setGyroAngleZ(-m_driveSim.getHeading().getDegrees());
     
   }
 
@@ -246,6 +254,8 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
   public void resetOdometry(Pose2d pose) {
     //Method to reset the odometry, performed as part of the intitialization protocol. Not implimented.
     resetEncoders();
+
+    //m_gyro.reset();
     m_odometry.resetPosition(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
     nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition()),
     nativeUnitsToDistanceMeters(_talon2.getSelectedSensorPosition()),
