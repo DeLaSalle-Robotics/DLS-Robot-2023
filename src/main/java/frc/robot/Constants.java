@@ -53,7 +53,7 @@ public final class Constants {
     public static double kvVoltsSecondsPerMeter = 2.4472;
     public static double kaVoltsSecondsSquaredPerMeter = 0.1517;
     //Feedback
-    public static double kPDriveVel = 0.155; 
+    public static double kPDriveVel = 0.0155; //SysID: 0.155
 
 
     //Values for characterization of wrist
@@ -69,7 +69,7 @@ public final class Constants {
     
     //Sets the maximium velocities and accelerations
     public static double maxVelocityMetersPerSecond = 3;
-    public static double maxAccelerationMetersPerSecondSq = 10;
+    public static double maxAccelerationMetersPerSecondSq = 3;
 
     public static double ramsete_b = 2;
     public static double ramsete_z = 0.7;

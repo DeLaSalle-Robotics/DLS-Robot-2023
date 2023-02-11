@@ -84,7 +84,12 @@ public class TrajectoryFollower extends CommandBase{
         
         var leftSpeedSetpoint = targetWheelSpeeds.leftMetersPerSecond;
         var rightSpeedSetpoint = targetWheelSpeeds.rightMetersPerSecond;
-        
+
+        SmartDashboard.putNumber("Left Speed Target", leftSpeedSetpoint);
+        SmartDashboard.putNumber("Right Speed Target", rightSpeedSetpoint);
+        SmartDashboard.putNumber("Left Speed", m_speeds.get().leftMetersPerSecond);
+        SmartDashboard.putNumber("Right Speed", m_speeds.get().rightMetersPerSecond);
+
         double leftOutput;
         double rightOutput;
 
@@ -101,8 +106,16 @@ public class TrajectoryFollower extends CommandBase{
             rightFeedforward 
                 + m_rightController.calculate(m_speeds.get().rightMetersPerSecond, rightSpeedSetpoint);
         m_output.accept(leftOutput, rightOutput);
-        System.out.println("Executing Command");
+        SmartDashboard.putNumber("Left Output", leftOutput);
+        SmartDashboard.putNumber("Left Feed Forward", leftFeedforward);
+        SmartDashboard.putNumber("Left PID", m_leftController.calculate(m_speeds.get().leftMetersPerSecond, leftSpeedSetpoint));
         
+        
+        SmartDashboard.putNumber("Right Output", rightOutput);
+        SmartDashboard.putNumber("Right Feed Forward", rightFeedforward);
+        SmartDashboard.putNumber("Right PID", m_leftController.calculate(m_speeds.get().rightMetersPerSecond, rightSpeedSetpoint));
+        
+        SmartDashboard.putNumber("Distance", m_driveSubsystem.getAverageEncoderDistance());
     }
     @Override
   public void end(boolean interrupted) {

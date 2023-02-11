@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -58,12 +59,29 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
 
   private final DifferentialDrive _drivetrain = new DifferentialDrive(_leftMotor, _rightMotor);
   
+  private final DifferentialDriveVoltageConstraint autoVoltageConstraint =
+                                                    new DifferentialDriveVoltageConstraint(
+                                                        new SimpleMotorFeedforward(
+                                                            Constants.ksVolts,
+                                                            Constants.kvVoltsSecondsPerMeter,
+                                                            Constants.kaVoltsSecondsSquaredPerMeter),
+                                                        Constants.kinematics,
+                                                        10);
+  private final TrajectoryConfig config =
+                                  new TrajectoryConfig(
+                                          Constants.maxVelocityMetersPerSecond,
+                                          Constants.maxAccelerationMetersPerSecondSq)
+                                      // Add kinematics to ensure max speed is actually obeyed
+                                      .setKinematics(Constants.kinematics)
+                                      // Apply the voltage constraint
+                                      .addConstraint(autoVoltageConstraint);
+
   private double kWheelRadiusInches = 3;
-  private double kSensorGearRatio = 9.29;
+  private double kSensorGearRatio = 10.7;
   private double kCountsPerRev = 2048;
   private double k100msPerSecond = 0.1;
   
-  DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
+  private DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
     DCMotor.getFalcon500(2),
     kSensorGearRatio, // Gear ratio
     10.0,  // Moment of interia kgm^2
@@ -83,7 +101,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
   private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
   private ADIS16448_IMUSim m_gyroSim = new ADIS16448_IMUSim(m_gyro);
   
-  private final DifferentialDriveOdometry m_odometry;
+  private DifferentialDriveOdometry m_odometry;
   private Field2d m_field = new Field2d();
   
   //Defining the drivetrain subsystem
@@ -99,6 +117,8 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
     //Defining encoders from each side of the robot.
     _talon1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
     _talon2.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    _talon1.setNeutralMode(NeutralMode.Brake);
+    _talon2.setNeutralMode(NeutralMode.Brake);
     _talon4.follow(_talon1);
     _talon3.follow(_talon2);
     _talon4.setInverted(InvertType.FollowMaster);
@@ -245,7 +265,7 @@ private final TalonFXSimCollection sim_rightMotor = _talon2.getSimCollection();
   }
 
   public double getAverageEncoderDistance() {
-    return (_talon1.getSelectedSensorPosition() + _talon2.getSelectedSensorPosition()) / 2;
+    return (this.countToDistanceMeters(_talon1.getSelectedSensorPosition()) + this.countToDistanceMeters(_talon2.getSelectedSensorPosition())) / 2;
   }
 
 public void setMaxOutput(double maxOutput){
@@ -361,35 +381,30 @@ public Command getAutonomousCommand() {
 }
 
 public Trajectory getTrajectory() {
-  var autoVoltageConstraint =
-  new DifferentialDriveVoltageConstraint(
-      new SimpleMotorFeedforward(
-          Constants.ksVolts,
-          Constants.kvVoltsSecondsPerMeter,
-          Constants.kaVoltsSecondsSquaredPerMeter),
-      Constants.kinematics,
-      10);
-  TrajectoryConfig config =
-    new TrajectoryConfig(
-            Constants.maxVelocityMetersPerSecond,
-            Constants.maxAccelerationMetersPerSecondSq)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(Constants.kinematics)
-        // Apply the voltage constraint
-        .addConstraint(autoVoltageConstraint);
-    Trajectory exampleTrajectory =
+  
+    
+        Trajectory exampleTrajectory =
         TrajectoryGenerator.generateTrajectory(
             // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
+            new Pose2d(5, 5, new Rotation2d(0)),
             // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(1, 0), new Translation2d(2, 0)),
+            List.of(new Translation2d(6, 4), new Translation2d(7, 6)),
             // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(3, 0, new Rotation2d(0)),
+            new Pose2d(8, 5, new Rotation2d(0)),
             // Pass config
             config);
     System.out.println("Trajectory Created");
-    
+    m_field.getObject("Traj").setTrajectory(exampleTrajectory);
     return exampleTrajectory;
+}
+
+public void clearTrajectories(){
+  Trajectory nullTrajectory = 
+    TrajectoryGenerator.generateTrajectory(new Pose2d(0,0,new Rotation2d(0)), 
+    List.of(new Translation2d(0.1, 0), new Translation2d(0, 0)),
+    new Pose2d(0,0,new Rotation2d(0)), config);
+    m_field.getObject("Traj").setTrajectory(nullTrajectory);
+    
 }
 
 }
