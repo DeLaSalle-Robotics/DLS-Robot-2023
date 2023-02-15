@@ -6,9 +6,11 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -16,8 +18,6 @@ import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,11 +28,12 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -40,10 +41,6 @@ import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-
-
 //import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -107,9 +104,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private DifferentialDriveOdometry m_odometry;
   private Field2d m_field = new Field2d();
   
+//Trajectory Path
+String tajectoryJSON = "paths/output/FullRun.wpilib.json";
+Trajectory autoTrajectory = new Trajectory();
+
+
+
   //Defining the drivetrain subsystem
   public DrivetrainSubsystem() {
-    
+    SmartDashboard.putString("Trajectory Path", tajectoryJSON);
     _talon1.configFactoryDefault();
     _talon2.configFactoryDefault();
     _talon3.configFactoryDefault();
@@ -331,90 +334,33 @@ public void zeroHeading() {
     return positionMeters;
   }
 
-public Command getAutonomousCommand() {
-  // Create a voltage constraint to ensure we don't accelerate too fast
-
-  var autoVoltageConstraint =
-  new DifferentialDriveVoltageConstraint(
-      new SimpleMotorFeedforward(
-          Constants.ksVolts,
-          Constants.kvVoltsSecondsPerMeter,
-          Constants.kaVoltsSecondsSquaredPerMeter),
-      Constants.kinematics,
-      10);
-
-// Create config for trajectory
-
-TrajectoryConfig config =
-  new TrajectoryConfig(
-          Constants.maxVelocityMetersPerSecond,
-          Constants.maxAccelerationMetersPerSecondSq)
-      // Add kinematics to ensure max speed is actually obeyed
-      .setKinematics(Constants.kinematics)
-      // Apply the voltage constraint
-      .addConstraint(autoVoltageConstraint);
-
-
-// An example trajectory to follow.  All units in meters.
-
-this.resetOdometry(new Pose2d(0,0,new Rotation2d(0)));
-Trajectory exampleTrajectory =
-  TrajectoryGenerator.generateTrajectory(
-      // Start at the origin facing the +X direction
-      new Pose2d(0, 0, new Rotation2d(0)),
-      // Pass through these two interior waypoints, making an 's' curve path
-      List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-      // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(3, 0, new Rotation2d(0)),
-      // Pass config
-      config);
-
-
-RamseteCommand ramseteCommand =
-  new RamseteCommand(
-      exampleTrajectory,
-      this::getPose,
-      new RamseteController(Constants.ramsete_b, Constants.ramsete_z),
-      new SimpleMotorFeedforward(
-          Constants.ksVolts,
-          Constants.kvVoltsSecondsPerMeter,
-          Constants.kaVoltsSecondsSquaredPerMeter),
-      Constants.kinematics,
-      this::getWheelSpeeds,
-      new PIDController(Constants.kPDriveVel, 0, 0),
-      new PIDController(Constants.kPDriveVel, 0, 0),
-      // RamseteCommand passes volts to the callback
-      this::driveVolts,
-      this);
-  System.out.println("Ramsete Command Made");
-
-// Reset odometry to the starting pose of the trajectory.
-
-this.resetOdometry(exampleTrajectory.getInitialPose());
-
-
-// Run path following command, then stop at the end.
-
-return ramseteCommand.andThen(() -> this.driveVolts(0, 0));
-
-}
 
 public Trajectory getTrajectory() {
+  try {
+    String trajectoryJSON = SmartDashboard.getString("Trajectory Path", tajectoryJSON);
+    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+    if (Files.exists(trajectoryPath)){System.out.println("Trajectory Exists");}
+    Trajectory autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
   
-    
-        Trajectory exampleTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(5, 5, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(6, 4), new Translation2d(7, 6)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(8, 5, new Rotation2d(0)),
-            // Pass config
-            config);
+  System.out.println("Trajectory Read");
+  m_field.getObject("Traj").setTrajectory(autoTrajectory);
+  return autoTrajectory;
+ } catch (IOException ex) {
+  DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());    
+  Trajectory autoTrajectory =
+  TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(5, 5, new Rotation2d(0)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of(new Translation2d(6, 4), new Translation2d(7, 6)),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(8, 5, new Rotation2d(0)),
+      // Pass config
+      config);
     System.out.println("Trajectory Created");
-    m_field.getObject("Traj").setTrajectory(exampleTrajectory);
-    return exampleTrajectory;
+    m_field.getObject("Traj").setTrajectory(autoTrajectory);
+    return autoTrajectory;
+ }
 }
 
 public void clearTrajectories(){
@@ -424,6 +370,18 @@ public void clearTrajectories(){
     new Pose2d(0,0,new Rotation2d(0)), config);
     m_field.getObject("Traj").setTrajectory(nullTrajectory);
     
+}
+
+public Trajectory getTrajectoryPath(String trajectoryJSON) {
+  try {
+  Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+  Trajectory autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+  return autoTrajectory;
+ } catch (IOException ex) {
+  DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+  Trajectory autoTrajectory = this.getTrajectory();
+  return autoTrajectory;
+ }
 }
 
 }

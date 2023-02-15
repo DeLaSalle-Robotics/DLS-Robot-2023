@@ -121,7 +121,6 @@ public class TrajectoryFollower extends CommandBase{
     m_timer.stop();
     m_leftController.close();
     m_rightController.close();
-
     if (interrupted) {
       m_output.accept(0.0, 0.0);
     }
