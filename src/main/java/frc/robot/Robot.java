@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     //One job of the robotcontainer is to set the autonomous Command
-    //m_autonomousCommand = m_robotContainer.getAutonomousCommand(trajectory);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // If there is an autonomous command, schedule it.
     if (m_autonomousCommand != null) {

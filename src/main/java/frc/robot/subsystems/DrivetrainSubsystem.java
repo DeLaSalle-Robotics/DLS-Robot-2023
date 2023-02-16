@@ -105,7 +105,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private Field2d m_field = new Field2d();
   
 //Trajectory Path
-String tajectoryJSON = "paths/output/FullRun.wpilib.json";
+String tajectoryJSON = "paths/1_Cube_Engage.wpilib.json";
 Trajectory autoTrajectory = new Trajectory();
 
 
@@ -375,6 +375,7 @@ public void clearTrajectories(){
 public Trajectory getTrajectoryPath(String trajectoryJSON) {
   try {
   Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+  if (Files.exists(trajectoryPath)){System.out.println("Trajectory Exists");}
   Trajectory autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
   return autoTrajectory;
  } catch (IOException ex) {

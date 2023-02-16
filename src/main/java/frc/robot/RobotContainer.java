@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,6 +62,12 @@ public class RobotContainer {
   private Trigger joystickA_2 = new JoystickButton(joystickA, 2);
 
   private String tajectoryJSON = "Paths/Output/output/1_Red_In.wpilib.json";
+
+  private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem);
+  private final Command m_red_Right_NoEngage = new Auto_Red_Right_NoEngage(m_drivetrainSubsystem);
+
+  SendableChooser<Command> m_chooser = new SendableChooser();
+
 //  private String tajectoryJSON = "Paths/Output/output/1_Red_to_Cone.wpilib.json";
 ;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -79,6 +86,9 @@ public class RobotContainer {
     //                                                          () -> controller.getXButton()));
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
+    m_chooser.setDefaultOption("Red Right Engage", m_red_Right_Engage);
+    m_chooser.addOption("Red Right NoEngage", m_red_Right_NoEngage);
+    SmartDashboard.putData(m_chooser);
   }
 
   /***
@@ -99,7 +109,7 @@ public class RobotContainer {
     joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getX(), () -> (joystickB.getY() * -1)));
     joystickA_1.onTrue(new TrajectoryFollower(m_drivetrainSubsystem.getTrajectory(),m_drivetrainSubsystem));
     joystickA_2.onTrue(Commands.runOnce(m_drivetrainSubsystem::clearTrajectories));
-    //joystickA_3.onTrue(new TrajectoryFollower(SmartDashboard.getString("Trajectory Path", tajectoryJSON),m_drivetrainSubsystem));
+    joystickA_3.onTrue(new Auto_Red_Right_Engage(m_drivetrainSubsystem));
     /*
      * It is possible to string commands together from one button press. This might be useful for the
      * intake where we engage the pneumatics after the intake wheels are stopped. Example code:
@@ -110,8 +120,10 @@ public class RobotContainer {
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
+   * @return 
    */
-  public void getAutonomousCommand() {
+  public Command getAutonomousCommand() {
+    return m_chooser.getSelected();
     // An ExampleCommand will run in autonomous
     /*return new ParallelCommandGroup(new ParallelRaceGroup(
       new Auto_Index_Command(m_intakeSubsystem, 0.3, 4.0, 2.0),
