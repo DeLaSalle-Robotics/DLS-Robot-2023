@@ -107,7 +107,7 @@ public class RobotContainer {
     controller_leftbumper.whileTrue(new ArmVoltStatic(m_miniArm));
     controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_miniArm));
     joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getX(), () -> (joystickB.getY() * -1)));
-    joystickA_1.onTrue(new TrajectoryFollower(m_drivetrainSubsystem.getTrajectory(),m_drivetrainSubsystem));
+    joystickA_1.onTrue(new TrajectoryFollower(m_drivetrainSubsystem.getTrajectory(), m_drivetrainSubsystem.getPose(), m_drivetrainSubsystem));
     joystickA_2.onTrue(Commands.runOnce(m_drivetrainSubsystem::clearTrajectories));
     joystickA_3.onTrue(new Auto_Red_Right_Engage(m_drivetrainSubsystem));
     /*

@@ -27,6 +27,7 @@ public class TrajectoryFollower extends CommandBase{
     private BiConsumer<Double, Double> m_output;
     private Supplier<DifferentialDriveWheelSpeeds> m_speeds;
     private Supplier<Pose2d> m_pose;
+    private Pose2d initpose;
     private DifferentialDriveKinematics m_kinematics= Constants.kinematics;
     private SimpleMotorFeedforward m_Feedforward = new SimpleMotorFeedforward(Constants.ksVolts,
                                                                             Constants.kvVoltsSecondsPerMeter,
@@ -34,9 +35,10 @@ public class TrajectoryFollower extends CommandBase{
     private PIDController m_leftController = new PIDController(Constants.kPDriveVel, 0, 0);
     private PIDController m_rightController = new PIDController(Constants.kPDriveVel, 0, 0);
     
-    public TrajectoryFollower(Trajectory _trajectory, DrivetrainSubsystem _driveSubsystem) {
+    public TrajectoryFollower(Trajectory _trajectory, Pose2d _initpose,DrivetrainSubsystem _driveSubsystem) {
         this.m_driveSubsystem = _driveSubsystem;
         this.m_trajectory = _trajectory;
+        this.initpose = _initpose;
         this.m_output = m_driveSubsystem::driveVolts;
         this.m_speeds = m_driveSubsystem::getWheelSpeeds;
         this.m_pose = m_driveSubsystem::getPose;
@@ -65,7 +67,7 @@ public class TrajectoryFollower extends CommandBase{
         m_timer.start();
         m_leftController.reset();
         m_rightController.reset();
-        m_driveSubsystem.resetOdometry(m_trajectory.getInitialPose());
+        m_driveSubsystem.resetOdometry(initpose);
     }
     @Override
     public void execute() {
