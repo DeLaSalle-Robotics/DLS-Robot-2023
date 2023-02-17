@@ -8,6 +8,8 @@ import frc.robot.Constants;
 
 import java.util.List;
 
+import org.photonvision.PhotonCamera;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -60,11 +62,15 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
   private final MotorControllerGroup _rightMotor = new MotorControllerGroup(Cim3, Cim4);
 
 //private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
+ PhotonCamera camera = new PhotonCamera("Cube_cam");
+ final double ANGULAR_P = 0.03;
+ final double ANGULAR_D = 0.0;
+ PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
 
-  
+ 
   //Defining the drivetrain subsystem
   public DriveBot_DrivetrainSubsystem() {
-    
+  _rightMotor.setInverted(true);
    }
   private final DifferentialDrive _drivetrain = new DifferentialDrive(_leftMotor, _rightMotor);
 
@@ -74,17 +80,44 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
     //Sends speeds to tank drive. Considered implementing a reverse driving capacity, but eventually abandoned that.
     // Note: tankdrive is a method of the DifferentialDrive class.
     _drivetrain.tankDrive(leftSpeed, rightSpeed);
+// left side = stick 
+// right side = -stick
 
   }
 
   public void drive_Arcade(double speed, double rotation) {
-    //Sends speeds to tank drive. Considered implementing a reverse driving capacity, but eventually abandoned that.
-    // Note: tankdrive is a method of the DifferentialDrive class.
+    
     _drivetrain.arcadeDrive(speed, rotation);
 
   }
 
  
+
+  public void find_cube(){
+    
+    var result = camera.getLatestResult();
+
+    double rotationSpeed;
+    if (result.hasTargets()) {
+        // Calculate angular turn power
+        // -1.0 required to ensure positive PID controller effort _increases_ yaw
+    
+        rotationSpeed = -turnController.calculate(result.getBestTarget().getYaw(), 0);
+        if (rotationSpeed > 0.5){rotationSpeed = 0.5;}
+    } else {
+        // If we have no targets, stay still.
+  
+        rotationSpeed = 0;
+    }
+    SmartDashboard.putNumber("Cube Rotation", rotationSpeed);
+// Use our forward/turn speeds to control the drivetrain
+this.drive_Arcade(0, (rotationSpeed * -1) );
+  }
+
+
+
+
+  
 /* 
   public double getHeading() {
     //Method returns heading in degrees from original heading.
