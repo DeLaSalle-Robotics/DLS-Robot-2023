@@ -80,7 +80,6 @@ private static double armPositionDeg = 75.0;
    m_armLength,
     Units.degreesToRadians(-75), 
     Units.degreesToRadians(255),
-     m_armMass, 
      true,
      VecBuilder.fill(2 * Math.PI /2048.0)
      );
@@ -99,7 +98,8 @@ private static double armPositionDeg = 75.0;
         Units.radiansToDegrees(m_armSim.getAngleRads()),
         6,
         new Color8Bit(Color.kPurple)
-      ));
+      )
+      );
      
      
 
