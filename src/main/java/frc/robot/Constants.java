@@ -14,9 +14,9 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    //CAN 
     public static final int drive_falcon_0 = 1; //Drivetrain Left
     public static final int drive_falcon_1 = 2; //Drivetrain Right
+    //CAN 
     public static final int drive_falcon_2 = 3; //Drivetrain Right
     public static final int drive_falcon_3 = 4; //Drivetrain Left
     public static final int armFalconRightID = 5; // Falcon driving elevator
@@ -25,7 +25,12 @@ public final class Constants {
     public static final int wrist775ID = 10; // ID for wrist motor
     public static int intakeArmEncoderChannel = 0;     //Intake encoder input
     public static final int climber_snowblower = 12; //Controls climber arm position.
-
+    //PMW
+    public static final int drive_cim_0 = 0; //Drivetrain Left
+    public static final int drive_cim_2 = 9; //Drivetrain Right
+    public static final int drive_cim_3 = 10; //Drivetrain Right
+    public static final int drive_cim_4 = 11; //Drivetrain Left
+    
     //MiniArmConstants
     public static final int miniFalcon = 8; // ID for test arm
     public static final double miniArmKp = 10;

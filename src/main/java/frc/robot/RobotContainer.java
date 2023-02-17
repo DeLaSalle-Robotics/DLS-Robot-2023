@@ -31,6 +31,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   //Subsystems
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  private final DriveBot_DrivetrainSubsystem m_drivebot_drivetrainSubsystem = new DriveBot_DrivetrainSubsystem();
   private final Arm m_intakeSubsystem = new Arm();
   private final Grasper m_grasper = new Grasper();
   private final vision m_vision = new vision();
@@ -69,6 +70,14 @@ public class RobotContainer {
                                                             () -> joystickA.getY(),
                                                             () -> joystickB.getY(),
                                                             () -> joystickA_3.getAsBoolean()));
+
+
+m_drivebot_drivetrainSubsystem.setDefaultCommand(new DriveBot_DriveCommand(m_drivebot_drivetrainSubsystem, 
+                                                            () -> controller.getRightX(),
+                                                            () -> controller.getLeftY()
+                                                            ));
+                                                            
+
                                                             
      m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
     //m_intakeSubsystem.setDefaultCommand(new IntakeAngleCommand(m_intakeSubsystem, 

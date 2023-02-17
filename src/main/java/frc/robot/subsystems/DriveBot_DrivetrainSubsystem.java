@@ -1,0 +1,100 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems;
+
+import frc.robot.Constants;
+
+import java.util.List;
+
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.simulation.ADIS16448_IMUSim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+//import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class DriveBot_DrivetrainSubsystem extends SubsystemBase {  
+  private final WPI_VictorSPX Cim0 = new WPI_VictorSPX(Constants.drive_cim_0);
+  private final WPI_VictorSPX Cim2 = new WPI_VictorSPX(Constants.drive_cim_2);
+  private final WPI_VictorSPX Cim3 = new WPI_VictorSPX(Constants.drive_cim_3);
+  private final WPI_VictorSPX Cim4 = new WPI_VictorSPX(Constants.drive_cim_4);
+
+  private final MotorControllerGroup _leftMotor = new MotorControllerGroup(Cim0, Cim2);
+  private final MotorControllerGroup _rightMotor = new MotorControllerGroup(Cim3, Cim4);
+
+//private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
+
+  
+  //Defining the drivetrain subsystem
+  public DriveBot_DrivetrainSubsystem() {
+    
+   }
+  private final DifferentialDrive _drivetrain = new DifferentialDrive(_leftMotor, _rightMotor);
+
+//Drivetrain Methods:
+
+  public void drive(double leftSpeed, double rightSpeed) {
+    //Sends speeds to tank drive. Considered implementing a reverse driving capacity, but eventually abandoned that.
+    // Note: tankdrive is a method of the DifferentialDrive class.
+    _drivetrain.tankDrive(leftSpeed, rightSpeed);
+
+  }
+
+  public void drive_Arcade(double speed, double rotation) {
+    //Sends speeds to tank drive. Considered implementing a reverse driving capacity, but eventually abandoned that.
+    // Note: tankdrive is a method of the DifferentialDrive class.
+    _drivetrain.arcadeDrive(speed, rotation);
+
+  }
+
+ 
+/* 
+  public double getHeading() {
+    //Method returns heading in degrees from original heading.
+    return m_gyro.getGyroAngleZ();
+  }
+  
+
+public void zeroHeading() {
+  m_gyro.reset();
+}
+*/
+}
+
