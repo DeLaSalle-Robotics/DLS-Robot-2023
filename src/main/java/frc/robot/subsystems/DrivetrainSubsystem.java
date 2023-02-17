@@ -11,17 +11,29 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -103,7 +115,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
   
   private DifferentialDriveOdometry m_odometry;
   private Field2d m_field = new Field2d();
+  private AprilTagFieldLayout aprilTagFieldLayout;
   
+//Forward Camera
+PhotonCamera cam = new PhotonCamera("testCamera");
+Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+
+// Construct PhotonPoseEstimator
+PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, cam, robotToCam);
+
+
+
 //Trajectory Path
 String tajectoryJSON = "paths/1_Cube_Engage.wpilib.json";
 Trajectory autoTrajectory = new Trajectory();
@@ -112,6 +134,17 @@ Trajectory autoTrajectory = new Trajectory();
 
   //Defining the drivetrain subsystem
   public DrivetrainSubsystem() {
+    try {
+      AprilTagFieldLayout aprilTagFieldLayout = new AprilTagFieldLayout(AprilTagFields.k2023ChargedUp.m_resourceFile);
+     } catch (IOException ex) {
+      AprilTagFieldLayout aprilTagFieldLayout = null;
+    }
+
+    var estimator  = new DifferentialDrivePoseEstimator(new Rotation2d(), new Pose2d(),
+    new MatBuilder<>(Nat.N5(), Nat.N1()).fill(0.02, 0.02, 0.01, 0.02, 0.02), // State measurement standard deviations. X, Y, theta.
+    new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01), // Local measurement standard deviations. Left encoder, right encoder, gyro.
+    new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.01)); // Global measurement standard deviations. X, Y, and theta.
+
     SmartDashboard.putString("Trajectory Path", tajectoryJSON);
     _talon1.configFactoryDefault();
     _talon2.configFactoryDefault();
@@ -182,6 +215,10 @@ Trajectory autoTrajectory = new Trajectory();
       countToDistanceMeters(_talon1.getSelectedSensorPosition()),
       countToDistanceMeters(_talon2.getSelectedSensorPosition())
     );
+
+    photonPoseEstimator.update();
+
+    
     SmartDashboard.putNumber("Left Speed", this.getWheelSpeeds().leftMetersPerSecond);
     SmartDashboard.putNumber("Right Speed", this.getWheelSpeeds().rightMetersPerSecond);
     SmartDashboard.putNumber("Left EncoderVel", _talon1.getSelectedSensorVelocity());
