@@ -187,10 +187,10 @@ public void goToAngle(double armPositionDeg) {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    double armCurrent =  m_miniPD.getCurrent(2);
-    SmartDashboard.putNumber("Arm Current", armCurrent);
-    double armVoltage = m_miniPD.getVoltage();
-    SmartDashboard.putNumber("Arm Voltage", armVoltage);
+    //double armCurrent =  m_miniPD.getCurrent(2);
+    //SmartDashboard.putNumber("Arm Current", armCurrent);
+    //double armVoltage = m_miniPD.getVoltage();
+    //SmartDashboard.putNumber("Arm Voltage", armVoltage);
     
     // Read Preferences for Arm setpoint and kP on entering Teleop
     
