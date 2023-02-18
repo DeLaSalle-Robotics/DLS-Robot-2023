@@ -6,9 +6,15 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.SimVisionSystem;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -19,6 +25,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -35,6 +43,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16448_IMU;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
@@ -60,6 +69,7 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
 
   private final MotorControllerGroup _leftMotor = new MotorControllerGroup(Cim0, Cim2);
   private final MotorControllerGroup _rightMotor = new MotorControllerGroup(Cim3, Cim4);
+  private PhotonPoseEstimator photonPoseEstimator;
 
 //private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
  PhotonCamera camera = new PhotonCamera("Cube_cam");
@@ -69,11 +79,46 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
  final double LINEAR_P = 0.03;
  final double LINEAR_D = 0.0;
  PIDController ForwardController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
+
+ PhotonCamera llCamera = new PhotonCamera("LimeLight");
  
+Pose2d prevPose = new Pose2d(10,10,new Rotation2d(0));
+  private Field2d m_field = new Field2d();
+  
+//Camera Simulation Code
+double camDiagFOV = 75.0; // degrees
+double camPitch = 15.0; // degrees
+double camHeightOffGround = 0.85; // meters
+double maxLEDRange = 20; // meters
+int camResolutionWidth = 640; // pixels
+int camResolutionHeight = 480; // pixels
+double minTargetArea = 10; // square pixels
+SimVisionSystem simVision =
+            new SimVisionSystem(
+                    "LimeLight",
+                    camDiagFOV,
+                    Constants.robotToCam,
+                    maxLEDRange,
+                    camResolutionWidth,
+                    camResolutionHeight,
+                    minTargetArea);
+
+  
   //Defining the drivetrain subsystem
   public DriveBot_DrivetrainSubsystem() {
   _rightMotor.setInverted(true);
-   }
+
+  try {
+    AprilTagFieldLayout fieldLayout = new AprilTagFieldLayout("Games/AprilTag.json");
+    photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP, llCamera, Constants.robotToCam);
+    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+  } catch (IOException e) {
+    DriverStation.reportError("Failed to load AprilTagFieldLayout",e.getStackTrace());
+    photonPoseEstimator = null;
+  }
+  SmartDashboard.putData("Field", m_field);
+
+}
   private final DifferentialDrive _drivetrain = new DifferentialDrive(_leftMotor, _rightMotor);
 
 //Drivetrain Methods:
@@ -117,8 +162,23 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
 this.drive_Arcade(forwardSpeed, rotationSpeed );
   }
 
-
-
+public void updateOdometry(){
+  photonPoseEstimator.setReferencePose(prevPose);
+  Optional<EstimatedRobotPose> result = photonPoseEstimator.update();
+  if (result.isPresent()) {
+    EstimatedRobotPose camPose = result.get();
+    m_field.getObject("Cam Est Pos").setPose(camPose.estimatedPose.toPose2d());
+} else {
+    // move it way off the screen to make it disappear
+    m_field.getObject("Cam Est Pos").setPose(new Pose2d(10, 10, new Rotation2d()));
+}
+}
+@Override
+  public void periodic() {
+    // This method will be called once per scheduler run and update the position and orientation of the robot.
+    this.updateOdometry();
+    simVision.processFrame(m_field.getRobotPose());
+    }
 
   
 /* 

@@ -2,6 +2,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
@@ -85,9 +88,12 @@ public final class Constants {
     public static double Shooter_Ki = 0;
 
     //Lime light related constants - useful for range finding.
-    public static double limelightMountAngle = 45; // in degrees
-    public static double limelightHeight = 30; // in inches
-    public static double GoalHeight = 104; // in inches
+    public static Transform3d robotToCam =
+                new Transform3d(
+                        new Translation3d(0.5, 0.0, 0.5),
+                        new Rotation3d(
+                                0, 0,
+                                0)); // Cam mounted facing forward, half a meter forward of center, half a meter up
 
     public static double ShooterSpeedSlope = 50; //Need to determine by trial and error
     public static double ShooterSpeedIntercept = 1000; //Need to determine by trial and error
