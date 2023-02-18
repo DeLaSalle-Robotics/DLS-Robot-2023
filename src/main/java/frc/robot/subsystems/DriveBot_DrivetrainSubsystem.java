@@ -66,7 +66,9 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
  final double ANGULAR_P = 0.03;
  final double ANGULAR_D = 0.0;
  PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
-
+ final double LINEAR_P = 0.03;
+ final double LINEAR_D = 0.0;
+ PIDController ForwardController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
  
   //Defining the drivetrain subsystem
   public DriveBot_DrivetrainSubsystem() {
@@ -98,20 +100,21 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
     var result = camera.getLatestResult();
 
     double rotationSpeed;
+    double forwardSpeed;
     if (result.hasTargets()) {
         // Calculate angular turn power
         // -1.0 required to ensure positive PID controller effort _increases_ yaw
-    
-        rotationSpeed = -turnController.calculate(result.getBestTarget().getYaw(), 0);
+        forwardSpeed = turnController.calculate(result.getBestTarget().getArea(), 15);
+        rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0);
         if (rotationSpeed > 0.5){rotationSpeed = 0.5;}
     } else {
-        // If we have no targets, stay still.
-  
-        rotationSpeed = 0;
+        // If we have no targets, spin slowly.
+        forwardSpeed = 0;
+        rotationSpeed = 0.2;
     }
     SmartDashboard.putNumber("Cube Rotation", rotationSpeed);
 // Use our forward/turn speeds to control the drivetrain
-this.drive_Arcade(0, (rotationSpeed * -1) );
+this.drive_Arcade(forwardSpeed, rotationSpeed );
   }
 
 
