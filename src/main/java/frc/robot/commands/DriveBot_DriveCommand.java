@@ -9,6 +9,8 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -39,6 +41,7 @@ public class DriveBot_DriveCommand extends CommandBase {
   @Override
   public void execute() {
       m_drivesubsystem.drive_Arcade(leftDrive.getAsDouble(), rightDrive.getAsDouble());
+     // SmartDashboard.putNumber("Y", leftDrive.getAsDouble());
     //  m_drivesubsystem.drive(leftDrive.getAsDouble(), rightDrive.getAsDouble());
     
   }

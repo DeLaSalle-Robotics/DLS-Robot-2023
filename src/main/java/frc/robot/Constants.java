@@ -98,4 +98,16 @@ public final class Constants {
     public static double ShooterSpeedSlope = 50; //Need to determine by trial and error
     public static double ShooterSpeedIntercept = 1000; //Need to determine by trial and error
     public static double kWristToleranceRPS;
+
+    public static double ANGULAR_P = 0.03;
+    public static double ANGULAR_D = 0.0;
+    public static double LINEAR_P = 0.03;
+    public static double LINEAR_D = 0.0;
+
+    public static double aANGULAR_P = 0.03;
+    public static double aANGULAR_D = 0.0;
+    public static double aLINEAR_P = 0.08;
+    public static double aLINEAR_D = 0.0;
+    public static double ALIGN_P = 1.1;
+    public static double ALIGN_D = 0.0;
 }
