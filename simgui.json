@@ -31,10 +31,16 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Arm Sim": "Mechanism2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/FieldEstimation": "Field2d",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser"
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "height": 8.013699531555176,
+        "image": "/Users/town0045/Robotics/2023/DLS-Robot-2023/Games/2023-field2.png",
+        "width": 16.541749954223633,
         "window": {
           "visible": true
         }
@@ -45,6 +51,12 @@
     "transitory": {
       "SmartDashboard": {
         "Field": {
+          "open": true
+        },
+        "open": true
+      },
+      "photonvision": {
+        "LimeLight": {
           "open": true
         },
         "open": true
