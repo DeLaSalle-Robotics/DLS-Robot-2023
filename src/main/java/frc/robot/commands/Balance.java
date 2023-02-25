@@ -62,8 +62,10 @@ public class Balance extends CommandBase {
 
     // Put new values at the end of the pitch values array and move everything to the left
         // Move wheels
-    if(curPitch > 2.5 || isStart){
+    if(isStart){
       System.out.println("Executed!");
+      m_driveSubsystem.drive_Arcade(Constants.unbalanceSpeed, 0.0);
+    } else if (curPitch > 2.5 && !isStart) {
       m_driveSubsystem.drive_Arcade(Constants.balanceSpeed, 0.0);
     } else if (curPitch < -2.5){
       m_driveSubsystem.drive_Arcade(-Constants.balanceSpeed, 0.0);
@@ -71,7 +73,7 @@ public class Balance extends CommandBase {
       m_driveSubsystem.drive_Arcade(0.0, 0.0);
     }
 
-    if(isStart && curPitch > 5){
+    if(isStart && curPitch > 9){
       isStart = false;
     }
 

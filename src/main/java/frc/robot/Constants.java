@@ -113,4 +113,5 @@ public final class Constants {
 
     // Balance
     public static double balanceSpeed = 0.5;
+    public static double unbalanceSpeed = 0.9;
 }
