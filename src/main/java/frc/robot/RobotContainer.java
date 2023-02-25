@@ -87,6 +87,7 @@ m_drivebot_drivetrainSubsystem.setDefaultCommand(new DriveBot_DriveCommand(m_dri
     configureButtonBindings();
   }
 
+  
   /***
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -99,7 +100,8 @@ m_drivebot_drivetrainSubsystem.setDefaultCommand(new DriveBot_DriveCommand(m_dri
     //controller_A.onTrue(Commands.runOnce(m_grasper::closeGrasp, m_grasper));
     //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));
     //controller_X.onTrue(new MiniArmProfileCommand(180, 1.0, m_miniArm));
-    controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
+    //controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
+    controller_Y.onTrue(new Balance(m_drivebot_drivetrainSubsystem));
     controller_leftbumper.whileTrue(new ArmVoltStatic(m_miniArm));
     controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_miniArm));
     joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getX(), () -> (joystickB.getY() * -1)));

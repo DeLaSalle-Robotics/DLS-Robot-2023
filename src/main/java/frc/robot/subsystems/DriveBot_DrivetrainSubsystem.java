@@ -284,7 +284,7 @@ return y_diff;
   }
 
   public double getPitch(){
-    return m_gyro.getPitch();
+    return m_gyro.getRoll();
   }
 
 public void zeroHeading() {

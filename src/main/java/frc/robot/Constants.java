@@ -110,4 +110,7 @@ public final class Constants {
     public static double aLINEAR_D = 0.0;
     public static double ALIGN_P = 1.1;
     public static double ALIGN_D = 0.0;
+
+    // Balance
+    public static double balanceSpeed = 0.5;
 }
