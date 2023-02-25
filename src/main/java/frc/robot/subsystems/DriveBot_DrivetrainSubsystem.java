@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import frc.robot.Constants;
 
 import java.io.IOException;
+import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.SimVisionSystem;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.TargetCorner;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -89,7 +91,7 @@ private Pose3d m_objectInField;
  PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
  final double LINEAR_P = 0.03;
  final double LINEAR_D = 0.0;
- PIDController ForwardController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
+ PIDController forwardController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
 
  PhotonCamera llCamera = new PhotonCamera("LimeLight");
  
@@ -117,8 +119,10 @@ SimVisionSystem simVision =
   
   //Defining the drivetrain subsystem
   public DriveBot_DrivetrainSubsystem() {
-  _rightMotor.setInverted(true);
-
+  _leftMotor.setInverted(true);
+  
+  turnController.setTolerance(1.0);
+  forwardController.setTolerance(1.0);
   try {
     AprilTagFieldLayout fieldLayout = new AprilTagFieldLayout("Games/AprilTag.json");
     photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP, llCamera, Constants.robotToCam);
@@ -193,6 +197,89 @@ public Pose3d getobjectInFieldID(){
     //For Testing always target aprilt tag 3 :
     //return aprilTagFieldLayout.getTagPose(3).get();
     return new Pose3d(m_odometry.getPoseMeters());
+ public double get_target_area(){
+
+  var result = camera.getLatestResult();
+  double area = result.getBestTarget().getArea();
+  return area;
+ }
+
+  public boolean have_target(){
+    var result = camera.getLatestResult();
+    return result.hasTargets();
+  }
+ public double  get_target_yaw(){
+
+  var result = camera.getLatestResult();
+  double yaw = result.getBestTarget().getYaw();
+  return yaw; }
+
+
+  public double get_atarget_area(){
+
+    var result = llCamera.getLatestResult();
+    double area = result.getBestTarget().getArea();
+    return area;
+   }
+  
+    public boolean have_atarget(){
+      var result = llCamera.getLatestResult();
+      return result.hasTargets();
+    }
+   public double  get_atarget_yaw(){
+  
+    var result = llCamera.getLatestResult();
+    double yaw = result.getBestTarget().getYaw();
+    return yaw;
+ }
+
+ public double get_atarget_z(){
+  var result = llCamera.getLatestResult();
+  if (result.hasTargets()){
+List<TargetCorner> corners = result.getBestTarget().getDetectedCorners();
+var corner_0 = corners.get(0);
+var corner_3 = corners.get(3);
+var corner_1 = corners.get(1);
+double x_corner0 = corner_0.x;
+double y_corner0 = corner_0.y;
+double x_corner3 = corner_3.x;
+double y_corner1 = corner_1.y;
+double y_diff = y_corner0 - y_corner1;
+SmartDashboard.putNumber("X diff", x_corner0 - x_corner3);
+SmartDashboard.putNumber("Y diff", y_corner0 - y_corner1);
+return y_diff;
+//System.out.println(corners.get(0));
+ //System.out.println(corners.get(1));
+ //System.out.println(corners.get(2));
+ //System.out.println(corners.get(3));
+  }
+  else{
+    return 0;
+  }
+
+ }
+
+/* 
+  public void find_cube(){
+    
+    var result = camera.getLatestResult();
+    double rotationSpeed;
+    double forwardSpeed;
+    if (result.hasTargets()) {
+        // Calculate angular turn power
+        // -1.0 required to ensure positive PID controller effort _increases_ yaw
+        forwardSpeed = forwardController.calculate(result.getBestTarget().getArea(), 15);
+        rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0);
+        if (rotationSpeed > 0.5){rotationSpeed = 0.5;}
+    } else {
+        // If we have no targets, spin slowly.
+        forwardSpeed = 0;
+        rotationSpeed = 0.2;
+    }
+    SmartDashboard.putNumber("Cube Rotation", rotationSpeed);
+// Use our forward/turn speeds to control the drivetrain
+this.drive_Arcade(forwardSpeed, rotationSpeed );
+
   }
   
 }
@@ -233,12 +320,14 @@ public void updateOdometry(){
     m_field.getObject("Cam Est Pos").setPose(new Pose2d(10, 10, new Rotation2d()));
 }
 }
+*/
 @Override
   public void periodic() {
     // This method will be called once per scheduler run and update the position and orientation of the robot.
-    this.updateOdometry();
-    simVision.processFrame(m_field.getRobotPose());
-    }
+    //this.updateOdometry();
+    //simVision.processFrame(m_field.getRobotPose());
+   this.get_atarget_z(); 
+  }
 
   
 /* 
@@ -252,5 +341,6 @@ public void zeroHeading() {
   m_gyro.reset();
 }
 */
+
 }
 
