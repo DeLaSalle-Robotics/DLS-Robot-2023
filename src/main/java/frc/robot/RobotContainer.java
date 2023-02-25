@@ -60,7 +60,7 @@ public class RobotContainer {
   private Trigger joystickA_4 = new JoystickButton(joystickA, 4);
   private Trigger joystickA_1 = new JoystickButton(joystickA, 1);
   private Trigger joystickB_7 = new JoystickButton(joystickB, 7);
-;
+ 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     //The SmartDashboard is a handy tool to display and store variables.
@@ -76,7 +76,7 @@ m_drivebot_drivetrainSubsystem.setDefaultCommand(new DriveBot_DriveCommand(m_dri
                                                             () -> controller.getLeftY(),
                                                             () -> controller.getRightX()
                                                             ));
-                                                            
+                                                           
 
                                                             
      m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
