@@ -270,10 +270,10 @@ return y_diff;
     // This method will be called once per scheduler run and update the position and orientation of the robot.
     //this.updateOdometry();
     //simVision.processFrame(m_field.getRobotPose());
-   this.get_atarget_z(); 
+   this.haveATTarget(); 
    SmartDashboard.putNumber("Yaw", this.getHeading());
    SmartDashboard.putNumber("Pitch", this.getPitch());
-   
+   SmartDashboard.putBoolean("April Tag", this.have_atarget());
   }
 
   
