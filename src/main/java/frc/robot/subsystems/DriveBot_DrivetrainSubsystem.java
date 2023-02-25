@@ -32,7 +32,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -71,6 +73,15 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
   private final MotorControllerGroup _rightMotor = new MotorControllerGroup(Cim3, Cim4);
   private PhotonPoseEstimator photonPoseEstimator;
 
+//Creating the odometry object to allow tracking of our robot
+private final DifferentialDriveOdometry m_odometry;
+//Creating a field, primarily for testing
+public final Field2d m_field = new Field2d();
+//Creating an object that will hold the aprilTag locations
+private AprilTagFieldLayout aprilTagFieldLayout;
+
+private Pose3d m_objectInField;
+
 //private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
  PhotonCamera camera = new PhotonCamera("Cube_cam");
  final double ANGULAR_P = 0.03;
@@ -83,7 +94,7 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
  PhotonCamera llCamera = new PhotonCamera("LimeLight");
  
 Pose2d prevPose = new Pose2d(10,10,new Rotation2d(0));
-  private Field2d m_field = new Field2d();
+
   
 //Camera Simulation Code
 double camDiagFOV = 75.0; // degrees
@@ -139,28 +150,77 @@ SimVisionSystem simVision =
   }
 
  
-
-  public void find_cube(){
+//Camera Methods
+//This method will return forward and rotation values- will need to be called by cube gathering command
+public double[] find_cube(){
     
-    var result = camera.getLatestResult();
-
-    double rotationSpeed;
-    double forwardSpeed;
-    if (result.hasTargets()) {
-        // Calculate angular turn power
-        // -1.0 required to ensure positive PID controller effort _increases_ yaw
-        forwardSpeed = turnController.calculate(result.getBestTarget().getArea(), 15);
-        rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0);
-        if (rotationSpeed > 0.5){rotationSpeed = 0.5;}
-    } else {
-        // If we have no targets, spin slowly.
-        forwardSpeed = 0;
-        rotationSpeed = 0.2;
-    }
-    SmartDashboard.putNumber("Cube Rotation", rotationSpeed);
-// Use our forward/turn speeds to control the drivetrain
-this.drive_Arcade(forwardSpeed, rotationSpeed );
+  var result = cubeCam.getLatestResult();
+  double rotationSpeed;
+  double forwardSpeed;
+  if (result.hasTargets()) {
+    SmartDashboard.putBoolean("Target", true);
+      // Calculate angular turn power
+      // -1.0 required to ensure positive PID controller effort _increases_ yaw
+      forwardSpeed = forwardController.calculate(result.getBestTarget().getArea(), 15); //<-- The target area should be in the Constants class.
+      rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0); // <-- Target Yaw will need to be updated once camera and intake are mounted. Also should be in Constants
+      if (rotationSpeed > 0.5){rotationSpeed = 0.5;} // limit rotation speed
+  } else {
+      SmartDashboard.putBoolean("Target", false);
+      forwardSpeed = 0;
+      rotationSpeed = 0;
   }
+// Use our forward/turn speeds to control the drivetrain
+double[] array = {forwardSpeed, rotationSpeed};
+return array;
+}
+
+//This method returns if AT Target is acquired
+public boolean haveATTarget(){
+  var result = llCamera.getLatestResult();
+  if (result.hasTargets()) {SmartDashboard.putBoolean("ATTarget", true);
+} else {SmartDashboard.putBoolean("ATTarget", false);}
+  return result.hasTargets();
+}
+
+//This method returns the position of the AT target, if none returns current position.
+public Pose3d getobjectInFieldID(){
+  var result = llCamera.getLatestResult();
+  int objectID;
+  if (result.hasTargets()) {
+    objectID = result.getBestTarget().getFiducialId();
+    return aprilTagFieldLayout.getTagPose(objectID).get();
+  } else {
+    //For Testing always target aprilt tag 3 :
+    //return aprilTagFieldLayout.getTagPose(3).get();
+    return new Pose3d(m_odometry.getPoseMeters());
+  }
+  
+}
+
+//Returns a pose that is slightly removed from the target in the x, aligned in the y, and oppisite in the rotation.
+public Pose2d getPoseTarget(){
+  Pose2d object =  this.getobjectInFieldID().toPose2d();
+  //This transform moves the center of the robot away from the vision target and faces the target.
+  Transform2d robotToTarget = new Transform2d(new Translation2d(0.75, 0.0), new Rotation2d(Math.PI));
+  return object.transformBy(robotToTarget);
+}
+
+//Creates the trajectory needed to get to the target pose.
+public Trajectory targetTrajectory() {
+  //Has issues if curPose.x is lower than tarPose.x, the trajectory moves past target.
+  Pose2d curPose = m_odometry.getPoseMeters();
+  Pose2d tarPose = this.getPoseTarget();
+  var interiorWaypoint = new ArrayList<Translation2d>();
+  interiorWaypoint.add(new Translation2d((tarPose.getX() - curPose.getX())/2 + curPose.getX(),tarPose.getY() ));
+ 
+  Trajectory traj = TrajectoryGenerator.generateTrajectory(
+    curPose, interiorWaypoint, tarPose, config);
+    m_field.getObject("Target").setTrajectory(traj);
+    
+    System.out.println("Sent new traj");
+    return traj;
+}
+
 
 public void updateOdometry(){
   photonPoseEstimator.setReferencePose(prevPose);
