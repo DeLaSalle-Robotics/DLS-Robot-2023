@@ -181,6 +181,14 @@ return(feedForward);
 public void findArmLocation(){
   //This method needs to find a way to set the arms position. Could move slowly until it hits the edge
   // while monitorting current, then set the encoder once a threshold is hit.
+
+  // Move slowly and monitor current
+  
+
+  // Wait for the threshold
+  
+  // Set the encoder
+
 }
 
 public void setArmLength(double armLength) {
