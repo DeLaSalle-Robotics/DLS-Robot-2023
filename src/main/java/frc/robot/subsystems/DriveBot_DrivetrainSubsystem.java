@@ -26,6 +26,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -51,6 +52,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -76,16 +78,18 @@ public class DriveBot_DrivetrainSubsystem extends SubsystemBase {
   private PhotonPoseEstimator photonPoseEstimator;
 
 //Creating the odometry object to allow tracking of our robot
-private final DifferentialDriveOdometry m_odometry;
+//private final DifferentialDriveOdometry m_odometry;
 //Creating a field, primarily for testing
 public final Field2d m_field = new Field2d();
 //Creating an object that will hold the aprilTag locations
 private AprilTagFieldLayout aprilTagFieldLayout;
 
+private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
+
 private Pose3d m_objectInField;
 
 //private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
- PhotonCamera camera = new PhotonCamera("Cube_cam");
+ PhotonCamera cubeCam = new PhotonCamera("Cube_cam");
  final double ANGULAR_P = 0.03;
  final double ANGULAR_D = 0.0;
  PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
@@ -120,7 +124,7 @@ SimVisionSystem simVision =
   //Defining the drivetrain subsystem
   public DriveBot_DrivetrainSubsystem() {
   _leftMotor.setInverted(true);
-  
+  m_gyro.reset();
   turnController.setTolerance(1.0);
   forwardController.setTolerance(1.0);
   try {
@@ -196,21 +200,22 @@ public Pose3d getobjectInFieldID(){
   } else {
     //For Testing always target aprilt tag 3 :
     //return aprilTagFieldLayout.getTagPose(3).get();
-    return new Pose3d(m_odometry.getPoseMeters());
+    return new Pose3d(new Pose2d(0,0,new Rotation2d(0)));
+  }}
  public double get_target_area(){
 
-  var result = camera.getLatestResult();
+  var result = cubeCam.getLatestResult();
   double area = result.getBestTarget().getArea();
   return area;
  }
 
   public boolean have_target(){
-    var result = camera.getLatestResult();
+    var result = cubeCam.getLatestResult();
     return result.hasTargets();
   }
  public double  get_target_yaw(){
 
-  var result = camera.getLatestResult();
+  var result = cubeCam.getLatestResult();
   double yaw = result.getBestTarget().getYaw();
   return yaw; }
 
@@ -259,88 +264,33 @@ return y_diff;
 
  }
 
-/* 
-  public void find_cube(){
-    
-    var result = camera.getLatestResult();
-    double rotationSpeed;
-    double forwardSpeed;
-    if (result.hasTargets()) {
-        // Calculate angular turn power
-        // -1.0 required to ensure positive PID controller effort _increases_ yaw
-        forwardSpeed = forwardController.calculate(result.getBestTarget().getArea(), 15);
-        rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0);
-        if (rotationSpeed > 0.5){rotationSpeed = 0.5;}
-    } else {
-        // If we have no targets, spin slowly.
-        forwardSpeed = 0;
-        rotationSpeed = 0.2;
-    }
-    SmartDashboard.putNumber("Cube Rotation", rotationSpeed);
-// Use our forward/turn speeds to control the drivetrain
-this.drive_Arcade(forwardSpeed, rotationSpeed );
 
-  }
-  
-}
-
-//Returns a pose that is slightly removed from the target in the x, aligned in the y, and oppisite in the rotation.
-public Pose2d getPoseTarget(){
-  Pose2d object =  this.getobjectInFieldID().toPose2d();
-  //This transform moves the center of the robot away from the vision target and faces the target.
-  Transform2d robotToTarget = new Transform2d(new Translation2d(0.75, 0.0), new Rotation2d(Math.PI));
-  return object.transformBy(robotToTarget);
-}
-
-//Creates the trajectory needed to get to the target pose.
-public Trajectory targetTrajectory() {
-  //Has issues if curPose.x is lower than tarPose.x, the trajectory moves past target.
-  Pose2d curPose = m_odometry.getPoseMeters();
-  Pose2d tarPose = this.getPoseTarget();
-  var interiorWaypoint = new ArrayList<Translation2d>();
-  interiorWaypoint.add(new Translation2d((tarPose.getX() - curPose.getX())/2 + curPose.getX(),tarPose.getY() ));
- 
-  Trajectory traj = TrajectoryGenerator.generateTrajectory(
-    curPose, interiorWaypoint, tarPose, config);
-    m_field.getObject("Target").setTrajectory(traj);
-    
-    System.out.println("Sent new traj");
-    return traj;
-}
-
-
-public void updateOdometry(){
-  photonPoseEstimator.setReferencePose(prevPose);
-  Optional<EstimatedRobotPose> result = photonPoseEstimator.update();
-  if (result.isPresent()) {
-    EstimatedRobotPose camPose = result.get();
-    m_field.getObject("Cam Est Pos").setPose(camPose.estimatedPose.toPose2d());
-} else {
-    // move it way off the screen to make it disappear
-    m_field.getObject("Cam Est Pos").setPose(new Pose2d(10, 10, new Rotation2d()));
-}
-}
-*/
 @Override
   public void periodic() {
     // This method will be called once per scheduler run and update the position and orientation of the robot.
     //this.updateOdometry();
     //simVision.processFrame(m_field.getRobotPose());
    this.get_atarget_z(); 
+   SmartDashboard.putNumber("Yaw", this.getHeading());
+   SmartDashboard.putNumber("Pitch", this.getPitch());
+   
   }
 
   
-/* 
+
   public double getHeading() {
     //Method returns heading in degrees from original heading.
-    return m_gyro.getGyroAngleZ();
+    return m_gyro.getYaw();
   }
-  
+
+  public double getPitch(){
+    return m_gyro.getPitch();
+  }
 
 public void zeroHeading() {
   m_gyro.reset();
 }
-*/
+
 
 }
 
