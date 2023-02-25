@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -36,10 +37,10 @@ public class TrajectoryFollower extends CommandBase{
     
     public TrajectoryFollower(Trajectory _trajectory, DrivetrainSubsystem _driveSubsystem) {
         this.m_driveSubsystem = _driveSubsystem;
-        this.m_trajectory = _trajectory;
         this.m_output = m_driveSubsystem::driveVolts;
         this.m_speeds = m_driveSubsystem::getWheelSpeeds;
         this.m_pose = m_driveSubsystem::getPose;
+        this.m_trajectory = _trajectory;
     
         // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(_driveSubsystem);}
@@ -50,7 +51,9 @@ public class TrajectoryFollower extends CommandBase{
         /*Creating the controller each time the command is called. */
         
         System.out.println("Initializing Command");
-        
+        if (DriverStation.isTeleop()) {
+            this.m_trajectory = m_driveSubsystem.targetTrajectory();
+        }
         /* Setting speeds and controllers to zero*/
         m_prevTime = -1;
         var initialState = m_trajectory.sample(0);
