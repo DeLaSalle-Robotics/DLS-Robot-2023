@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
@@ -18,17 +19,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Grasper extends SubsystemBase {  
+public class Intake extends SubsystemBase {  
   private final Compressor phCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
   private final DoubleSolenoid grasperSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
    1,
    2);
-  //private final VictorSPX _VictorSPX = new VictorSPX(1);
+   private final DoubleSolenoid twisterSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
+   1,
+   2);
+  private final CANSparkMax _IntakeNeo550 = new CANSparkMax(Constants.IntakeID, CANSparkMaxLowLevel.MotorType.kBrushless);
   
   //Declaration of subsystem and its components
-  public Grasper() {
+  public Intake() {
     grasperSolenoid.set(Value.kForward); // Should close the claw on startup
-    
+    _IntakeNeo550.setSmartCurrentLimit(10);
+
 }
 
 //Subsystem Methods:
@@ -52,7 +57,16 @@ public class Grasper extends SubsystemBase {
     grasperSolenoid.set(Value.kReverse);
   }
 
-  
+  public void twistGrasp(){
+    //Turn the claw -may be punmatics or maybe a motor
+  }
+
+public void spinIntake(){
+  //Spin the wheels at set speed
+  //Need to monitor current going to intake motor, once a game piece is acquired, we should stop spinning and close clamp
+  //This may be done at the Command level.
+}
+
 
   @Override
   public void periodic() {
