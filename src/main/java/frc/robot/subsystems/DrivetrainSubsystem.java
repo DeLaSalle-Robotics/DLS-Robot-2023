@@ -9,6 +9,7 @@ import frc.robot.Constants;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
@@ -109,8 +110,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   //Navigation
   private final ADIS16448_IMU m_gyro = new ADIS16448_IMU();
   private final DifferentialDriveOdometry m_odometry;
-  private final Field2d m_field = new Field2d();
-  private final Field2d m_fieldApproximation = new Field2d();
+  public final Field2d m_field = new Field2d();
   private AprilTagFieldLayout aprilTagFieldLayout;
   //private final PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, cam, robotToCam);
 
@@ -139,11 +139,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                       new Rotation2d(this.getHeading()),
                                       this.nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition()),
                                       this.nativeUnitsToDistanceMeters(_talon2.getSelectedSensorPosition()),
-                                      new Pose2d(0,0, new Rotation2d(0)),
-                                      VecBuilder.fill(10.05, 10.05, Units.degreesToRadians(5)), //large deviation should not trust wheels for testing vision
-                                      VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+                                      new Pose2d(5,5, new Rotation2d(Math.PI/2)),
+                                      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), //large deviation should not trust wheels for testing vision
+                                      VecBuilder.fill(1000000.5, 1000000.5, Units.degreesToRadians(30000000)));
   
-  private Field2d m_fieldSim = new Field2d();
 
   //Simulation Classes
   private final TalonFXSimCollection sim_leftMotor = _talon1.getSimCollection();
@@ -213,9 +212,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition()),
     nativeUnitsToDistanceMeters(_talon2.getSelectedSensorPosition())
     );
+    
     //Create vision data entry - which does both publishing (.set) and subscribing (.get).
 
     m_cameraToObjectEntry = cameraToObjectTopic.getEntry(m_defaultVal);
+    //Center of robot to camera
     m_robotToCamera = new Transform3d(new Translation3d(1, 1, 1), new Rotation3d(0, 0, Math.PI / 2));
 
     try {
@@ -227,11 +228,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   llCamera = new PhotonCamera("LimeLight");
   robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), 
                                           new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-  photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, 
-                                                          PoseStrategy.LOWEST_AMBIGUITY, llCamera, robotToCam);
+  //photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, 
+   //                                                       PoseStrategy.LOWEST_AMBIGUITY, llCamera, robotToCam);
 
     SmartDashboard.putData("Field", m_field);
-    SmartDashboard.putData("FieldEstimation", m_fieldApproximation);
   }
 
 
@@ -260,13 +260,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
 //Camera Methods
 
+public boolean haveTarget(){
+  var result = llCamera.getLatestResult();
+  return result.hasTargets();
+}
+
 public Pose3d getobjectInFieldID(){
   var result = llCamera.getLatestResult();
   int objectID;
   if (result.hasTargets()) {
     objectID = result.getBestTarget().getFiducialId();
-  } else {objectID = 3;}
-  return aprilTagFieldLayout.getTagPose(objectID).get();
+    return aprilTagFieldLayout.getTagPose(objectID).get();
+  } else {
+    //For Testing always target aprilt tag 3 :
+    return aprilTagFieldLayout.getTagPose(3).get();
+    //return new Pose3d(curPose);
+  }
+  
 }
 
 public Pose2d getPoseTarget(){
@@ -276,12 +286,28 @@ public Pose2d getPoseTarget(){
   return object.transformBy(robotToTarget);
 }
 
+public Trajectory targetTrajectory() {
+  //Has issues if curPose.x is lower than tarPose.x, the trajectory moves past target.
+  Pose2d curPose = m_odometry.getPoseMeters();
+  Pose2d tarPose = this.getPoseTarget();
+  var interiorWaypoint = new ArrayList<Translation2d>();
+  interiorWaypoint.add(new Translation2d((tarPose.getX() - curPose.getX())/2 + curPose.getX(),tarPose.getY() ));
+ 
+  Trajectory traj = TrajectoryGenerator.generateTrajectory(
+    curPose, interiorWaypoint, tarPose, config);
+    m_field.getObject("Target").setTrajectory(traj);
+    
+    System.out.println("Sent new traj");
+    return traj;
+}
+
+
 public Transform3d getCameraToObject() {
   var result = llCamera.getLatestResult();
   Transform3d cameraToObjectTransform;
   if (result.hasTargets()) {
     cameraToObjectTransform = result.getBestTarget().getBestCameraToTarget();
-  } else {cameraToObjectTransform = new Transform3d(new Pose3d(5.0, 5.0, 0.5, new Rotation3d(0,0,0)),
+  } else {cameraToObjectTransform = new Transform3d(new Pose3d(this.getPose()),
                                                       this.getobjectInFieldID());}
                                                     
   return cameraToObjectTransform;
@@ -294,12 +320,13 @@ public Pose3d objectToRobotPose(
     return ComputerVisionUtil.objectToRobotPose(objectInField, cameraToObject, robotToCamera);
   }
 
+  /*
   public void publishCameraToObject(
     Pose3d objectInField,
     Transform3d robotToCamera,
     DoubleArrayEntry cameraToObjectEntry,
-    DifferentialDrivetrainSim drivetrainSim) {
-      Pose3d robotInField = new Pose3d(drivetrainSim.getPose());
+    DifferentialDrivetrainSim m_driveSim) {
+      Pose3d robotInField = new Pose3d(m_driveSim.getPose());
       Pose3d cameraInField = robotInField.plus(robotToCamera);
       Transform3d cameraToObject= new Transform3d(cameraInField, objectInField);
       // Publishes double array with Translation3D elements {x, y, z} and Rotation3D elements {w, x,
@@ -316,22 +343,24 @@ public Pose3d objectToRobotPose(
       };
       cameraToObjectEntry.set(val);
     }
+    */
    
 
 public void updateOdometry() {
-  m_poseEstimator.update(new Rotation2d(m_gyro.getAngle()), 
+  /*m_poseEstimator.update(new Rotation2d(-m_gyro.getAngle()), 
                           countToDistanceMeters(_talon1.getSelectedSensorPosition()),
                           countToDistanceMeters(_talon2.getSelectedSensorPosition()));
-  // Publish cameraToObject transformation to networktables --this would normally be handled by
+  */
+    // Publish cameraToObject transformation to networktables --this would normally be handled by
     // the
     // computer vision solution.
     //publishCameraToObject(
     //    m_objectInField, m_robotToCamera, m_cameraToObjectEntry, m_driveSim);
     
     // Compute the robot's field-relative position exclusively from vision measurements.
-    
+    /*
     Pose3d visionMeasurement3d = 
-      objectToRobotPose(this.getobjectInFieldID(), m_robotToCamera, this.getCameraToObject());
+      objectToRobotPose(this.getobjectInFieldID(this.getPose()), m_robotToCamera, this.getCameraToObject());
 
     // Convert robot pose from Pose3d to Pose2d needed to apply vision measurements.
 
@@ -339,18 +368,19 @@ public void updateOdometry() {
 
   // Apply vision measurements. For simulation purposes only, we don't input a latency delay -- on
     // a real robot, this must be calculated based either on known latency or timestamps.
-    m_poseEstimator.addVisionMeasurement(visionMeasurement2d, Timer.getFPGATimestamp());
+   // m_poseEstimator.addVisionMeasurement(visionMeasurement2d, Timer.getFPGATimestamp());
+   */
 }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run and update the position and orientation of the robot.
-    this.updateOdometry();
-    m_fieldSim.setRobotPose(m_driveSim.getPose());
-    m_fieldApproximation.setRobotPose(m_poseEstimator.getEstimatedPosition());
-
-    //photonPoseEstimator.update();
-
+    m_odometry.update(
+      Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
+      countToDistanceMeters(_talon1.getSelectedSensorPosition()),
+      countToDistanceMeters(_talon2.getSelectedSensorPosition())
+    );
+    m_field.setRobotPose(m_odometry.getPoseMeters());
     
     SmartDashboard.putNumber("Left Speed", this.getWheelSpeeds().leftMetersPerSecond);
     SmartDashboard.putNumber("Right Speed", this.getWheelSpeeds().rightMetersPerSecond);
@@ -358,7 +388,6 @@ public void updateOdometry() {
     SmartDashboard.putNumber("Right EncoderVel", _talon2.getSelectedSensorVelocity());
     SmartDashboard.putNumber("Heading", this.getHeading());
 
-    m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
     }
 
   @Override
@@ -396,7 +425,7 @@ public void updateOdometry() {
 
  public Pose2d getPose() {
     //Method to return the current position in meters from origin
-    return m_poseEstimator.getEstimatedPosition();
+    return m_odometry.getPoseMeters();
   }
 //
   public double getHeading() {
@@ -426,10 +455,10 @@ public void updateOdometry() {
 
   public void resetOdometry(Pose2d pose) {
     //Method to reset the odometry, performed as part of the intitialization protocol. Not implimented.
-    resetEncoders();
+    this.resetEncoders();
 
     //m_gyro.reset();
-    m_poseEstimator.resetPosition(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
+    m_odometry.resetPosition(Rotation2d.fromDegrees(-m_gyro.getGyroAngleZ()),
     nativeUnitsToDistanceMeters(_talon1.getSelectedSensorPosition()),
     nativeUnitsToDistanceMeters(_talon2.getSelectedSensorPosition()),
     pose);
@@ -458,7 +487,7 @@ public void setMaxOutput(double maxOutput){
 
 public void setNewPose(Pose2d pose){
   this.resetEncoders();
-  m_poseEstimator.resetPosition(new Rotation2d(0),0.0, 0.0, pose);
+  m_odometry.resetPosition(new Rotation2d(0),0.0, 0.0, pose);
   m_field.setRobotPose(pose);
   
 }
@@ -506,6 +535,9 @@ public void zeroHeading() {
 
 
 public Trajectory getTrajectory() {
+  if (DriverStation.isTeleop()) {
+    return this.targetTrajectory();
+  } else {
   try {
     String trajectoryJSON = SmartDashboard.getString("Trajectory Path", tajectoryJSON);
     Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
@@ -531,6 +563,7 @@ public Trajectory getTrajectory() {
     m_field.getObject("Traj").setTrajectory(autoTrajectory);
     return autoTrajectory;
  }
+ }
 }
 
 public void clearTrajectories(){
@@ -543,6 +576,7 @@ public void clearTrajectories(){
 }
 
 public Trajectory getTrajectoryPath(String trajectoryJSON) {
+
   try {
   Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
   if (Files.exists(trajectoryPath)){System.out.println("Trajectory Exists");}
