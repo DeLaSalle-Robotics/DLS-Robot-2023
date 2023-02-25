@@ -4,21 +4,22 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.MiniArm;
+import frc.robot.subsystems.Arm;
 
 /** An example command that uses an example subsystem. */
 public class ArmVoltQuasistatic extends CommandBase {
-  private final MiniArm m_miniarm;
+  private final Arm m_Arm;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArmVoltQuasistatic(MiniArm subsystem) {
-    m_miniarm = subsystem;
-    addRequirements(m_miniarm);
+  public ArmVoltQuasistatic(Arm subsystem) {
+    m_Arm = subsystem;
+    addRequirements(m_Arm);
   }
 
   /*// Called once when the command is initially scheduled.
@@ -30,13 +31,16 @@ public class ArmVoltQuasistatic extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_miniarm.ArmMoveVolts(0.9);
+    m_Arm.armSetVolts(0.9);
+    SmartDashboard.putNumber("ArmAngle", m_Arm.ArmAngle());
+    SmartDashboard.putNumber("ArmRate", m_Arm.ArmVelocity());
+    SmartDashboard.putNumber("Volts", 0.9);
   }
 
   // Called once when the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_miniarm.ArmMoveVolts(0.0);
+    m_Arm.armSetVolts(0.0);
   }
 
   /*// Returns true when the command should end.

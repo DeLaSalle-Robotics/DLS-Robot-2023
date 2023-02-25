@@ -5,20 +5,20 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.MiniArm;
+import frc.robot.subsystems.Arm;
 
 /** An example command that uses an example subsystem. */
 public class ArmVoltStatic extends CommandBase {
-  private final MiniArm m_miniarm;
+  private final Arm m_Arm;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArmVoltStatic(MiniArm subsystem) {
-    m_miniarm = subsystem;
-    addRequirements(m_miniarm);
+  public ArmVoltStatic(Arm subsystem) {
+    m_Arm = subsystem;
+    addRequirements(m_Arm);
   }
 
   /*// Called once when the command is initially scheduled.
@@ -32,14 +32,14 @@ public class ArmVoltStatic extends CommandBase {
   @Override
   public void execute() {
     currentVoltage = currentVoltage + interval;
-    m_miniarm.ArmMoveVolts(currentVoltage);
+    m_Arm.armSetVolts(currentVoltage);
   }
 
   // Called once when the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     currentVoltage = 0;
-    m_miniarm.ArmMoveVolts(0.0);
+    m_Arm.armSetVolts(0.0);
   }
 
   /*// Returns true when the command should end.

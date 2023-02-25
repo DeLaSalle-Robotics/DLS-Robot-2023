@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 // Phoenix
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -14,9 +16,25 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 // Wipilibj
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Constants
@@ -27,23 +45,79 @@ public class Arm extends SubsystemBase {
   private final WPI_TalonFX _armFalconR = new WPI_TalonFX(Constants.armFalconRightID);
   private final WPI_TalonFX _armFalconL = new WPI_TalonFX(Constants.armFalconLeftID);
   private final WPI_TalonFX _armExtend = new WPI_TalonFX(Constants.armExtendID);
-  //A through bore encorder that reports the arm position.
-  //private final DutyCycleEncoder _armEncoder = new DutyCycleEncoder(Constants.intakeArmEncoderChannel);
+  private final Encoder m_encoder = new Encoder(7, 8,false, Encoder.EncodingType.k4X); //<-- put channels in the Constants class
+
+  //Setting Initial State
+  private final DCMotor m_armGearbox = DCMotor.getFalcon500(2);
+  private final double  m_armReduction = 280; // <-- Should be in the Constants class
+  private final double  m_armMass = 0.2; //<-- Needs to be updated for acutal arm
+  private final double m_armLength = Units.inchesToMeters(24); //<-- Will be provied by a method
+  private double priorArmVelocity = 0.0;
+  private static double armPositionDeg = 75.0; //<-- Whatever position keeps us within frame parameter
+
+  // The P gain for the PID controller that drives this arm. May need a full PID <-- although this is likely in a command
+  private static double kArmKp = 50.0;
+  public static final String kArmPositionKey = "ArmPosition";
+  public static final String kArmPKey = "ArmP";
+
+  //Simulation Code
+ private final SingleJointedArmSim m_armSim =
+ new SingleJointedArmSim(
+   m_armGearbox, 
+   m_armReduction,
+  SingleJointedArmSim.estimateMOI(m_armLength, m_armMass),
+   m_armLength, // <-- This might present a problem trying to alter the arm length in simulation
+    Units.degreesToRadians(-75),  //<-- These need to be defined on the robot
+    Units.degreesToRadians(255), //<-- These need to be defined on the robot
+     true,
+     VecBuilder.fill(2 * Math.PI /2048.0)
+     );
+  private final PIDController m_controller = new PIDController(kArmKp, 0, 0);
+  private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
+
+       //Mechanism 2d Testing
+       private final Mechanism2d m_mech2d = new Mechanism2d(60,60);
+       private final MechanismRoot2d m_armPivot = m_mech2d.getRoot("ArmPivot", 30,30); //<-- Probably be wise to get the height here reasonably close to reality
+       private final MechanismLigament2d m_armTower = m_armPivot.append(new MechanismLigament2d("ArmTower", 30, -90));//<-- Probably be wise to get the height here reasonably close to reality
+       private final MechanismLigament2d m_arm =
+       m_armPivot.append(
+        new MechanismLigament2d(
+          "Arm",
+          30, //<-- needs to be variable
+          Units.radiansToDegrees(m_armSim.getAngleRads()),
+          6,
+          new Color8Bit(Color.kPurple)
+        ));
+  
 
  //Declaring the Subsystem \/
  public Arm() {
   _armFalconR.configFactoryDefault(); //Resets any preexisting settings - good practice to prevent things from breaking unexpectedly.
   _armFalconR.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our arm. Other option is coast.
+  _armFalconR.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
   _armFalconL.configFactoryDefault(); //Resets any preexisting settings - good practice to prevent things from breaking unexpectedly.
   _armFalconL.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our arm. Other option is coast.
+  _armFalconL.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
   _armFalconR.follow(_armFalconL);
   _armFalconR.setInverted(true); // Not sure if this is right
+  
   _armExtend.configFactoryDefault();
   _armExtend.setNeutralMode(NeutralMode.Brake);
+  _armExtend.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,30);
 
-   //Putting the PID constants on the SmartDashboard is a good way to tune them.
-   //Although it is not ideal to leave them there for the competion.
-  
+  m_encoder.setDistancePerPulse(2 * Math.PI /2048.0);
+
+   // Put Mechanism 2d to SmartDashboard
+ SmartDashboard.putData("Arm Sim", m_mech2d);
+ m_armTower.setColor(new Color8Bit(Color.kBlue));
+
+if (!Preferences.containsKey(kArmPositionKey)) {
+    Preferences.setDouble(kArmPositionKey, armPositionDeg);
+  }
+if (!Preferences.containsKey(kArmPKey)) {
+    Preferences.setDouble(kArmPKey, kArmKp);
+  }
+
 }
 
 
@@ -57,103 +131,70 @@ public class Arm extends SubsystemBase {
     _armFalconL.set(ControlMode.PercentOutput, speed);
   }
 
-  public void ArmMoveVolts(Double volt){
-    _armFalconL.setVoltage(volt);
+  public void ArmMoveVolts(double volt){
+    double m_feedForward = this.getFeedForward(this.ArmAngle(), this.ArmLength());
+    _armFalconL.setVoltage(volt + m_feedForward);
+    SmartDashboard.putNumber("Arm FeedForward", m_feedForward);
+    SmartDashboard.putNumber("Arm Volts", volt);
+  }
+
+  public double ArmAngle() {
+    //This method returns the arm angle in degrees
+    double vertical_radian = m_encoder.getDistance(); //<-- Need to confirm the units
+    return(Math.toDegrees(vertical_radian));
+  }
+  public double ArmVelocity() {
+    //This method returns the arm angle in degrees
+    double armRate = m_encoder.getRate();
+    return(armRate);
   }
 
 
-  // public double ArmAngle() {
-  //   //This method returns the arm angle in degrees
-  //  // double encoderReading = _armEncoder.getAbsolutePosition();
-  //   double vertical_radian = Math.asin(encoderReading/Constants.stage1Length);
-  //   return(Math.toDegrees(vertical_radian));
-  // }
+  public double ArmLength(){
+    double armLength_clicks = _armExtend.getSelectedSensorPosition();
+    //Conversion figure to convert length to sensor position
+    double armlength_m = 0 * armLength_clicks + 42; //<-- needs to be determined.
+    return armlength_m;
+  }
 
   public void ArmExtend(Double speed) {
     //This method sets the speed of the arm extension motor
     _armExtend.set(speed);
   }
 
-  // public double getArmEncoder() {
-  //   //This method returns the position of the encoder
-  //   return(_armEncoder.getAbsolutePosition());
-  // }
+private double ArmComCalc(double armLength){
+  double Arm_Com = armLength; //Function to convert armlength to Center of Mass distance from pivot
+  return Arm_Com;
+}
 
-  public double[] predictVelAndAccel(double _time, double[] velArray, double[] accelArray){
-    // Takes in time and returns what the velocity and acceleration should be
-    double[] output = new double[2];
-    int index = (int)Math.round(_time * 50);
-    output[0] = velArray[index];
-    output[1] = accelArray[index];
-    return output;
-  }
+public double getFeedForward(double armAngle, double armLength){
+  double Arm_Com = ArmComCalc(this.ArmLength());  //Get the Center of Mass (Com)
+  double feedForward = Constants.arm_Kg * Math.cos(armAngle) * Arm_Com+ //Static Torque Component
+                      Constants.arm_Ks +                                //Static Motor Component
+                      Constants.arm_Kv * this.ArmVelocity() +           //Torque of friction
+                      Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02; //Angular Momentum Calculation
+  priorArmVelocity = this.ArmVelocity();
+  //double feedForward = 0.0;
+return(feedForward);
+}
 
-  public double[][] getPredictions(double endAngle, double endLength) {
-    double startAngle = 0; //ArmAngle();
-    double startLength = 0;// getArmEncoder(); // Check this
+public void findArmLocation(){
+  //This method needs to find a way to set the arms position. Could move slowly until it hits the edge
+  // while monitorting current, then set the encoder once a threshold is hit.
+}
 
-    // Get constant length to trapezoid
-    double constTimeAccel = Constants.maxVelocityMetersPerSecond / Constants.maxAccelerationMetersPerSecondSq;
-    double constLenToTrapezoid = constTimeAccel * Constants.maxVelocityMetersPerSecond;
+public void setArmLength(double armLength) {
+  //This method moves arm to set length - Probably better as a command.
+}
 
-    double angleChange = endAngle - startAngle;
-    double absAngleChange = Math.abs(angleChange);
+public void armLengthFineControl() {
+  //This method/command should provide fine control of arm extension to allow corrective aiming of initial position
+}
 
-    // Triangles
-    if (absAngleChange < constLenToTrapezoid) {
-
-      // Get total time
-      double timeAccel = Math.sqrt(absAngleChange / Constants.maxAccelerationMetersPerSecondSq);
-      double time = timeAccel * 2;
-
-      // Defines the arrays that will be returned
-      double[] velArray = new double[(int)Math.ceil(time * 50)];
-      double[] accelArray = new double[velArray.length];
-
-      // Set values in the arrays
-      for(int i = 0;i < velArray.length;i++) {
-        double timeSeconds = i/50;
-        if(timeSeconds <= timeAccel) { // Before peak
-          accelArray[i] = Constants.maxAccelerationMetersPerSecondSq;
-          velArray[i] = timeSeconds * Constants.maxAccelerationMetersPerSecondSq;
-        } else { // After peak
-          accelArray[i] = -Constants.maxAccelerationMetersPerSecondSq;
-          velArray[i] = (time - timeSeconds) * Constants.maxAccelerationMetersPerSecondSq;
-        }
-      }
-
-      // Return the arrays
-      return new double[][] {velArray, accelArray};
-    } else { // Trapezoid
-
-      double distanceMinusConstant = absAngleChange - constLenToTrapezoid;
-      double timeCoasting = distanceMinusConstant / Constants.maxVelocityMetersPerSecond;
-      double totalTime = timeCoasting + constTimeAccel * 2;
-
-      double[] velArray = new double[(int)Math.ceil(totalTime * 50)];
-      double[] accelArray = new double[velArray.length];
-
-      // Set values in arrays
-      for (int i = 0; i < velArray.length; i++){
-        double timeSeconds = i / 50;
-
-        if(timeSeconds <= constTimeAccel) { // Before peak
-          accelArray[i] = Constants.maxAccelerationMetersPerSecondSq;
-          velArray[i] = timeSeconds * Constants.maxAccelerationMetersPerSecondSq;
-        } else if (timeSeconds >= (totalTime - constTimeAccel)){ // After peak
-          accelArray[i] = -Constants.maxAccelerationMetersPerSecondSq;
-          velArray[i] = (totalTime - timeSeconds) * Constants.maxAccelerationMetersPerSecondSq;
-        } else { // At peak
-          accelArray[i] = 0;
-          velArray[i] = Constants.maxVelocityMetersPerSecond;
-        }
-      }
-
-      // Return the arrays
-      return new double[][] {velArray, accelArray};
-    }
-  }
-
+public void targetingPose() {
+  //This needs to be a command that can take targeting information and set arm length and chassis position to faciliate scoring at selected target
+  //Also need a method of target selection, thinking about a grid of booleans on the SmartDashboard
+}
  
   @Override
   public void periodic() {
@@ -163,5 +204,40 @@ public class Arm extends SubsystemBase {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+    m_armSim.setInput(_armFalconL.get() * RobotController.getBatteryVoltage());
+
+    // Next, we update it. The standard loop time is 20ms.
+    m_armSim.update(0.020);
+
+    // Finally, we set our simulated encoder's readings and simulated battery voltage
+    m_encoderSim.setDistance(m_armSim.getAngleRads());
+    // SimBattery estimates loaded battery voltages
+    RoboRioSim.setVInVoltage(
+        BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps()));
+
+    // Update the Mechanism Arm angle based on the simulated arm angle
+    m_arm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
+  }
+
+  //These methods are used to characterize the arm constants
+  boolean testingKs;
+  double startAngle;
+  double currentVoltage = 0;
+  double incrementAmount = 0.002;
+  
+  public void incrementVolts() {
+    currentVoltage += incrementAmount;
+    SmartDashboard.putNumber("ArmAngle", ArmAngle());
+    SmartDashboard.putNumber("ArmRate", ArmVelocity());
+    SmartDashboard.putNumber("Volts", currentVoltage);
+    
+    _armFalconL.setVoltage(currentVoltage);
+  }
+  public void armSetVolts(double volts){
+    _armFalconL.setVoltage(volts);
+  }
+
+  public void stopVolts() {
+    _armFalconL.setVoltage(0);
   }
 }

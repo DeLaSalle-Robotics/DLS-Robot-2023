@@ -33,7 +33,7 @@ public class RobotContainer {
   //Subsystems
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final Arm m_intakeSubsystem = new Arm();
-  private final Grasper m_grasper = new Grasper();
+  private final Intake m_grasper = new Intake();
   private final vision m_vision = new vision();
   private final MiniArm m_miniArm = new MiniArm();
   private final TestCommand m_testCommand = new TestCommand(m_miniArm, null);
@@ -102,8 +102,8 @@ public class RobotContainer {
     controller_B.onTrue(Commands.runOnce(m_miniArm::ResetArmEncoder, m_miniArm));
     //controller_A.onTrue(Commands.runOnce(m_grasper::closeGrasp, m_grasper));
     //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));
-    controller_X.onTrue(new MiniArmProfileCommand(180, 1.0, m_miniArm));
-    controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
+    controller_X.onTrue(new ArmProfileCommand(180, 1.0, m_miniArm));
+    controller_Y.onTrue(new ArmProfileCommand(0, 1.0, m_miniArm));
     controller_leftbumper.whileTrue(new ArmVoltStatic(m_miniArm));
     controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_miniArm));
     joystickA_1.onTrue(new TrajectoryFollower(m_drivetrainSubsystem.getTrajectory(), m_drivetrainSubsystem));

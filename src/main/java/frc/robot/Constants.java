@@ -28,11 +28,11 @@ public final class Constants {
 
     //MiniArmConstants
     public static final int miniFalcon = 8; // ID for test arm
-    public static final double miniArmKp = 10;
-    public static final double miniArmKi = 0.0;
-    public static final double miniArmKd = 0.0;
-    public static final double miniArmMaxRotVel = 5.0;
-    public static final double miniArmMaxRotAccel = 10.0;
+    public static final double ArmKp = 10;
+    public static final double ArmKi = 0.0;
+    public static final double ArmKd = 0.0;
+    public static final double ArmMaxRotVel = 5.0;
+    public static final double ArmMaxRotAccel = 10.0;
     public static final double arm_Kg = 0.09;
     public static final double arm_Ks = 0.656;
     public static final double arm_Kv = 0.151;
