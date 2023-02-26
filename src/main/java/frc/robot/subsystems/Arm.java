@@ -20,6 +20,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 // Wipilibj
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
@@ -60,6 +61,8 @@ public class Arm extends SubsystemBase {
   public static final String kArmPositionKey = "ArmPosition";
   public static final String kArmPKey = "ArmP";
 
+  private DigitalInput magSwitch = new DigitalInput(0);
+
   //Simulation Code
  private final SingleJointedArmSim m_armSim =
  new SingleJointedArmSim(
@@ -76,14 +79,14 @@ public class Arm extends SubsystemBase {
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
        //Mechanism 2d Testing
-       private final Mechanism2d m_mech2d = new Mechanism2d(60,60);
-       private final MechanismRoot2d m_armPivot = m_mech2d.getRoot("ArmPivot", 30,30); //<-- Probably be wise to get the height here reasonably close to reality
-       private final MechanismLigament2d m_armTower = m_armPivot.append(new MechanismLigament2d("ArmTower", 30, -90));//<-- Probably be wise to get the height here reasonably close to reality
+       private final Mechanism2d m_mech2d = new Mechanism2d(3,3);
+       private final MechanismRoot2d m_armPivot = m_mech2d.getRoot("ArmPivot", 1.5,0.35); 
+       private final MechanismLigament2d m_armTower = m_armPivot.append(new MechanismLigament2d("ArmTower", .35, -90));
        private final MechanismLigament2d m_arm =
        m_armPivot.append(
         new MechanismLigament2d(
           "Arm",
-          30, //<-- needs to be variable
+          1.2, //<-- needs to be variable
           Units.radiansToDegrees(m_armSim.getAngleRads()),
           6,
           new Color8Bit(Color.kPurple)
@@ -132,7 +135,7 @@ if (!Preferences.containsKey(kArmPKey)) {
   }
 
   public void ArmMoveVolts(double volt){
-    double m_feedForward = this.getFeedForward(this.ArmAngle(), this.ArmLength());
+    double m_feedForward = this.getFeedForward(this.ArmAngle(), this.getArmLength());
     _armFalconL.setVoltage(volt + m_feedForward);
     SmartDashboard.putNumber("Arm FeedForward", m_feedForward);
     SmartDashboard.putNumber("Arm Volts", volt);
@@ -150,10 +153,10 @@ if (!Preferences.containsKey(kArmPKey)) {
   }
 
 
-  public double ArmLength(){
+  public double getArmLength(){
     double armLength_clicks = _armExtend.getSelectedSensorPosition();
     //Conversion figure to convert length to sensor position
-    double armlength_m = 0 * armLength_clicks + 42; //<-- needs to be determined.
+    double armlength_m = 0 * armLength_clicks + .3; //<-- needs to be determined.
     return armlength_m;
   }
 
@@ -163,12 +166,13 @@ if (!Preferences.containsKey(kArmPKey)) {
   }
 
 private double ArmComCalc(double armLength){
+
   double Arm_Com = armLength; //Function to convert armlength to Center of Mass distance from pivot
   return Arm_Com;
 }
 
 public double getFeedForward(double armAngle, double armLength){
-  double Arm_Com = ArmComCalc(this.ArmLength());  //Get the Center of Mass (Com)
+  double Arm_Com = ArmComCalc(this.getArmLength());  //Get the Center of Mass (Com)
   double feedForward = Constants.arm_Kg * Math.cos(armAngle) * Arm_Com+ //Static Torque Component
                       Constants.arm_Ks +                                //Static Motor Component
                       Constants.arm_Kv * this.ArmVelocity() +           //Torque of friction
@@ -178,10 +182,7 @@ public double getFeedForward(double armAngle, double armLength){
 return(feedForward);
 }
 
-public void findArmLocation(){
-  //This method needs to find a way to set the arms position. Could move slowly until it hits the edge
-  // while monitorting current, then set the encoder once a threshold is hit.
-}
+
 
 public void setArmLength(double armLength) {
   //This method moves arm to set length - Probably better as a command.
@@ -199,6 +200,10 @@ public void targetingPose() {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //Check if the magnetic sensor passes the arm- 
+    if (magSwitch.get()) {
+      m_encoder.reset();
+    }
   }
 
   @Override
@@ -217,6 +222,7 @@ public void targetingPose() {
 
     // Update the Mechanism Arm angle based on the simulated arm angle
     m_arm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
+    m_arm.setLength(this.getArmLength());
   }
 
   //These methods are used to characterize the arm constants

@@ -7,10 +7,12 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 
 public class ArmProfileCommand extends ProfiledPIDCommand {
-    
-    public ArmProfileCommand(double targetAngleDegrees, double armLength, Arm m_Arm) {
+    double armLength;
+    double armLengthKp;
+    Arm m_Arm;
+    public ArmProfileCommand(double targetAngleDegrees, double _armLength, Arm m_Arm) {
         //We will likely need another ProfiledPIDController to length the Arm - simple fix for now is to pass it into the command.
-     
+        
         super(new ProfiledPIDController(
             Constants.ArmKp, 
             Constants.ArmKi, 
@@ -25,8 +27,19 @@ public class ArmProfileCommand extends ProfiledPIDCommand {
 
         getController().
         setTolerance(Math.toRadians(Constants.angleTolerance));
+        armLength = _armLength;
+        
+        if (!Preferences.containsKey("Length Kp")) {
+            Preferences.setDouble("Length Kp", armLengthKp);
+          }
+        
     }
 
+    @Override
+    public void execute() {
+        double armLengthError = armLength - m_Arm.getArmLength();
+        m_Arm.ArmExtend(armLengthError * armLengthKp);
+    }
     @Override
     public boolean isFinished() {
         return getController().atGoal();
