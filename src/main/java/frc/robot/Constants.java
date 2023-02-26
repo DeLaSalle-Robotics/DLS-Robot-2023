@@ -87,4 +87,9 @@ public final class Constants {
     public static double ShooterSpeedSlope = 50; //Need to determine by trial and error
     public static double ShooterSpeedIntercept = 1000; //Need to determine by trial and error
     public static double kWristToleranceRPS;
+
+    //Speed for fine control of arm.
+    public static double ControlArmSpeed = 0.5;
+    public static double ControlDriveSpeed = 0.5;
+    
 }

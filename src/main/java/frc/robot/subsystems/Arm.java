@@ -184,14 +184,6 @@ return(feedForward);
 
 
 
-public void setArmLength(double armLength) {
-  //This method moves arm to set length - Probably better as a command.
-}
-
-public void armLengthFineControl() {
-  //This method/command should provide fine control of arm extension to allow corrective aiming of initial position
-}
-
 public void targetingPose() {
   //This needs to be a command that can take targeting information and set arm length and chassis position to faciliate scoring at selected target
   //Also need a method of target selection, thinking about a grid of booleans on the SmartDashboard
