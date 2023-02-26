@@ -236,6 +236,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
   
 //Camera Methods
+
+public boolean have_target(){
+  var result = cubeCam.getLatestResult();
+  return result.hasTargets();
+}
+
 //This method will return forward and rotation values- will need to be called by cube gathering command
 public double[] find_cube(){
     
