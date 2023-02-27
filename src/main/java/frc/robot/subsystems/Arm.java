@@ -51,7 +51,7 @@ public class Arm extends SubsystemBase {
   //Setting Initial State
   private final DCMotor m_armGearbox = DCMotor.getFalcon500(2);
   private final double  m_armReduction = 280; // <-- Should be in the Constants class
-  private final double  m_armMass = 0.2; //<-- Needs to be updated for acutal arm
+  private final double  m_armMass = 12.33; //<-- Needs to be updated for acutal arm - guesstimate in kg
   private final double m_armLength = Units.inchesToMeters(24); //<-- Will be provied by a method
   private double priorArmVelocity = 0.0;
   private static double armPositionDeg = 75.0; //<-- Whatever position keeps us within frame parameter
@@ -167,7 +167,8 @@ if (!Preferences.containsKey(kArmPKey)) {
 
 private double ArmComCalc(double armLength){
 
-  double Arm_Com = armLength; //Function to convert armlength to Center of Mass distance from pivot
+  double Arm_Com = armLength * 1.03/1.439 + 0.384; //Function to convert armlength to Center of Mass distance from pivot <- currently a guesstimate.
+  
   return Arm_Com;
 }
 
@@ -196,6 +197,9 @@ public void targetingPose() {
     if (magSwitch.get()) {
       m_encoder.reset();
     }
+
+    //Create check on arm position and limit over extension <- create warning for Smart dashboard.
+
   }
 
   @Override
