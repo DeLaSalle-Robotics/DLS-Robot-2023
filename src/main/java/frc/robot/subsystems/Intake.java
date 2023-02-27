@@ -8,13 +8,17 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.SparkMaxRelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,15 +29,19 @@ public class Intake extends SubsystemBase {
    1,
    2);
    private final DoubleSolenoid twisterSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
-   1,
-   2);
+   3,
+   4);
   private final CANSparkMax _IntakeNeo550 = new CANSparkMax(Constants.IntakeID, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+  private final PowerDistribution pdh; 
   
   //Declaration of subsystem and its components
   public Intake() {
     grasperSolenoid.set(Value.kForward); // Should close the claw on startup
     _IntakeNeo550.setSmartCurrentLimit(10);
+    _IntakeNeo550.setIdleMode(IdleMode.kBrake);
 
+    pdh = new PowerDistribution(1, ModuleType.kRev);
 }
 
 //Subsystem Methods:
@@ -61,10 +69,11 @@ public class Intake extends SubsystemBase {
     //Turn the claw -may be punmatics or maybe a motor
   }
 
-public void spinIntake(){
+public void spinIntake(double speed){
   //Spin the wheels at set speed
   //Need to monitor current going to intake motor, once a game piece is acquired, we should stop spinning and close clamp
   //This may be done at the Command level.
+  _IntakeNeo550.set(speed);
 }
 
 
@@ -72,6 +81,12 @@ public void spinIntake(){
   public void periodic() {
     // This method will be called once per scheduler run
     
+    double intakeCurrent = pdh.getCurrent(Constants.intakeChannel);
+    SmartDashboard.putNumber("Intake Current", intakeCurrent);
+    if (intakeCurrent > Constants.intakeCurrentThreshold){
+      this.spinIntake(0.0);
+    }
+
   }
 
   @Override
