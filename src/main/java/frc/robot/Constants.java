@@ -92,4 +92,7 @@ public final class Constants {
     public static double ControlArmSpeed = 0.5;
     public static double ControlDriveSpeed = 0.5;
     
+    // Balance
+    public static double balanceSpeed = 0.5;
+    public static double unbalanceSpeed = 0.9;
 }
