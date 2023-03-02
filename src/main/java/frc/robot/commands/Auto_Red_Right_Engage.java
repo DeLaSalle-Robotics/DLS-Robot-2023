@@ -6,7 +6,9 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.Intake;
 
 public class Auto_Red_Right_Engage extends SequentialCommandGroup{
 
@@ -15,7 +17,7 @@ public class Auto_Red_Right_Engage extends SequentialCommandGroup{
     private Trajectory m_Trajectory3;
     
 
-    public Auto_Red_Right_Engage(DrivetrainSubsystem m_drivetrain) {
+    public Auto_Red_Right_Engage(DrivetrainSubsystem m_drivetrain, Arm m_arm, Intake m_intake) {
         System.out.println("Auto Red Right Engage");
         String TrajPath1 = "paths/1_Red_Out.wpilib.json";
         m_Trajectory1 = m_drivetrain.getTrajectoryPath(TrajPath1);
@@ -25,9 +27,13 @@ public class Auto_Red_Right_Engage extends SequentialCommandGroup{
         m_Trajectory3 = m_drivetrain.getTrajectoryPath(TrajPath3);
         
         addCommands( 
-            new TrajectoryFollower(m_Trajectory1, m_drivetrain),
-            //Pick up Cube Command
-            new TrajectoryFollower(m_Trajectory2, m_drivetrain),
+            new ParallelCommandGroup(
+                new TrajectoryFollower(m_Trajectory1, m_drivetrain),
+                new ArmProfileCommand(-50, 0, m_arm)),
+            new CubePickUp(m_drivetrain, m_intake),
+            new ParallelCommandGroup(
+                new TrajectoryFollower(m_Trajectory2, m_drivetrain),
+                new ArmProfileCommand(50, .5, m_arm)),
             //Place Cube Command
             new TrajectoryFollower(m_Trajectory3, m_drivetrain)
             //Engage Command

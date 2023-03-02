@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
 //Main robot class
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //This class brings basic commands methods, including the ability to run them in parallel
 import edu.wpi.first.wpilibj2.command.Command; 
 //Command Scheduler decides what will be done and when.
@@ -46,7 +47,9 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     
     //This would be a good place to put the targetting code.
-    
+    SmartDashboard.getBoolean("R1",false);
+    SmartDashboard.getBoolean("R2", false);
+    SmartDashboard.getBoolean("R3", false);
   }
 
   /**

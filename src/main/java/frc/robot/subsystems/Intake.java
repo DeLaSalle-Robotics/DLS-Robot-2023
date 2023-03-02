@@ -34,13 +34,14 @@ public class Intake extends SubsystemBase {
   private final CANSparkMax _IntakeNeo550 = new CANSparkMax(Constants.IntakeID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
   private final PowerDistribution pdh; 
-  
+  private boolean IntakeVertical;
   //Declaration of subsystem and its components
   public Intake() {
     grasperSolenoid.set(Value.kForward); // Should close the claw on startup
+    twisterSolenoid.set(Value.kForward); // Should put claw horizontal to node
     _IntakeNeo550.setSmartCurrentLimit(10);
     _IntakeNeo550.setIdleMode(IdleMode.kBrake);
-
+    SmartDashboard.putBoolean("Claw Vertical", false);
     pdh = new PowerDistribution(1, ModuleType.kRev);
 }
 
@@ -65,8 +66,20 @@ public class Intake extends SubsystemBase {
     grasperSolenoid.set(Value.kReverse);
   }
 
-  public void twistGrasp(){
+  public void intakeHorizontal(){
     //Turn the claw -may be punmatics or maybe a motor
+    twisterSolenoid.set(Value.kForward);
+    SmartDashboard.putBoolean("Intake Vertical", false);
+  }
+  public void intakeVertical(){
+    //Turn the claw -may be punmatics or maybe a motor
+    twisterSolenoid.set(Value.kReverse);
+    SmartDashboard.putBoolean("Intake Vertical", true);
+  }
+
+  public double getIntakeCurrent() {
+    return pdh.getCurrent(Constants.intakeChannel);
+    
   }
 
 public void spinIntake(double speed){
