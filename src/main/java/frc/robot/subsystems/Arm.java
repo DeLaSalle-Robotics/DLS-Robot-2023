@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -48,13 +49,16 @@ public class Arm extends SubsystemBase {
   private final WPI_TalonFX _armExtend = new WPI_TalonFX(Constants.armExtendID);
   private final Encoder m_encoder = new Encoder(7, 8,false, Encoder.EncodingType.k4X); //<-- put channels in the Constants class
 
+  //Simuation Parts
+  private final TalonFXSimCollection sim_FalconL = _armFalconL.getSimCollection();
+
   //Setting Initial State
   private final DCMotor m_armGearbox = DCMotor.getFalcon500(2);
   private final double  m_armReduction = 280; // <-- Should be in the Constants class
-  private final double  m_armMass = 12.33; //<-- Needs to be updated for acutal arm - guesstimate in kg
+  private final double  m_armMass = 7; //<-- Needs to be updated for acutal arm - guesstimate in kg
   private final double m_armLength = Units.inchesToMeters(24); //<-- Will be provied by a method
   private double priorArmVelocity = 0.0;
-  private static double armPositionDeg = 75.0; //<-- Whatever position keeps us within frame parameter
+  private static double armPositionRad = Math.PI/4; //<-- Whatever position keeps us within frame parameter
 
   // The P gain for the PID controller that drives this arm. May need a full PID <-- although this is likely in a command
   private static double kArmKp = 50.0;
@@ -87,7 +91,7 @@ public class Arm extends SubsystemBase {
         new MechanismLigament2d(
           "Arm",
           1.2, //<-- needs to be variable
-          Units.radiansToDegrees(m_armSim.getAngleRads()),
+          m_armSim.getAngleRads(),
           6,
           new Color8Bit(Color.kPurple)
         ));
@@ -115,7 +119,7 @@ public class Arm extends SubsystemBase {
  m_armTower.setColor(new Color8Bit(Color.kBlue));
 
 if (!Preferences.containsKey(kArmPositionKey)) {
-    Preferences.setDouble(kArmPositionKey, armPositionDeg);
+    Preferences.setDouble(kArmPositionKey, armPositionRad);
   }
 if (!Preferences.containsKey(kArmPKey)) {
     Preferences.setDouble(kArmPKey, kArmKp);
@@ -131,22 +135,22 @@ if (!Preferences.containsKey(kArmPKey)) {
 
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
-    _armFalconL.set(ControlMode.PercentOutput, speed);
+    _armFalconL.setVoltage( speed);
   }
 
   public void ArmMoveVolts(double volt){
     double m_feedForward = this.getFeedForward(this.ArmAngle(), this.getArmLength());
     _armFalconL.setVoltage(volt + m_feedForward);
-    SmartDashboard.putNumber("Arm FeedForward", m_feedForward);
-    SmartDashboard.putNumber("Arm Volts", volt);
+    System.out.println("Running Move Volts");
   }
 
   public double ArmAngle() {
     //This method returns the arm angle in degrees
     double vertical_radian = m_encoder.getDistance(); //<-- Need to confirm the units
-    return(Math.toDegrees(vertical_radian));
+    return(vertical_radian);
   }
   public double ArmVelocity() {
+
     //This method returns the arm angle in degrees
     double armRate = m_encoder.getRate();
     return(armRate);
@@ -168,15 +172,19 @@ if (!Preferences.containsKey(kArmPKey)) {
 private double ArmComCalc(double armLength){
 
   double Arm_Com = armLength * 1.03/1.439 + 0.384; //Function to convert armlength to Center of Mass distance from pivot <- currently a guesstimate.
-  
+
   return Arm_Com;
 }
 
 public double getFeedForward(double armAngle, double armLength){
   double Arm_Com = ArmComCalc(this.getArmLength());  //Get the Center of Mass (Com)
+  double curVel = this.ArmVelocity();
+  double curDir;
+  if (curVel > 0){ curDir = 1;}
+    else{ curDir = -1;}
   double feedForward = Constants.arm_Kg * Math.cos(armAngle) * Arm_Com+ //Static Torque Component
-                      Constants.arm_Ks +                                //Static Motor Component
-                      Constants.arm_Kv * this.ArmVelocity() +           //Torque of friction
+                      Constants.arm_Ks * curDir +                                //Static Motor Component <- This needs to flip depending on the direction
+                      Constants.arm_Kv * curVel +           //Torque of friction
                       Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02; //Angular Momentum Calculation
   priorArmVelocity = this.ArmVelocity();
   //double feedForward = 0.0;
@@ -199,14 +207,15 @@ public void targetingPose() {
     }
 
     //Create check on arm position and limit over extension <- create warning for Smart dashboard.
-
+    //Pretty complicated because it is dependent on current length 
   }
 
   @Override
   public void simulationPeriodic() {
+    
     // This method will be called once per scheduler run during simulation
     m_armSim.setInput(_armFalconL.get() * RobotController.getBatteryVoltage());
-
+    SmartDashboard.putNumber("Sim Input", _armFalconL.get());
     // Next, we update it. The standard loop time is 20ms.
     m_armSim.update(0.020);
 

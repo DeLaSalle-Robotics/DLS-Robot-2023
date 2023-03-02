@@ -38,6 +38,7 @@ public class RobotContainer {
   
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);
+
   private Trigger controller_A = new JoystickButton(controller, 1);
   private Trigger controller_B = new JoystickButton(controller, 2);
   private Trigger controller_X = new JoystickButton(controller, 3);
@@ -59,6 +60,7 @@ public class RobotContainer {
   private Trigger joystickA_1 = new JoystickButton(joystickA, 1);
   private Trigger joystickA_2 = new JoystickButton(joystickA, 2);
 
+  //Defining POV buttons
   private POVButton controller_Up = new POVButton(controller, 0);
   private POVButton controller_Right = new POVButton(controller, 90);
   private POVButton controller_Down = new POVButton(controller, 180);
@@ -66,7 +68,7 @@ public class RobotContainer {
 
   private String tajectoryJSON = "Paths/Output/output/1_Red_In.wpilib.json";
 
-  private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem);
+  private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem, m_Arm, m_grasper);
   private final Command m_red_Right_NoEngage = new Auto_Red_Right_NoEngage(m_drivetrainSubsystem);
 
   SendableChooser<Command> m_chooser = new SendableChooser();
@@ -83,7 +85,7 @@ public class RobotContainer {
                                                             () -> joystickB.getY(),
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
-     //m_Arm.setDefaultCommand(new TestCommand(m_Arm, () -> controller.getLeftY()));
+     m_Arm.setDefaultCommand(new ArmMoveCommand( m_Arm, () -> joystickA.getX()));
     
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
@@ -107,8 +109,9 @@ public class RobotContainer {
     controller_Y.onTrue(new ArmProfileCommand(0, 1.0, m_Arm));
     controller_leftbumper.whileTrue(new ArmVoltStatic(m_Arm));
     controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_Arm));
-    joystickA_1.onTrue(new TrajectoryFollower(m_drivetrainSubsystem.getTrajectory(), m_drivetrainSubsystem));
-    joystickA_2.onTrue(Commands.runOnce(m_drivetrainSubsystem::clearTrajectories));
+    
+    joystickA_1.onTrue(new ArmProfileCommand(Math.toRadians(90), 1.0, m_Arm));
+    joystickA_2.onTrue(new ArmProfileCommand(Math.toRadians(0), 1.0, m_Arm));
     joystickA_3.onTrue(new TestingPoses(m_drivetrainSubsystem));
     joystickA_4.onTrue(new ResetingPoses(m_drivetrainSubsystem));
     

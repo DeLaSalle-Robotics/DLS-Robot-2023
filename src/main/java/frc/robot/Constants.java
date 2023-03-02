@@ -31,12 +31,12 @@ public final class Constants {
     public static final double ArmKp = 10;
     public static final double ArmKi = 0.0;
     public static final double ArmKd = 0.0;
-    public static final double ArmMaxRotVel = 5.0;
-    public static final double ArmMaxRotAccel = 10.0;
-    public static final double arm_Kg = 0.09;
-    public static final double arm_Ks = 0.656;
-    public static final double arm_Kv = 0.151;
-    public static final double arm_Ka = 0;
+    public static final double ArmMaxRotVel = Math.toRadians(5.0);
+    public static final double ArmMaxRotAccel = Math.toRadians(10.0);
+    public static final double arm_Kg = 0.24;
+    public static final double arm_Ks = 0.2;
+    public static final double arm_Kv = 5;
+    public static final double arm_Ka = 0.03;
     public static final double angleTolerance = 1;
     public static final double armPositionDeg = 75.0; //Default arm position
  
@@ -99,4 +99,5 @@ public final class Constants {
     //Intake Constants
     public static double intakeCurrentThreshold = 5;
     public static int intakeChannel = 4; //<-- The channel on the pdh inwhich the intake motors are attached.
+    public static double IntakeSpeed = 0.8;
 }
