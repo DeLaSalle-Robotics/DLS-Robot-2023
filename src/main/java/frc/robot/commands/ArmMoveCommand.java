@@ -18,7 +18,7 @@ public class ArmMoveCommand extends CommandBase{
 
     @Override
     public void execute() {
-        m_Arm.ArmMoveVolts(10 * speed.getAsDouble());
+        m_Arm.ArmMove(speed.getAsDouble());
         SmartDashboard.putNumber("Manual Arm", speed.getAsDouble());
     }
 }

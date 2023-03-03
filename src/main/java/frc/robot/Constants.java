@@ -31,10 +31,10 @@ public final class Constants {
     public static final double ArmKp = 10;
     public static final double ArmKi = 0.0;
     public static final double ArmKd = 0.0;
-    public static final double ArmMaxRotVel = Math.toRadians(5.0);
-    public static final double ArmMaxRotAccel = Math.toRadians(10.0);
+    public static final double ArmMaxRotVel = 5.0;
+    public static final double ArmMaxRotAccel = 10.0;
     public static final double arm_Kg = 0.24;
-    public static final double arm_Ks = 0.2;
+    public static final double arm_Ks = 0.6;
     public static final double arm_Kv = 5;
     public static final double arm_Ka = 0.03;
     public static final double angleTolerance = 1;
