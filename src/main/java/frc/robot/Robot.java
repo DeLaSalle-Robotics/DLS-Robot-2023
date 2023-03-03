@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
 //Main robot class
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //This class brings basic commands methods, including the ability to run them in parallel
 import edu.wpi.first.wpilibj2.command.Command; 
 //Command Scheduler decides what will be done and when.
@@ -46,6 +47,17 @@ public class Robot extends TimedRobot {
     //0arduinoOutput.set(true);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+
+    SmartDashboard.putBoolean("R1", false);
+    SmartDashboard.putBoolean("R2", false);
+    SmartDashboard.putBoolean("R3", false);
+    SmartDashboard.putBoolean("C1", false);
+    SmartDashboard.putBoolean("C2", false);
+    SmartDashboard.putBoolean("C3", false);
+    SmartDashboard.putBoolean("L1", false);
+    SmartDashboard.putBoolean("L2", false);
+    SmartDashboard.putBoolean("L3", false);
+
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
     
