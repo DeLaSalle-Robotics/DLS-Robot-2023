@@ -104,6 +104,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // controller_A.onTrue(new TestCommand(m_miniArm, () -> controller.getLeftY()));
+    controller_A.onTrue(new AlignToTarget(10.0, m_drivetrainSubsystem));
     controller_B.onTrue(Commands.runOnce(m_Arm::ResetArmEncoder, m_Arm));
     //controller_A.onTrue(Commands.runOnce(m_grasper::closeGrasp, m_grasper));
     //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));

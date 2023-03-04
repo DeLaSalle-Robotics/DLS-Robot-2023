@@ -3,6 +3,10 @@ package frc.robot;
 
 //If we want to read files and deal with errors (useful for autonomus code), we need these libraries.
 import java.nio.file.Path;
+
+// This was never used and caused compilation errors, so it's disabled for now
+// import org.apache.commons.io.output.ThresholdingOutputStream;
+
 import java.io.IOException;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -22,6 +26,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 //Command Scheduler decides what will be done and when.
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -32,7 +38,11 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand; //creates the autonomous Command (see below)
 
   private RobotContainer m_robotContainer;
-  
+
+  // Tracks the current focus for targetting
+  String currentFocus = "C2";
+  // Table to hold all keys
+  String[] targettingKeys = {"R1", "R2", "R3", "C1", "C2", "C3", "L1", "L2", "L3"};
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -45,6 +55,15 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
+
+    // Booleans for targetting nodes
+    for(String key : targettingKeys){
+      if (key == currentFocus){
+        SmartDashboard.putBoolean(key, true);
+      } else {
+        SmartDashboard.putBoolean(key, false);
+      }
+    }
     
     //This would be a good place to put the targetting code.
     SmartDashboard.getBoolean("R1",false);
@@ -67,6 +86,30 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     // Called every 20 miliseconds.
     CommandScheduler.getInstance().run();
+
+    // Check if a new boolean is activated
+    for(String key : targettingKeys){
+
+      // Check if a boolean is true that does not match the current focus
+      if(SmartDashboard.getBoolean(key, false) && key != currentFocus){
+        currentFocus = key;
+
+        // Change all other booleans to false as a failsafe
+        for (String key2 : targettingKeys){
+          if (key2 != currentFocus){
+            SmartDashboard.putBoolean(key2, false);
+          }
+        }
+        // Break the loop as all other values should be false by now, so it won't find anything that's true
+        break;
+      }
+    }
+
+    // Failsafe to re-activate the current key if it got turned off
+    if (!(SmartDashboard.getBoolean(currentFocus, false))){
+      SmartDashboard.putBoolean(currentFocus, true);
+    }
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
