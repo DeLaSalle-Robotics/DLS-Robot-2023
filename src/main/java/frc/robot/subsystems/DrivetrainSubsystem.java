@@ -236,6 +236,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
   
 //Camera Methods
+
+public boolean have_target(){
+  var result = cubeCam.getLatestResult();
+  return result.hasTargets();
+}
+
 //This method will return forward and rotation values- will need to be called by cube gathering command
 public double[] find_cube(){
     
@@ -466,17 +472,6 @@ public Trajectory getTrajectory() {
   if (DriverStation.isTeleop()) {
     return this.targetTrajectory();
   } else {
-  try {
-    String TrajPath1 = "paths/1_Red_Out.wpilib.json";
-    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(TrajPath1);
-    if (Files.exists(trajectoryPath)){System.out.println("Trajectory Exists");}
-    Trajectory autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-  
-  System.out.println("Trajectory Read");
-  m_field.getObject("Traj").setTrajectory(autoTrajectory);
-  return autoTrajectory;
- } catch (IOException ex) {
-  DriverStation.reportError("Unable to open trajectory: ", ex.getStackTrace());    
   Trajectory autoTrajectory =
   TrajectoryGenerator.generateTrajectory(
       // Start at the origin facing the +X direction
@@ -492,7 +487,7 @@ public Trajectory getTrajectory() {
     return autoTrajectory;
  }
  }
-}
+
 
 //Erases Trajectories on the simulated field
 public void clearTrajectories(){
@@ -523,9 +518,8 @@ public double targetingRotation() {
   return 42;
 }
 
-public double getPitch() {
-//returns the pitch from the NavX
-return 42;
+public double getPitch(){
+  return m_gyro.getRoll();
 }
 
 public void tipProtection(){

@@ -39,13 +39,8 @@ public class DriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (turnInPlace.getAsBoolean()) {
-      m_drivesubsystem.drive_Arcade(leftDrive.getAsDouble(), rightDrive.getAsDouble());
-    } else {
-      m_drivesubsystem.drive(leftDrive.getAsDouble(), rightDrive.getAsDouble());
+    m_drivesubsystem.drive_Arcade(leftDrive.getAsDouble(), rightDrive.getAsDouble());
     }
-    //m_drivesubsystem.drive_Curve(leftDrive.getAsDouble(), rightDrive.getAsDouble(), turnInPlace.getAsBoolean());
-  }
 
   // Called once the command ends or is interrupted.
   @Override

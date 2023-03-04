@@ -32,9 +32,9 @@ public class ArmVoltQuasistatic extends CommandBase {
   @Override
   public void execute() {
     m_Arm.armSetVolts(0.9);
-    SmartDashboard.putNumber("ArmAngle", m_Arm.ArmAngle());
-    SmartDashboard.putNumber("ArmRate", m_Arm.ArmVelocity());
-    SmartDashboard.putNumber("Volts", 0.9);
+    SmartDashboard.putNumber("Arm Angle", m_Arm.ArmAngle());
+    SmartDashboard.putNumber("Arm Rate", m_Arm.ArmVelocity());
+    SmartDashboard.putNumber("Arm Volts", 0.9);
   }
 
   // Called once when the command ends or is interrupted.

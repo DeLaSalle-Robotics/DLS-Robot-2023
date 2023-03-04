@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -32,14 +33,13 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   //Subsystems
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final Arm m_intakeSubsystem = new Arm();
+  private final Arm m_Arm = new Arm();
   private final Intake m_grasper = new Intake();
-  private final vision m_vision = new vision();
-  private final MiniArm m_miniArm = new MiniArm();
-  private final TestCommand m_testCommand = new TestCommand(m_miniArm, null);
-  private final ArmVoltStatic m_armVoltTest = new ArmVoltStatic(m_miniArm);
+  private final ArmExtend m_armExtend = new ArmExtend();
+  
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);
+
   private Trigger controller_A = new JoystickButton(controller, 1);
   private Trigger controller_B = new JoystickButton(controller, 2);
   private Trigger controller_X = new JoystickButton(controller, 3);
@@ -61,9 +61,15 @@ public class RobotContainer {
   private Trigger joystickA_1 = new JoystickButton(joystickA, 1);
   private Trigger joystickA_2 = new JoystickButton(joystickA, 2);
 
+  //Defining POV buttons
+  private POVButton controller_Up = new POVButton(controller, 0);
+  private POVButton controller_Right = new POVButton(controller, 90);
+  private POVButton controller_Down = new POVButton(controller, 180);
+  private POVButton controller_Left = new POVButton(controller, 270);
+
   private String tajectoryJSON = "Paths/Output/output/1_Red_In.wpilib.json";
 
-  private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem);
+  private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem, m_Arm, m_grasper, m_armExtend);
   private final Command m_red_Right_NoEngage = new Auto_Red_Right_NoEngage(m_drivetrainSubsystem);
 
   SendableChooser<Command> m_chooser = new SendableChooser();
@@ -80,10 +86,9 @@ public class RobotContainer {
                                                             () -> joystickB.getY(),
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
-     m_miniArm.setDefaultCommand(new TestCommand(m_miniArm, () -> controller.getLeftY()));
-    //m_intakeSubsystem.setDefaultCommand(new IntakeAngleCommand(m_intakeSubsystem, 
-     //                                                         () -> controller.getLeftY (), 
-    //                                                          () -> controller.getXButton()));
+     m_Arm.setDefaultCommand(new ArmMoveCommand( m_Arm, () -> joystickA.getX()));
+    m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> joystickB.getX(), m_armExtend));
+
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
     m_chooser.setDefaultOption("Red Right Engage", m_red_Right_Engage);
@@ -99,17 +104,24 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // controller_A.onTrue(new TestCommand(m_miniArm, () -> controller.getLeftY()));
-    controller_B.onTrue(Commands.runOnce(m_miniArm::ResetArmEncoder, m_miniArm));
+    controller_B.onTrue(Commands.runOnce(m_Arm::ResetArmEncoder, m_Arm));
     //controller_A.onTrue(Commands.runOnce(m_grasper::closeGrasp, m_grasper));
     //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));
-    controller_X.onTrue(new ArmProfileCommand(180, 1.0, m_miniArm));
-    controller_Y.onTrue(new ArmProfileCommand(0, 1.0, m_miniArm));
-    controller_leftbumper.whileTrue(new ArmVoltStatic(m_miniArm));
-    controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_miniArm));
-    joystickA_1.onTrue(new TrajectoryFollower(m_drivetrainSubsystem.getTrajectory(), m_drivetrainSubsystem));
-    joystickA_2.onTrue(Commands.runOnce(m_drivetrainSubsystem::clearTrajectories));
+    controller_X.onTrue(new ArmPlaceCommand(180, 0.3, m_Arm,m_armExtend));
+    controller_Y.onTrue(new ArmPlaceCommand(0, 1.0, m_Arm, m_armExtend));
+    controller_leftbumper.whileTrue(new ArmVoltStatic(m_Arm));
+    controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_Arm));
+    
+    joystickA_1.onTrue(new ArmPlaceCommand(180, 0.4, m_Arm,m_armExtend));
+    joystickA_2.onTrue(new ArmPlaceCommand(0, 1.0, m_Arm, m_armExtend));
     joystickA_3.onTrue(new TestingPoses(m_drivetrainSubsystem));
     joystickA_4.onTrue(new ResetingPoses(m_drivetrainSubsystem));
+    
+    controller_Up.onTrue(new ArmLengthDrive(() -> Constants.ControlArmSpeed, m_armExtend));
+    controller_Down.onTrue(new ArmLengthDrive(() -> -Constants.ControlArmSpeed, m_armExtend));
+    controller_Left.onTrue(new DrivetrainControlRotate(Constants.ControlDriveSpeed, m_drivetrainSubsystem));
+    controller_Right.onTrue(new DrivetrainControlRotate(-Constants.ControlDriveSpeed, m_drivetrainSubsystem));
+
         /*
      * It is possible to string commands together from one button press. This might be useful for the
      * intake where we engage the pneumatics after the intake wheels are stopped. Example code:

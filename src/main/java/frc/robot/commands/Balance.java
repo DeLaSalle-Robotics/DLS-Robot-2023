@@ -4,8 +4,11 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Balance extends CommandBase {
 
@@ -15,7 +18,7 @@ public class Balance extends CommandBase {
   private double[] pitchValues = new double[20]; // Raw values
   private double averagePitch = 0.0; // Average value
   private int balanceCounter = 0;
-
+  private boolean isStart;
   // Sum of values in the raw table
   private double pitchSum = 0.0; // Raw sum
 
@@ -40,7 +43,9 @@ public class Balance extends CommandBase {
     averagePitch = pitchValues[0];
 
     // Move wheels
-    m_driveSubsystem.drive_Arcade(0.25, 0.0);
+    m_driveSubsystem.drive_Arcade(Constants.balanceSpeed, 0.0);
+
+    isStart = true;
 
   }
 
@@ -48,29 +53,32 @@ public class Balance extends CommandBase {
   @Override
   public void execute() {
 
-    // Put new values at the end of the pitch values array and move everything to the left
-    double youngest = m_driveSubsystem.getPitch();
-    double oldest = pitchValues[0];
-    for(int i = pitchValues.length - 1; i > 1; i--){
-      pitchValues[i - 1] = pitchValues[i];
-    }
-    pitchValues[pitchValues.length - 1] = youngest;
+    double curPitch = m_driveSubsystem.getPitch();
 
-    // Calculate the average based on the values added and removed
-    pitchSum += (youngest - oldest);
-    averagePitch = pitchSum / pitchValues.length;
-    
-    // Move wheels
-    if(averagePitch > 2.5){
-      m_driveSubsystem.drive_Arcade(0.25, 0.0);
-    } else if (averagePitch < -2.5){
-      m_driveSubsystem.drive_Arcade(-0.25, 0.0);
+    // Put new values at the end of the pitch values array and move everything to the left
+        // Move wheels
+    if(isStart){
+      System.out.println("Executed!");
+      m_driveSubsystem.drive_Arcade(Constants.unbalanceSpeed, 0.0);
+    } else if (curPitch > 2.5 && !isStart) {
+      m_driveSubsystem.drive_Arcade(Constants.balanceSpeed, 0.0);
+    } else if (curPitch < -2.5){
+      m_driveSubsystem.drive_Arcade(-Constants.balanceSpeed, 0.0);
     } else {
       m_driveSubsystem.drive_Arcade(0.0, 0.0);
     }
 
+    if(isStart && curPitch > 9){
+      isStart = false;
+    }
+
+    SmartDashboard.putBoolean("isStart", isStart);
+    SmartDashboard.putNumber("averagePitch", averagePitch);
+    SmartDashboard.putNumber("Pitch Sum", pitchSum);
+    
+
     // If pitch is within the threshold, set isBalanced to true
-    if(averagePitch <= 2.5 && averagePitch >= -2.5){
+    if(curPitch <= 2.5 && curPitch >= -2.5 && !(isStart)){
       balanceCounter++;
     } else {
       balanceCounter = 0;
@@ -90,6 +98,7 @@ public class Balance extends CommandBase {
   @Override
   public boolean isFinished() {
     if(balanceCounter >= 25){
+      System.out.println("Finished!");
       return true;
     } else {
       return false;

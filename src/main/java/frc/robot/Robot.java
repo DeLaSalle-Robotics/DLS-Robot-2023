@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
 //Main robot class
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //This class brings basic commands methods, including the ability to run them in parallel
 import edu.wpi.first.wpilibj2.command.Command; 
 //Command Scheduler decides what will be done and when.
@@ -32,11 +33,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   
-  //This is where we tell it which trajectory to run.
-  String trajectoryJSON = "paths/Test_Path.wpilib.json";
-  Trajectory trajectory = new Trajectory();
-
-  DigitalOutput arduinoOutput = new DigitalOutput(1);
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -49,12 +46,10 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
     
-    try {
-      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-    } catch (IOException ex)    {
-      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-    }
+    //This would be a good place to put the targetting code.
+    SmartDashboard.getBoolean("R1",false);
+    SmartDashboard.getBoolean("R2", false);
+    SmartDashboard.getBoolean("R3", false);
   }
 
   /**
