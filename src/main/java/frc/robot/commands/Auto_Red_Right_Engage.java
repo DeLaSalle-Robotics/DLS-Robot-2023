@@ -28,10 +28,11 @@ public class Auto_Red_Right_Engage extends SequentialCommandGroup{
         m_Trajectory3 = m_drivetrain.getTrajectoryPath(TrajPath3);
         
         addCommands( 
+            new ArmPlaceCommand(25,1.3,m_arm,m_armExtend),
             new ParallelCommandGroup(
                 new TrajectoryFollower(m_Trajectory1, m_drivetrain),
-                new ArmPlaceCommand(-50, 0, m_arm,m_armExtend)),
-            new CubePickUp(m_drivetrain, m_intake),
+                new ArmPlaceCommand(230, .35, m_arm,m_armExtend)),
+            new CubePickUp(m_drivetrain, m_intake, m_arm, m_armExtend),
             new ParallelCommandGroup(
                 new TrajectoryFollower(m_Trajectory2, m_drivetrain),
                 new ArmPlaceCommand(50, .5, m_arm, m_armExtend)),

@@ -43,6 +43,7 @@ public class Intake extends SubsystemBase {
     _IntakeNeo550.setIdleMode(IdleMode.kBrake);
     SmartDashboard.putBoolean("Claw Vertical", false);
     pdh = new PowerDistribution(1, ModuleType.kRev);
+    SmartDashboard.putBoolean("Have Piece", true);
 }
 
 //Subsystem Methods:
@@ -59,11 +60,13 @@ public class Intake extends SubsystemBase {
   public void closeGrasp() {
     //Gets the climber motor position.
     grasperSolenoid.set(Value.kForward);
+    SmartDashboard.putBoolean("Have Piece", true);
   }
 
   public void openGrasp() {
     //Allows climber position to be reset.
     grasperSolenoid.set(Value.kReverse);
+    SmartDashboard.putBoolean("Have Piece", false);
   }
 
   public void intakeHorizontal(){
@@ -98,6 +101,7 @@ public void spinIntake(double speed){
     SmartDashboard.putNumber("Intake Current", intakeCurrent);
     if (intakeCurrent > Constants.intakeCurrentThreshold){
       this.spinIntake(0.0);
+      SmartDashboard.putBoolean("Have Piece", true);
     }
 
   }
