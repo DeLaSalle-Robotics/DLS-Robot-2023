@@ -102,8 +102,10 @@ m_drivebot_drivetrainSubsystem.setDefaultCommand(new DriveBot_DriveCommand(m_dri
     //controller_X.onTrue(new MiniArmProfileCommand(180, 1.0, m_miniArm));
     //controller_Y.onTrue(new MiniArmProfileCommand(0, 1.0, m_miniArm));
     controller_Y.onTrue(new Balance(m_drivebot_drivetrainSubsystem));
-    controller_leftbumper.whileTrue(new ArmVoltStatic(m_miniArm));
-    controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_miniArm));
+    // controller_leftbumper.whileTrue(new ArmVoltStatic(m_miniArm));
+    // controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_miniArm));
+    controller_leftbumper.onTrue(new AlignToTarget(25, m_drivebot_drivetrainSubsystem));
+    controller_rightbumper.onTrue(new AlignToTarget(-25, m_drivebot_drivetrainSubsystem));
     joystickA_4.toggleOnTrue(new OneStickArcadeDrive(m_drivetrainSubsystem, () -> joystickA.getX(), () -> (joystickB.getY() * -1)));
     joystickA_1.onTrue(new TrajectoryFollower(m_drivetrainSubsystem.getTrajectory(),m_drivetrainSubsystem));
     controller_A.whileTrue(new HuntCube(0,m_drivebot_drivetrainSubsystem));

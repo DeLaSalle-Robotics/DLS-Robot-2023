@@ -32,7 +32,7 @@ public class HuntCube extends CommandBase {
   public void execute() {
 
     if (m_drive.have_target()) {
-      // Calculatet angular turn power
+      // Calculate angular turn power
       // -1.0 required to ensure positive PID controller effort _increases_ yaw
       forwardSpeed = forwardController.calculate(m_drive.get_target_area(), 15);
       rotationSpeed = -turnController.calculate(m_drive.get_target_yaw(),0);
