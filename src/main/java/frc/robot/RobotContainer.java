@@ -35,6 +35,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final Arm m_Arm = new Arm();
   private final Intake m_grasper = new Intake();
+  private final ArmExtend m_armExtend = new ArmExtend();
   
   //Controllers and buttons. Buttons can be mapped using the DriversStation
   private XboxController controller = new XboxController(0);
@@ -68,7 +69,7 @@ public class RobotContainer {
 
   private String tajectoryJSON = "Paths/Output/output/1_Red_In.wpilib.json";
 
-  private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem, m_Arm, m_grasper);
+  private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem, m_Arm, m_grasper, m_armExtend);
   private final Command m_red_Right_NoEngage = new Auto_Red_Right_NoEngage(m_drivetrainSubsystem);
 
   SendableChooser<Command> m_chooser = new SendableChooser();
@@ -86,7 +87,8 @@ public class RobotContainer {
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
      m_Arm.setDefaultCommand(new ArmMoveCommand( m_Arm, () -> joystickA.getX()));
-    
+    m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> joystickB.getX(), m_armExtend));
+
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
     m_chooser.setDefaultOption("Red Right Engage", m_red_Right_Engage);
@@ -105,18 +107,18 @@ public class RobotContainer {
     controller_B.onTrue(Commands.runOnce(m_Arm::ResetArmEncoder, m_Arm));
     //controller_A.onTrue(Commands.runOnce(m_grasper::closeGrasp, m_grasper));
     //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));
-    controller_X.onTrue(new ArmProfileCommand(180, 1.0, m_Arm));
-    controller_Y.onTrue(new ArmProfileCommand(0, 1.0, m_Arm));
+    controller_X.onTrue(new ArmPlaceCommand(180, 0.3, m_Arm,m_armExtend));
+    controller_Y.onTrue(new ArmPlaceCommand(0, 1.0, m_Arm, m_armExtend));
     controller_leftbumper.whileTrue(new ArmVoltStatic(m_Arm));
     controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_Arm));
     
-    joystickA_1.onTrue(new ArmProfileCommand(Math.toRadians(90), 1.0, m_Arm));
-    joystickA_2.onTrue(new ArmProfileCommand(Math.toRadians(0), 1.0, m_Arm));
+    joystickA_1.onTrue(new ArmPlaceCommand(180, 0.4, m_Arm,m_armExtend));
+    joystickA_2.onTrue(new ArmPlaceCommand(0, 1.0, m_Arm, m_armExtend));
     joystickA_3.onTrue(new TestingPoses(m_drivetrainSubsystem));
     joystickA_4.onTrue(new ResetingPoses(m_drivetrainSubsystem));
     
-    controller_Up.onTrue(new ArmExtendCommand(Constants.ControlArmSpeed, m_Arm));
-    controller_Down.onTrue(new ArmExtendCommand(-Constants.ControlArmSpeed, m_Arm));
+    controller_Up.onTrue(new ArmLengthDrive(() -> Constants.ControlArmSpeed, m_armExtend));
+    controller_Down.onTrue(new ArmLengthDrive(() -> -Constants.ControlArmSpeed, m_armExtend));
     controller_Left.onTrue(new DrivetrainControlRotate(Constants.ControlDriveSpeed, m_drivetrainSubsystem));
     controller_Right.onTrue(new DrivetrainControlRotate(-Constants.ControlDriveSpeed, m_drivetrainSubsystem));
 

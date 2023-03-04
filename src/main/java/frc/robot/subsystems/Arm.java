@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Constants
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 
 public class Arm extends SubsystemBase {
@@ -145,20 +146,20 @@ public double getFeedForward(double armAngle){
   double Arm_Com = SmartDashboard.getNumber("CoM", 0.3);  //Get the Center of Mass (Com)
   double curVel = this.ArmVelocity();
   double curDir;
+  double Ks;
   if (curVel > 0){ curDir = 1;}
     else{ curDir = -1;}
+  if (Robot.isReal()) {Ks = Constants.arm_Ks;} else {Ks = 0;}
   double feedForward = Constants.arm_Kg * Math.cos(armAngle) * Arm_Com+ //Static Torque Component
-                      Constants.arm_Ks * curDir +                                //Static Motor Component <- This needs to flip depending on the direction
+                      Ks * curDir +                                //Static Motor Component <- This needs to flip depending on the direction
                       Constants.arm_Kv * curVel +           //Torque of friction
                       Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02; //Angular Momentum Calculation
   priorArmVelocity = this.ArmVelocity();
   //double feedForward = 0.0;
-  SmartDashboard.putNumber("Ks", Constants.arm_Ks * curDir);
+  SmartDashboard.putNumber("Ks", Ks * curDir);
   SmartDashboard.putNumber("Kg", Constants.arm_Kg * Math.cos(armAngle) * Arm_Com);
   SmartDashboard.putNumber("Kv", Constants.arm_Kv * curVel);
   SmartDashboard.putNumber("Ka", Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02);
-  SmartDashboard.putNumber("curVel",curVel);
-  SmartDashboard.putNumber("Arm_Com", Arm_Com);
   SmartDashboard.putNumber("FeedForward", feedForward);
 return(feedForward);
 }

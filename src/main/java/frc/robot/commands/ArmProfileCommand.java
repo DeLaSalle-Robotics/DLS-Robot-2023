@@ -13,7 +13,7 @@ public class ArmProfileCommand extends ProfiledPIDCommand {
     double armLengthKp;
     Arm m_Arm;
     boolean armLengthTest;
-    public ArmProfileCommand(double targetAngleRad, double _armLength, Arm _Arm) {
+    public ArmProfileCommand(double targetAngleRad, Arm _Arm) {
         
         //We will likely need another ProfiledPIDController to length the Arm - simple fix for now is to pass it into the command.
         
@@ -32,7 +32,7 @@ public class ArmProfileCommand extends ProfiledPIDCommand {
         getController().enableContinuousInput(-180, 180);
         getController().
         setTolerance(Math.toRadians(Constants.angleTolerance));
-        armLength = _armLength;
+        
         
         if (!Preferences.containsKey("Length Kp")) {
             Preferences.setDouble("Length Kp", armLengthKp);
@@ -42,6 +42,6 @@ public class ArmProfileCommand extends ProfiledPIDCommand {
 
     @Override
     public boolean isFinished() {
-        return getController().atGoal();// && armLengthTest;
+        return getController().atGoal();
     }
 }
