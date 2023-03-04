@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Intake;
@@ -16,7 +17,10 @@ public class SpinIntake extends CommandBase {
         public void execute() {
             m_intake.spinIntake(Constants.IntakeSpeed);
         }
-
+    @Override
+    public void end(boolean interrupted) {
+        SmartDashboard.putBoolean("Have Piece", true);
+    }
     @Override
     public boolean isFinished() {
         return m_intake.getIntakeCurrent() > Constants.intakeCurrentThreshold;
