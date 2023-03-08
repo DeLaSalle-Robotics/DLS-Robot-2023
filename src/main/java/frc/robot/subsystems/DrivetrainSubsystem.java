@@ -385,15 +385,14 @@ public Trajectory targetTrajectory() {
   }
 
   public void driveVolts(double leftVolts, double rightVolts) {
-    //Method that sets the voltage to the motors. Used to control position and velocity. Not Implimented.
+    //Method that sets the voltage to the motors. Used to control position and velocity. 
     _leftMotor.setVoltage(leftVolts);
     _rightMotor.setVoltage(rightVolts);
     _drivetrain.feed();
-    SmartDashboard.putNumber("Left Volt", leftVolts);
   }
 
   public void resetOdometry(Pose2d pose) {
-    //Method to reset the odometry, performed as part of the intitialization protocol. Not implimented.
+    //Method to reset the odometry, performed as part of the intitialization protocol.
     this.resetEncoders();
 
     //m_gyro.reset();
@@ -413,7 +412,6 @@ public Trajectory targetTrajectory() {
     sim_leftMotor.setIntegratedSensorRawPosition(
       distanceToNativeUnits(0.0
       ));
-      System.out.println("Resetting Encoders");
   }
 
   //Returns the average distance the robot has moved.
@@ -513,11 +511,6 @@ try {
  }
 }
 
-public double targetingRotation() {
-  //This method will be called during game peice placement to provide a controlled rotation facilitating proper positioning
-  return 42;
-}
-
 public double getPitch(){
   return m_gyro.getRoll();
 }
@@ -525,11 +518,6 @@ public double getPitch(){
 public void tipProtection(){
   //Method that will stop the robot if roll angle/accelleration gets to large
   // Protection during autonoums in case we get too close to the charging station - ?
-}
-
-public void balanceOnChargingStation(){
-  //Needs to be a command that uses the orientation along the x-axis (pitch) to control drivetrain
-  //Basically turn it off once it starts to rotate down
 }
 
 }
