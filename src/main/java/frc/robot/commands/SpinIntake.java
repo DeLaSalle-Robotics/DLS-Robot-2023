@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.Intake;
 
 public class SpinIntake extends CommandBase {
@@ -23,6 +24,7 @@ public class SpinIntake extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-        return m_intake.getIntakeCurrent() > Constants.intakeCurrentThreshold;
+        if(Robot.isReal()) {return m_intake.getIntakeCurrent() > Constants.intakeCurrentThreshold;
+        } else {return true;}
     }
 }

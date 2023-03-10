@@ -3,7 +3,9 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Arm;
@@ -29,6 +31,7 @@ public class Auto_Red_Right_Engage extends SequentialCommandGroup{
         
         addCommands( 
             new ArmPlaceCommand(25,1.3,m_arm,m_armExtend),
+            Commands.runOnce(m_intake::openGrasp,m_intake),
             new ParallelCommandGroup(
                 new TrajectoryFollower(m_Trajectory1, m_drivetrain),
                 new ArmPlaceCommand(230, .35, m_arm,m_armExtend)),
