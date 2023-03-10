@@ -24,7 +24,7 @@ public class ArmExtend extends SubsystemBase{
 private final ElevatorSim m_armSim = 
 new ElevatorSim(
     DCMotor.getFalcon500(1),
-    4.0,7.0,0.02, 0.3683,1.397,true,VecBuilder.fill(0.01)
+    12.0,7.0,0.02, 0.3683,1.397,true,VecBuilder.fill(0.01)
 );
 
   public ArmExtend(){
