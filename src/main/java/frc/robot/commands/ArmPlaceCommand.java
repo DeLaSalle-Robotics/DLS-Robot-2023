@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -16,8 +17,11 @@ public class ArmPlaceCommand extends ParallelCommandGroup{
         m_armExtend = _armExtend;
         angle = _angle;
         length = _length;
-        addCommands(new ArmProfileCommand(Math.toRadians(angle), m_arm),
+        addCommands(
+        new ArmProfileCommand(Math.toRadians(angle), m_arm),
         new ArmLengthSet(length, m_armExtend));
+        SmartDashboard.putNumber("ArmSetAngle", _angle);
+        SmartDashboard.putNumber("ArmSetLength", _length);
     }
 
     

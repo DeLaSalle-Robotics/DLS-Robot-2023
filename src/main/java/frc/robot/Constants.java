@@ -33,10 +33,11 @@ public final class Constants {
     public static final double ArmKd = 0.0;
     public static final double ArmMaxRotVel = 2.0;
     public static final double ArmMaxRotAccel = 5.0;
-    public static final double arm_Kg = 0.34;
+    public static final double arm_Kg = 0.54;
     public static final double arm_Ks = 0.6;
     public static final double arm_Kv = 2;
     public static final double arm_Ka = 0.05;
+    
     public static final double angleTolerance = 5;
     public static final double armPositionDeg = 75.0; //Default arm position
  
