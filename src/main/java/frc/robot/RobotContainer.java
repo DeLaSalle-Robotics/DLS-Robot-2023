@@ -38,6 +38,20 @@ public class RobotContainer {
   private final ArmExtend m_armExtend = new ArmExtend();
   
   //Controllers and buttons. Buttons can be mapped using the DriversStation
+  private XboxController Tcontroller = new XboxController(4);
+
+  private Trigger Tcontroller_A = new JoystickButton(Tcontroller, 1);
+  private Trigger Tcontroller_B = new JoystickButton(Tcontroller, 2);
+  private Trigger Tcontroller_X = new JoystickButton(Tcontroller, 3);
+  private Trigger Tcontroller_Y = new JoystickButton(Tcontroller, 4);
+  private Trigger Tcontroller_leftbumper = new JoystickButton(Tcontroller, 5);
+  private Trigger Tcontroller_rightbumper = new JoystickButton(Tcontroller, 6);
+  //Defining POV buttons
+  private POVButton Tcontroller_Up = new POVButton(Tcontroller, 0);
+  private POVButton Tcontroller_Right = new POVButton(Tcontroller, 90);
+  private POVButton Tcontroller_Down = new POVButton(Tcontroller, 180);
+  private POVButton Tcontroller_Left = new POVButton(Tcontroller, 270);
+
   private XboxController controller = new XboxController(0);
 
   private Trigger controller_A = new JoystickButton(controller, 1);
@@ -82,12 +96,12 @@ public class RobotContainer {
     //Some subsystems have default commands. The () -> denotes a continous supply of data from 
     // the referenced value. Usually a joystick, but can be a constant.
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
-                                                            () -> joystickA.getY(),
-                                                            () -> joystickB.getY(),
+                                                            () -> Tcontroller.getLeftX(),
+                                                            () -> Tcontroller.getLeftY(),
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
-     m_Arm.setDefaultCommand(new ArmMoveCommand( m_Arm, () -> joystickA.getX()));
-    m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> joystickB.getX(), m_armExtend));
+    m_Arm.setDefaultCommand(new ArmMoveCommand( m_Arm, () -> Tcontroller.getRightY()));
+    m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> Tcontroller.getRightX(), m_armExtend));
 
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
@@ -122,6 +136,13 @@ public class RobotContainer {
     controller_Down.onTrue(new ArmLengthDrive(() -> -Constants.ControlArmSpeed, m_armExtend));
     controller_Left.onTrue(new DrivetrainControlRotate(Constants.ControlDriveSpeed, m_drivetrainSubsystem));
     controller_Right.onTrue(new DrivetrainControlRotate(-Constants.ControlDriveSpeed, m_drivetrainSubsystem));
+
+    Tcontroller_A.onTrue(Commands.runOnce(m_grasper::openGrasp));
+    Tcontroller_B.onTrue(Commands.runOnce(m_grasper::closeGrasp));
+    Tcontroller_X.onTrue(Commands.runOnce(m_grasper::intakeHorizontal));
+    Tcontroller_Y.onTrue(Commands.runOnce(m_grasper::intakeVertical));
+    Tcontroller_leftbumper.onTrue(Commands.runOnce(m_grasper::enableCompressor));
+    Tcontroller_rightbumper.onTrue(Commands.runOnce(m_grasper::disableCompressor));
 
         /*
      * It is possible to string commands together from one button press. This might be useful for the

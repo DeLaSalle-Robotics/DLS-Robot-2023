@@ -19,9 +19,9 @@ public final class Constants {
     public static final int drive_falcon_1 = 2; //Drivetrain Right
     public static final int drive_falcon_2 = 3; //Drivetrain Right
     public static final int drive_falcon_3 = 4; //Drivetrain Left
-    public static final int armFalconRightID = 5; // Falcon driving elevator
+    public static final int armFalconRightID = 7; // Falcon driving elevator
     public static final int armFalconLeftID = 6; // Falcon driving elevator
-    public static final int armExtendID = 7; // Falcon driving arm extension
+    public static final int armExtendID = 8; // Falcon driving arm extension
     public static final int wrist775ID = 10; // ID for wrist motor
     public static int IntakeID = 0;     //Intake encoder input
     public static final int climber_snowblower = 12; //Controls climber arm position.

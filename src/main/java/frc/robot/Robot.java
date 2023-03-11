@@ -3,6 +3,9 @@ package frc.robot;
 
 //If we want to read files and deal with errors (useful for autonomus code), we need these libraries.
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 // This was never used and caused compilation errors, so it's disabled for now
 // import org.apache.commons.io.output.ThresholdingOutputStream;
@@ -42,8 +45,9 @@ public class Robot extends TimedRobot {
   // Tracks the current focus for targetting
   String currentFocus = "C2";
   // Table to hold all keys
-  String[] targettingKeys = {"R1", "R2", "R3", "C1", "C2", "C3", "L1", "L2", "L3"};
-  
+  //List[] targettingKeys = {"R1", "R2", "R3", "C1", "C2", "C3", "L1", "L2", "L3"};
+//  List<String> targettingKeys = Arrays.asList("R1", "R2", "R3", "C1", "C2", "C3", "L1", "L2", "L3");
+  HashMap<String,Double[]> targettingKeys;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -55,9 +59,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
-
+    setupTargetting();
     // Booleans for targetting nodes
-    for(String key : targettingKeys){
+    for(String key : targettingKeys.keySet()){
       if (key == currentFocus){
         SmartDashboard.putBoolean(key, true);
       } else {
@@ -95,14 +99,14 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     // Check if a new boolean is activated
-    for(String key : targettingKeys){
+    for(String key : targettingKeys.keySet()){
 
       // Check if a boolean is true that does not match the current focus
       if(SmartDashboard.getBoolean(key, false) && key != currentFocus){
         currentFocus = key;
 
         // Change all other booleans to false as a failsafe
-        for (String key2 : targettingKeys){
+        for (String key2 : targettingKeys.keySet()){
           if (key2 != currentFocus){
             SmartDashboard.putBoolean(key2, false);
           }
@@ -123,7 +127,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {}
-
+  
   @Override
   public void disabledPeriodic() {}
 
@@ -171,4 +175,32 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  private void setupTargetting() {
+    targettingKeys=new HashMap<>();
+    targettingKeys.put("R1",(new Double[]{1.0,2.0,3.0}));
+    targettingKeys.put("R2",(new Double[]{1.0,2.0,3.0}));
+    targettingKeys.put("R3",(new Double[]{1.0,2.0,3.0}));
+
+    targettingKeys.put("C1",(new Double[]{1.0,2.0,3.0}));
+    targettingKeys.put("C2",(new Double[]{1.0,2.0,3.0}));
+    targettingKeys.put("C3",(new Double[]{1.0,2.0,3.0}));
+
+    targettingKeys.put("L1",(new Double[]{1.0,2.0,3.0}));
+    targettingKeys.put("L2",(new Double[]{1.0,2.0,3.0}));
+    targettingKeys.put("L3",(new Double[]{1.0,2.0,3.0}));
+
+  }
+
+public void postTargetData(String target){
+
+  Double[] data=targettingKeys.get(target);
+  if (data!=null) {
+    SmartDashboard.putNumber("Rotation", data[0] );
+    SmartDashboard.putNumber("Pitch",data[1] );
+    SmartDashboard.putNumber("Length",data[2] );
+  }
+}
+
+
 }
