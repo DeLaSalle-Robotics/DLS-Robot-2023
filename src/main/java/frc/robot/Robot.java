@@ -66,9 +66,16 @@ public class Robot extends TimedRobot {
     }
     
     //This would be a good place to put the targetting code.
-    SmartDashboard.getBoolean("R1",false);
-    SmartDashboard.getBoolean("R2", false);
-    SmartDashboard.getBoolean("R3", false);
+    SmartDashboard.putBoolean("R1", false);
+    SmartDashboard.putBoolean("R2", false);
+    SmartDashboard.putBoolean("R3", false);
+    SmartDashboard.putBoolean("C1", false);
+    SmartDashboard.putBoolean("C2", false);
+    SmartDashboard.putBoolean("C3", false);
+    SmartDashboard.putBoolean("L1", false);
+    SmartDashboard.putBoolean("L2", false);
+    SmartDashboard.putBoolean("L3", false);
+    SmartDashboard.putString("Current Target", currentFocus);
   }
 
   /**
@@ -104,6 +111,7 @@ public class Robot extends TimedRobot {
         break;
       }
     }
+    SmartDashboard.putString("Current Target", currentFocus);
 
     // Failsafe to re-activate the current key if it got turned off
     if (!(SmartDashboard.getBoolean(currentFocus, false))){
