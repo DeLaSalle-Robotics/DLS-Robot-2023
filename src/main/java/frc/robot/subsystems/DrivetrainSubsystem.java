@@ -140,9 +140,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private PhotonCamera cubeCam;
 
   //PID controllers that find the cube
-  final double ANGULAR_P = 0.03; //<-- should be moved to Constants class to allow it to be found.
+  final double ANGULAR_P = 1; //<-- should be moved to Constants class to allow it to be found.
   PIDController turnController = new PIDController(ANGULAR_P, 0, 0);
-  final double LINEAR_P = 0.03; //<-- should be moved to Constants class to allow it to be found.
+  final double LINEAR_P = 1; //<-- should be moved to Constants class to allow it to be found.
   PIDController forwardController = new PIDController(LINEAR_P, 0, 0);
   
   //Simulation Classes - Motor groups and gyro
@@ -263,6 +263,15 @@ public double[] find_cube(){
 // Use our forward/turn speeds to control the drivetrain
 double[] array = {forwardSpeed, rotationSpeed};
 return array;
+}
+
+public double targetRotation(double target) {
+  double rotationSpeed = turnController.calculate(this.getHeading(),target);
+  System.out.print("Rotation Speed: ");
+  System.out.println(rotationSpeed);
+  System.out.print("Heading: ");
+  System.out.println(this.getHeading());
+  return rotationSpeed;
 }
 
 //This method returns if AT Target is acquired
