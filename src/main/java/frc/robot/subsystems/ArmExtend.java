@@ -24,7 +24,7 @@ public class ArmExtend extends SubsystemBase{
 private final ElevatorSim m_armSim = 
 new ElevatorSim(
     DCMotor.getFalcon500(1),
-    12.0,7.0,0.02, 0.3683,1.397,true,VecBuilder.fill(0.01)
+    12.0,7.0,0.02, 0.3683,1.397,false,VecBuilder.fill(0.01)
 );
 
   public ArmExtend(){
@@ -37,7 +37,7 @@ new ElevatorSim(
     if (Robot.isReal()){
     double armLength_clicks = _armExtend.getSelectedSensorPosition();
     //Conversion figure to convert length to sensor position
-    double armlength_m = 0 * armLength_clicks + .3; //<-- needs to be determined.
+    double armlength_m = 3.068e-5 * armLength_clicks + .3; //<-- Estimate from radius needs to be confirmed.
     return armlength_m;} else {
        return m_armSim.getPositionMeters();
     }
@@ -48,10 +48,16 @@ new ElevatorSim(
     _armExtend.set(speed);
   }
   
+  public void ArmExtentionVolts(double volts) {
+    //This method sets the speed of the arm extension motor
+    _armExtend.setVoltage(volts);
+  }
+
   public double ArmComCalc(){
 
-    double Arm_Com = this.getArmLength() * 0.5711 - 0.0639; //Function to convert armlength to Center of Mass distance from pivot <- Derived from measurments.
-  
+    //Function to convert total arm length to Center of Mass distance from pivot <- Derived from measurments
+      
+    double Arm_Com = this.getArmLength() * 0.5711 - 0.0639; 
     return Arm_Com;
   }
 

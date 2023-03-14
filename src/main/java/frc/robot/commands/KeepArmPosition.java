@@ -4,6 +4,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
@@ -14,9 +15,9 @@ public class KeepArmPosition extends PIDCommand{
 
     public KeepArmPosition (double targetAngle, Arm arm)  {
         super(
-            new PIDController(Constants.ArmKp, Constants.ArmKi, Constants.ArmKd),
+            new PIDController(Constants.ArmKp_static, Constants.ArmKi_static, Constants.ArmKd_static),
              arm::ArmAngle,
-             targetAngle,
+             Math.toRadians(targetAngle),
               output -> arm.ArmMoveVolts(output), 
               arm);
               getController().enableContinuousInput(-180, 180);
@@ -24,9 +25,5 @@ public class KeepArmPosition extends PIDCommand{
               setTolerance(Math.toRadians(Constants.angleTolerance));
               addRequirements(arm);
     }
-    @Override
-    public boolean isFinished() {
-        // TODO Auto-generated method stub
-        return getController().atSetpoint();
-    }
+    
 }

@@ -19,8 +19,8 @@ public class ArmPlaceCommand extends ParallelCommandGroup{
         angle = _angle;
         length = _length;
         addCommands(
-        new ArmProfileCommand(Math.toRadians(angle), m_arm),
-        new ArmLengthSet(length, m_armExtend));
+            new ArmProfileCommand(Math.toRadians(angle), m_arm), // angle must be in radians
+            new ArmLengthSet(length, m_armExtend)); // length in meters
     }
 
     
