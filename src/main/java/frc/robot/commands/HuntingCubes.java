@@ -34,8 +34,8 @@ public class HuntingCubes extends CommandBase {
       // -1.0 required to ensure positive PID controller effort _increases_ yaw
       double[] fittingArray = m_drive.find_cube();
 
-      forwardSpeed = fittingArray[0];
-      rotationSpeed = -fittingArray[1];
+      forwardSpeed = fittingArray[0]/12;
+      rotationSpeed = -fittingArray[1]/12;
       if (rotationSpeed > 0.5){rotationSpeed = 0.5;}
   } else {
       // If we have no targets, spin slowly.

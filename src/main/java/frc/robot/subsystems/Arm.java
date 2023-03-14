@@ -128,14 +128,15 @@ public class Arm extends SubsystemBase {
   public void ArmMoveVolts(double volt){
     var m_feedForward = this.getFeedForward(this.ArmAngle());
     _armFalconL.setVoltage(volt + m_feedForward);
-    System.out.println("Running Move Volts");
+   
   }
 
   public double ArmAngle() {
     //This method returns the arm angle in radians
     double vertical_radian = m_encoder.getDistance(); //<-- Returns in radians
     double armAngleCorrection = Math.toRadians(0);
-    return(vertical_radian - armAngleCorrection);
+    double correctedAngle = vertical_radian - armAngleCorrection;
+    return(correctedAngle);
   }
   public double ArmVelocity() {
 
@@ -163,7 +164,7 @@ public double getFeedForward(double armAngle){
   SmartDashboard.putNumber("Kv", Constants.arm_Kv * curVel);
   SmartDashboard.putNumber("Ka", Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02);
   SmartDashboard.putNumber("FeedForward", feedForward);
-  System.out.println("Feedforward Running");
+  
 return(feedForward);
 }
 

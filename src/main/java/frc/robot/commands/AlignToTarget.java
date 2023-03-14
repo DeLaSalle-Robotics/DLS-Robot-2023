@@ -19,13 +19,6 @@ public class AlignToTarget extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.'
     m_drive = _drive;
 
-    // Set targetRotation and isRight
-    targetRotation = targetAngleDegrees + m_drive.getHeading();
-    if (targetAngleDegrees < 0){
-      isRight = true; // Counterclockwise is positive
-    } else {
-      isRight = false;
-    }
   }
 
   // Called when the command is initially scheduled.
@@ -37,7 +30,10 @@ public class AlignToTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.drive_Arcade(0.0, 0.4);
+
+    double rotationSpeed = m_drive.targetRotation(targetRotation);
+//Should determine Ks and add/substract it to the output. Just to get it spinning
+    m_drive.driveVolts(-rotationSpeed-3, rotationSpeed+3);
     System.out.println("abidayabidabidedoo");
   }
 
@@ -47,15 +43,16 @@ public class AlignToTarget extends CommandBase {
 
   }
 
+ 
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (m_drive.getHeading() >= targetRotation && !isRight){
-      return true;
-    } else if (m_drive.getHeading() <= targetRotation && isRight){
-      return true;
-    } else {
-      return false;
-    }
+    double error = Math.abs(m_drive.getHeading() - targetRotation);
+    System.out.print("HeadingError: ");
+    System.out.println(error);
+    m_drive.driveVolts(0, 0);
+    return error < Constants.angleTolerance;
   }
+  
 }

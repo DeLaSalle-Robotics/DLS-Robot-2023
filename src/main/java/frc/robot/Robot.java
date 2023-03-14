@@ -23,6 +23,8 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
 //Main robot class
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //This class brings basic commands methods, including the ability to run them in parallel
 import edu.wpi.first.wpilibj2.command.Command; 
@@ -122,6 +124,28 @@ public class Robot extends TimedRobot {
       SmartDashboard.putBoolean(currentFocus, true);
     }
 
+// Set the scheduler to log Shuffleboard events for command initialize, interrupt, finish
+
+CommandScheduler.getInstance()
+
+.onCommandInitialize(
+    command -> 
+      Shuffleboard.addEventMarker("Command initialized",command.getName(), EventImportance.kNormal));
+//    Shuffleboard.addEventMarker(
+//            "Command initialized", command.getName(), EventImportance.kNormal));
+
+CommandScheduler.getInstance()
+.onCommandInterrupt(
+    command ->
+        Shuffleboard.addEventMarker(
+            "Command interrupted", command.getName(), EventImportance.kNormal));
+
+CommandScheduler.getInstance()
+.onCommandFinish(
+    command ->
+        Shuffleboard.addEventMarker(
+            "Command finished", command.getName(), EventImportance.kNormal));
+
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -164,7 +188,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  
+  }
 
   @Override
   public void testInit() {
