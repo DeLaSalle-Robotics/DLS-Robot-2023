@@ -86,7 +86,7 @@ public class RobotContainer {
                                                             () -> joystickB.getY(),
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
-     m_Arm.setDefaultCommand(new KeepArmPosition(SmartDashboard.getNumber("ArmSetAngle", 0), m_Arm));
+     //m_Arm.setDefaultCommand(new KeepArmPosition( m_Arm));
     m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> joystickB.getX(), m_armExtend));
 
     // Method to configure the buttons to perform commands.
@@ -113,10 +113,10 @@ public class RobotContainer {
     controller_leftbumper.whileTrue(new ArmVoltStatic(m_Arm));
     controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_Arm));
     
-    joystickA_1.onTrue(new ArmPlaceCommand(180, 0.4, m_Arm,m_armExtend));
-    joystickA_2.onTrue(new ArmPlaceCommand(0, 1.0, m_Arm, m_armExtend));
-    joystickA_3.onTrue(new TestingPoses(m_drivetrainSubsystem));
-    joystickA_4.onTrue(new ResetingPoses(m_drivetrainSubsystem));
+    joystickA_1.onTrue(new ArmPlaceCommand(230, 0.35, m_Arm, m_armExtend));
+    joystickA_2.onTrue(new ArmPlaceCommand(30, 1.3, m_Arm, m_armExtend));
+    joystickA_3.onTrue(new KeepArmPosition(90, m_Arm));
+    joystickA_4.onTrue(new SpinIntake(m_grasper));
     
     controller_Up.onTrue(new ArmLengthDrive(() -> Constants.ControlArmSpeed, m_armExtend));
     controller_Down.onTrue(new ArmLengthDrive(() -> -Constants.ControlArmSpeed, m_armExtend));
