@@ -100,8 +100,13 @@ public class RobotContainer {
                                                             () -> Tcontroller.getLeftY(),
                                                             () -> joystickA_3.getAsBoolean()));
                                                             
+<<<<<<< HEAD
     m_Arm.setDefaultCommand(new ArmMoveCommand( m_Arm, () -> Tcontroller.getRightY()));
     m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> Tcontroller.getRightX(), m_armExtend));
+=======
+     m_Arm.setDefaultCommand(new KeepArmPosition(SmartDashboard.getNumber("ArmSetAngle", 0), m_Arm));
+    m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> joystickB.getX(), m_armExtend));
+>>>>>>> e0d356fe55f0a842898bad87340945e1c8dd041b
 
     // Method to configure the buttons to perform commands.
     configureButtonBindings();

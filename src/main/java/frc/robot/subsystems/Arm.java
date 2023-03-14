@@ -132,9 +132,10 @@ public class Arm extends SubsystemBase {
   }
 
   public double ArmAngle() {
-    //This method returns the arm angle in degrees
-    double vertical_radian = m_encoder.getDistance(); //<-- Need to confirm the units
-    return(vertical_radian);
+    //This method returns the arm angle in radians
+    double vertical_radian = m_encoder.getDistance(); //<-- Returns in radians
+    double armAngleCorrection = Math.toRadians(0);
+    return(vertical_radian - armAngleCorrection);
   }
   public double ArmVelocity() {
 
@@ -144,7 +145,7 @@ public class Arm extends SubsystemBase {
   }
 
 public double getFeedForward(double armAngle){
-  double Arm_Com = SmartDashboard.getNumber("CoM", 0.3);  //Get the Center of Mass (Com)
+  double Arm_Com = SmartDashboard.getNumber("CoM", 0.3);  //Get the Center of Mass (CoM)
   double curVel = this.ArmVelocity();
   double curDir;
   double Ks;
@@ -162,24 +163,10 @@ public double getFeedForward(double armAngle){
   SmartDashboard.putNumber("Kv", Constants.arm_Kv * curVel);
   SmartDashboard.putNumber("Ka", Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02);
   SmartDashboard.putNumber("FeedForward", feedForward);
+  System.out.println("Feedforward Running");
 return(feedForward);
 }
 
-public void findArmLocation(){
-  //This method needs to find a way to set the arms position. Could move slowly until it hits the edge
-  // while monitorting current, then set the encoder once a threshold is hit.
-}
-
-public void setArmLength(double armLength) {
-  //This method moves arm to set length - Probably better as a command.
-}
-
-
-public void targetingPose() {
-  //This needs to be a command that can take targeting information and set arm length and chassis position to faciliate scoring at selected target
-  //Also need a method of target selection, thinking about a grid of booleans on the SmartDashboard
-}
- 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

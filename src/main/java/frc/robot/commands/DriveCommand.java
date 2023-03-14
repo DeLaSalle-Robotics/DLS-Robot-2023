@@ -14,20 +14,19 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class DriveCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DrivetrainSubsystem m_drivesubsystem;
-  private final DoubleSupplier leftDrive;
-  private final DoubleSupplier rightDrive;
-  private final BooleanSupplier turnInPlace;
+  private final DoubleSupplier speed;
+  private final DoubleSupplier rotation;
+  
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveCommand(DrivetrainSubsystem subsystem, DoubleSupplier _leftDrive, DoubleSupplier _rightDrive,
+  public DriveCommand(DrivetrainSubsystem subsystem, DoubleSupplier _speed, DoubleSupplier _rotation,
   BooleanSupplier _turnInPlace) {
     m_drivesubsystem = subsystem;
-    leftDrive = _leftDrive;
-    rightDrive = _rightDrive;
-    turnInPlace = _turnInPlace;
+    speed = _speed;
+    rotation = _rotation;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -39,7 +38,7 @@ public class DriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drivesubsystem.drive_Arcade(leftDrive.getAsDouble(), rightDrive.getAsDouble());
+    m_drivesubsystem.drive_Arcade(speed.getAsDouble(), rotation.getAsDouble());
     }
 
   // Called once the command ends or is interrupted.
