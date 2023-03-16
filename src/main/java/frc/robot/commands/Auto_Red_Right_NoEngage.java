@@ -20,7 +20,7 @@ public class Auto_Red_Right_NoEngage extends SequentialCommandGroup{
         m_Trajectory1 = m_drivetrain.getTrajectoryPath(TrajPath1);
         String TrajPath2 = "paths/1_Red_In.wpilib.json";
         m_Trajectory2 = m_drivetrain.getTrajectoryPath(TrajPath2);
-        String TrajPath3 = "paths/1_Red_toCone.wpilib.json";
+        String TrajPath3 = "paths/1_Red_to_Cone.wpilib.json";
         m_Trajectory3 = m_drivetrain.getTrajectoryPath(TrajPath3);
         
         addCommands( 
