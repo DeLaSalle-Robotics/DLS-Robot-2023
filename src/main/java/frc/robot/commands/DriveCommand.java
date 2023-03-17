@@ -22,8 +22,7 @@ public class DriveCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public DriveCommand(DrivetrainSubsystem subsystem, DoubleSupplier _speed, DoubleSupplier _rotation,
-  BooleanSupplier _turnInPlace) {
+  public DriveCommand(DrivetrainSubsystem subsystem, DoubleSupplier _speed, DoubleSupplier _rotation) {
     m_drivesubsystem = subsystem;
     speed = _speed;
     rotation = _rotation;
