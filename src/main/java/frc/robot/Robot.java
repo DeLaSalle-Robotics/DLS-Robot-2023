@@ -204,17 +204,18 @@ CommandScheduler.getInstance()
 
   private void setupTargetting() {
     targettingKeys=new HashMap<>();
-    targettingKeys.put("R1",(new Double[]{1.0,2.0,3.0}));
-    targettingKeys.put("R2",(new Double[]{1.0,2.0,3.0}));
-    targettingKeys.put("R3",(new Double[]{1.0,2.0,3.0}));
+    //Targeting values are: shift from apriltag, arm angle, arm length
+    targettingKeys.put("R1",(new Double[]{0.56,38.4,1.8}));
+    targettingKeys.put("R2",(new Double[]{0.56,38.4,1.37}));
+    targettingKeys.put("R3",(new Double[]{0.56,0.0,0.3}));
 
-    targettingKeys.put("C1",(new Double[]{1.0,2.0,3.0}));
-    targettingKeys.put("C2",(new Double[]{1.0,2.0,3.0}));
-    targettingKeys.put("C3",(new Double[]{1.0,2.0,3.0}));
+    targettingKeys.put("C1",(new Double[]{0.0,33.6,1.47}));
+    targettingKeys.put("C2",(new Double[]{0.0,33.6,0.95}));
+    targettingKeys.put("C3",(new Double[]{0.0,0.0,0.3}));
 
-    targettingKeys.put("L1",(new Double[]{1.0,2.0,3.0}));
-    targettingKeys.put("L2",(new Double[]{1.0,2.0,3.0}));
-    targettingKeys.put("L3",(new Double[]{1.0,2.0,3.0}));
+    targettingKeys.put("L1",(new Double[]{-0.56,38.4,1.8}));
+    targettingKeys.put("L2",(new Double[]{-0.56,38.4,1.37}));
+    targettingKeys.put("L3",(new Double[]{-0.56,0.0,0.3}));
 
   }
 
@@ -222,7 +223,7 @@ public void postTargetData(String target){
 
   Double[] data=targettingKeys.get(target);
   if (data!=null) {
-    SmartDashboard.putNumber("Rotation", data[0] );
+    SmartDashboard.putNumber("Shift", data[0] );
     SmartDashboard.putNumber("Pitch",data[1] );
     SmartDashboard.putNumber("Length",data[2] );
   }
