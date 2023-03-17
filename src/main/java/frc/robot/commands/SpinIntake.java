@@ -16,11 +16,20 @@ public class SpinIntake extends CommandBase {
     
     @Override
         public void execute() {
-            m_intake.spinIntake(Constants.IntakeSpeed);
+           if (SmartDashboard.getBoolean("Have Piece", false)) {
+            m_intake.spinIntake(-Constants.IntakeSpeed);
+            } else {
+                m_intake.spinIntake(-Constants.IntakeSpeed);
+            }
         }
     @Override
     public void end(boolean interrupted) {
-        SmartDashboard.putBoolean("Have Piece", true);
+        if (SmartDashboard.getBoolean("Have Piece", false)) {
+            SmartDashboard.putBoolean("Have Piece", true);
+            } else {
+                SmartDashboard.putBoolean("Have Piece", false);
+            }
+
     }
     @Override
     public boolean isFinished() {
