@@ -50,6 +50,9 @@ new ElevatorSim(
   
   public void ArmExtentionVolts(double volts) {
     //This method sets the speed of the arm extension motor
+    if (SmartDashboard.getNumber("Current Arm Angle", 0) < 90) {
+      //Do the thing to limit the angle where extension happens
+    }
     _armExtend.setVoltage(volts);
   }
 
