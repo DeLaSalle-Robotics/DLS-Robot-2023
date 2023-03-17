@@ -44,7 +44,7 @@ public final class Constants {
     public static final double ArmMaxRotVel = 2.0;
     public static final double ArmMaxRotAccel = 5.0;
     
-    public static final double arm_Kg = 0.54;
+    public static final double arm_Kg = 0.44;
     public static final double arm_Ks = 0.6;
     public static final double arm_Kv = 2;
     public static final double arm_Ka = 0.05;
@@ -81,7 +81,7 @@ public final class Constants {
     
     //Sets the maximium velocities and accelerations
     public static double maxVelocityMetersPerSecond = 3;
-    public static double maxAccelerationMetersPerSecondSq = 10;
+    public static double maxAccelerationMetersPerSecondSq = 3;
 
     public static double ramsete_b = 2;
     public static double ramsete_z = 0.7;

@@ -20,7 +20,9 @@ import edu.wpi.first.wpilibj.DriverStation; //This class is necessary to control
 //Trajectory classes could be useful, but not fully implimented here.
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
-
+import edu.wpi.first.networktables.BooleanTopic;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 //Main robot class
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
@@ -82,6 +84,16 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("L2", false);
     SmartDashboard.putBoolean("L3", false);
     SmartDashboard.putString("Current Target", currentFocus);
+
+
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    
+
+// get a topic from a NetworkTableInstance
+// the topic name in this case is the full name
+    BooleanTopic AllianceTopic = inst.getBooleanTopic("/FMSInfo/IsRedAlliance");
+    boolean allBool = AllianceTopic.subscribe(false).get();
+    SmartDashboard.putBoolean("Alliance", allBool);
   }
 
   /**
@@ -189,7 +201,7 @@ CommandScheduler.getInstance()
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-  
+    this.postTargetData(this.currentFocus);
   }
 
   @Override

@@ -175,7 +175,7 @@ return(feedForward);
     if (magSwitch.get()) {
       m_encoder.reset();
     }
-
+    SmartDashboard.putNumber("Current Arm Angle", Math.toDegrees(m_encoder.getDistance()));
     //Create check on arm position and limit over extension <- create warning for Smart dashboard.
     //Pretty complicated because it is dependent on current length 
   }

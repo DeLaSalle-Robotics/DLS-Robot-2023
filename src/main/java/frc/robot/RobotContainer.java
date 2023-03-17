@@ -64,8 +64,8 @@ public class RobotContainer {
   //private Trigger controller_rightstickbutton = new JoystickButton(controller, 10);
   private Joystick joystickA = new Joystick(1);
   private Joystick joystickB = new Joystick(2);
-  private Trigger joystickA_6 = new JoystickButton(joystickA, 6);
-  private Trigger joystickA_7 = new JoystickButton(joystickA, 7);
+  private Trigger joystickB_1 = new JoystickButton(joystickB,1);
+  private Trigger joystickB_2 = new JoystickButton(joystickB, 2);
   private Trigger joystickA_8 = new JoystickButton(joystickA, 8);
   private Trigger joystickA_9 = new JoystickButton(joystickA, 9);
   private Trigger joystickA_10 = new JoystickButton(joystickA, 10);
@@ -81,8 +81,6 @@ public class RobotContainer {
   private POVButton controller_Down = new POVButton(controller, 180);
   private POVButton controller_Left = new POVButton(controller, 270);
 
-  private String tajectoryJSON = "Paths/Output/output/1_Red_In.wpilib.json";
-
   private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem, m_Arm, m_grasper, m_armExtend);
   private final Command m_red_Right_NoEngage = new Auto_Red_Right_NoEngage(m_drivetrainSubsystem);
 
@@ -96,13 +94,12 @@ public class RobotContainer {
     //Some subsystems have default commands. The () -> denotes a continous supply of data from 
     // the referenced value. Usually a joystick, but can be a constant.
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
-                                                            () -> Tcontroller.getLeftX(),
-                                                            () -> Tcontroller.getLeftY(),
-                                                            () -> joystickA_3.getAsBoolean()));
+                                                            () -> joystickA.getX(),
+                                                            () -> joystickB.getY()));
                                                             
      //m_Arm.setDefaultCommand(new KeepArmPosition( m_Arm));
     m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> joystickB.getX(), m_armExtend));
->>>>>>> e0d356fe55f0a842898bad87340945e1c8dd041b
+
 
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
@@ -119,19 +116,19 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // controller_A.onTrue(new TestCommand(m_miniArm, () -> controller.getLeftY()));
-    controller_A.onTrue(new AlignToTarget(10.0, m_drivetrainSubsystem));
+    controller_leftbumper.onTrue(Commands.runOnce(m_drivetrainSubsystem::getTrajectory, m_drivetrainSubsystem));
     controller_B.onTrue(Commands.runOnce(m_Arm::ResetArmEncoder, m_Arm));
     //controller_A.onTrue(Commands.runOnce(m_grasper::closeGrasp, m_grasper));
     //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));
-    controller_X.onTrue(new ArmPlaceCommand(180, 0.3, m_Arm,m_armExtend));
-    controller_Y.onTrue(new ArmPlaceCommand(0, 1.0, m_Arm, m_armExtend));
-    controller_leftbumper.whileTrue(new ArmVoltStatic(m_Arm));
-    controller_rightbumper.whileTrue(new ArmVoltQuasistatic(m_Arm));
+    //controller_X.onTrue(new ArmPlaceCommand(180, 0.3, m_Arm,m_armExtend));
+    //controller_Y.onTrue(new ArmPlaceCommand(0, 1.0, m_Arm, m_armExtend));
+    joystickB_1.whileTrue(new ArmVoltStatic(m_Arm));
+    joystickB_2.whileTrue(new ArmVoltQuasistatic(m_Arm));
     
     joystickA_1.onTrue(new ArmPlaceCommand(230, 0.35, m_Arm, m_armExtend));
     joystickA_2.onTrue(new ArmPlaceCommand(30, 1.3, m_Arm, m_armExtend));
     joystickA_3.onTrue(new KeepArmPosition(90, m_Arm));
-    joystickA_4.onTrue(new SpinIntake(m_grasper));
+    joystickA_4.onTrue(new TargetedRotation(m_drivetrainSubsystem, m_Arm, m_grasper, m_armExtend));
     
     controller_Up.onTrue(new ArmLengthDrive(() -> Constants.ControlArmSpeed, m_armExtend));
     controller_Down.onTrue(new ArmLengthDrive(() -> -Constants.ControlArmSpeed, m_armExtend));
@@ -144,7 +141,9 @@ public class RobotContainer {
     Tcontroller_Y.onTrue(Commands.runOnce(m_grasper::intakeVertical));
     Tcontroller_leftbumper.onTrue(Commands.runOnce(m_grasper::enableCompressor));
     Tcontroller_rightbumper.onTrue(Commands.runOnce(m_grasper::disableCompressor));
-
+    Tcontroller_leftbumper.onTrue(new DriveCommand(m_drivetrainSubsystem, 
+                                    () -> Tcontroller.getLeftX(),
+                                    () -> Tcontroller.getRightY()));
         /*
      * It is possible to string commands together from one button press. This might be useful for the
      * intake where we engage the pneumatics after the intake wheels are stopped. Example code:
@@ -159,13 +158,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return m_chooser.getSelected();
-    // An ExampleCommand will run in autonomous
-    /*return new ParallelCommandGroup(new ParallelRaceGroup(
-      new Auto_Index_Command(m_intakeSubsystem, 0.3, 4.0, 2.0),
-       new Auto_Shoot_Command(m_shooterSubsystem, 30000.0)),
-     new Auto_Intake_Lower(m_intakeSubsystem));*/
-
-    //This autonomus command does not use trajectories, but was able to hit a two ball automomous score.
     
   }
 }
