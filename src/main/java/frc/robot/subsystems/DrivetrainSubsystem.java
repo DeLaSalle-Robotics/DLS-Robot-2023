@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -55,6 +56,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
@@ -291,12 +293,24 @@ public Pose3d getobjectInFieldID(){
     return aprilTagFieldLayout.getTagPose(objectID).get();
   } else {
     //For Testing always target aprilt tag 3 :
-    //return aprilTagFieldLayout.getTagPose(3).get();
-    return new Pose3d(m_odometry.getPoseMeters());
+    if (Robot.isSimulation()) {return aprilTagFieldLayout.getTagPose(2).get();
+    } else {
+    return new Pose3d(m_odometry.getPoseMeters());}
   }
   
 }
 
+public Pose2d visionPose(){
+  Pose3d tarPose = this.getobjectInFieldID();
+  var result = llCamera.getLatestResult();
+  if (result.hasTargets()) {
+    Pose2d newPose = tarPose.plus(result.getBestTarget().getBestCameraToTarget()).toPose2d();
+    return newPose;
+    } else {
+      return m_odometry.getPoseMeters();
+    }
+
+}
 //Returns a pose that is slightly removed from the target in the x, aligned in the y, and oppisite in the rotation.
 public Pose2d getPoseTarget(){
   Pose2d object =  this.getobjectInFieldID().toPose2d();
@@ -306,10 +320,15 @@ public Pose2d getPoseTarget(){
 }
 
 //Creates the trajectory needed to get to the target pose.
-public Trajectory targetTrajectory() {
+public Trajectory targetTrajectoryold() {
   //Has issues if curPose.x is lower than tarPose.x, the trajectory moves past target.
   Pose2d curPose = m_odometry.getPoseMeters();
-  Pose2d tarPose = this.getPoseTarget();
+  Pose2d tarCenterPose = this.getPoseTarget();
+  double tarRot = tarCenterPose.getRotation().getDegrees();
+  SmartDashboard.putNumber("Tar Degree", tarRot);
+  Pose2d tarPose = new Pose2d(new Translation2d(tarCenterPose.getX() ,
+                                      tarCenterPose.getY()+ SmartDashboard.getNumber("Shift", 0)),
+                                      new Rotation2d(0.0));
   var interiorWaypoint = new ArrayList<Translation2d>();
   interiorWaypoint.add(new Translation2d((tarPose.getX() - curPose.getX())/2 + curPose.getX(),tarPose.getY() ));
  
@@ -321,6 +340,40 @@ public Trajectory targetTrajectory() {
     return traj;
 }
 
+public Trajectory targetTrajectory() {
+  //Has issues if curPose.x is lower than tarPose.x, the trajectory moves past target.
+  Pose2d curPose = m_odometry.getPoseMeters();
+  Pose2d tarCenterPose = this.getPoseTarget();
+  double tarRot = tarCenterPose.getRotation().getDegrees();
+  double curRot = curPose.getRotation().getDegrees();
+  SmartDashboard.putNumber("Tar Degree", tarRot);
+  SmartDashboard.putNumber("Cur Degree", curRot);
+  double placementOffset;
+  //Changes the direction of offset dependent on alliance.
+  if (SmartDashboard.getBoolean("Alliance", false)) {
+    placementOffset = -0.5;
+  } else {
+    placementOffset = 0.5;
+  }
+  Pose2d tarPose = new Pose2d(new Translation2d(tarCenterPose.getX() + placementOffset,
+                                      tarCenterPose.getY()+ SmartDashboard.getNumber("Shift", 0)),
+                                      new Rotation2d(0.0));
+  double needRot = Math.atan((curPose.getY() - tarPose.getY())/(curPose.getX() - tarPose.getX()));
+  SmartDashboard.putNumber("Need Rot", Math.toDegrees(needRot));
+  Pose2d startPose = new Pose2d(new Translation2d(curPose.getX(),curPose.getY()), new Rotation2d(needRot));
+  Pose2d endPose = new Pose2d(new Translation2d(tarPose.getX(),tarPose.getY()), new Rotation2d(needRot));
+
+  var interiorWaypoint = new ArrayList<Translation2d>();
+  interiorWaypoint.add(new Translation2d((endPose.getX() - startPose.getX())/2 + startPose.getX(),
+  (endPose.getY() - startPose.getY())/2 + startPose.getY() ));
+  
+  Trajectory traj = TrajectoryGenerator.generateTrajectory(
+    startPose, interiorWaypoint, endPose, config);
+    m_field.getObject("Target").setTrajectory(traj);
+    
+    System.out.println("Sent new traj");
+    return traj;
+}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run and update the position and orientation of the robot.
@@ -330,10 +383,11 @@ public Trajectory targetTrajectory() {
       countToDistanceMeters(_talon1.getSelectedSensorPosition()),
       countToDistanceMeters(_talon2.getSelectedSensorPosition())
     );
-    
+    SmartDashboard.putNumber("Robot Heading", m_gyro.getYaw());
     //Putting the robot on the field helps with planning.
     m_field.setRobotPose(m_odometry.getPoseMeters());
-    
+    SmartDashboard.putBoolean("April Target", this.haveATTarget());
+    SmartDashboard.putBoolean("Cube Target", this.have_target());
     }
 
   @Override
