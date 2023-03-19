@@ -107,6 +107,9 @@ public class Arm extends SubsystemBase {
   _armFalconR.follow(_armFalconL);
   _armFalconR.setInverted(true); // Not sure if this is right
   
+  _armFalconL.configOpenloopRamp(0.5);
+  _armFalconR.configOpenloopRamp(0.5);
+
    m_encoder.setDistancePerPulse(2 * Math.PI /2048.0);
 
    // Put Mechanism 2d to SmartDashboard
