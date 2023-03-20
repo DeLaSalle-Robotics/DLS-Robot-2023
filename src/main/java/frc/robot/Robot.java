@@ -47,11 +47,11 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   // Tracks the current focus for targetting
-  String currentFocus = "C2";
+  String currentFocus = "Mid Cone";
   // Table to hold all keys
   //List[] targettingKeys = {"R1", "R2", "R3", "C1", "C2", "C3", "L1", "L2", "L3"};
 //  List<String> targettingKeys = Arrays.asList("R1", "R2", "R3", "C1", "C2", "C3", "L1", "L2", "L3");
-  HashMap<String,Double[]> targettingKeys;
+  HashMap<String,Double[]> targetingKeys;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -63,9 +63,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
-    setupTargetting();
+    setupTargeting();
     // Booleans for targetting nodes
-    for(String key : targettingKeys.keySet()){
+    for(String key : targetingKeys.keySet()){
       if (key == currentFocus){
         SmartDashboard.putBoolean(key, true);
       } else {
@@ -74,18 +74,17 @@ public class Robot extends TimedRobot {
     }
     
     //This would be a good place to put the targetting code.
-    SmartDashboard.putBoolean("R1", false);
-    SmartDashboard.putBoolean("R2", false);
-    SmartDashboard.putBoolean("R3", false);
-    SmartDashboard.putBoolean("C1", false);
-    SmartDashboard.putBoolean("C2", false);
-    SmartDashboard.putBoolean("C3", false);
-    SmartDashboard.putBoolean("L1", false);
-    SmartDashboard.putBoolean("L2", false);
-    SmartDashboard.putBoolean("L3", false);
     SmartDashboard.putString("Current Target", currentFocus);
+    SmartDashboard.putString("Score Type", "Mid");
+    SmartDashboard.putString("Piece Type", "Cube");
 
-
+    SmartDashboard.putBoolean("Cone Low", false);
+    SmartDashboard.putBoolean("Cone Mid", false);
+    SmartDashboard.putBoolean("Cone High", false);
+    SmartDashboard.putBoolean("Cube Low", false);
+    SmartDashboard.putBoolean("Cube Mid", false);
+    SmartDashboard.putBoolean("Cube High", false);
+    
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     
 
@@ -113,14 +112,14 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     // Check if a new boolean is activated
-    for(String key : targettingKeys.keySet()){
+    for(String key : targetingKeys.keySet()){
 
       // Check if a boolean is true that does not match the current focus
       if(SmartDashboard.getBoolean(key, false) && key != currentFocus){
         currentFocus = key;
 
         // Change all other booleans to false as a failsafe
-        for (String key2 : targettingKeys.keySet()){
+        for (String key2 : targetingKeys.keySet()){
           if (key2 != currentFocus){
             SmartDashboard.putBoolean(key2, false);
           }
@@ -136,27 +135,6 @@ public class Robot extends TimedRobot {
       SmartDashboard.putBoolean(currentFocus, true);
     }
 
-// Set the scheduler to log Shuffleboard events for command initialize, interrupt, finish
-
-CommandScheduler.getInstance()
-
-.onCommandInitialize(
-    command -> 
-      Shuffleboard.addEventMarker("Command initialized",command.getName(), EventImportance.kNormal));
-//    Shuffleboard.addEventMarker(
-//            "Command initialized", command.getName(), EventImportance.kNormal));
-
-CommandScheduler.getInstance()
-.onCommandInterrupt(
-    command ->
-        Shuffleboard.addEventMarker(
-            "Command interrupted", command.getName(), EventImportance.kNormal));
-
-CommandScheduler.getInstance()
-.onCommandFinish(
-    command ->
-        Shuffleboard.addEventMarker(
-            "Command finished", command.getName(), EventImportance.kNormal));
 
   }
 
@@ -214,32 +192,31 @@ CommandScheduler.getInstance()
   @Override
   public void testPeriodic() {}
 
-  private void setupTargetting() {
-    targettingKeys=new HashMap<>();
-    //Targeting values are: shift from apriltag, arm angle, arm length
-    targettingKeys.put("R1",(new Double[]{0.56,38.4,1.8}));
-    targettingKeys.put("R2",(new Double[]{0.56,38.4,1.37}));
-    targettingKeys.put("R3",(new Double[]{0.56,0.0,0.3}));
+  private void setupTargeting() {
+    targetingKeys=new HashMap<>();
+    //Targeting values are: arm angle, arm length
+    targetingKeys.put("Cone Low",(new Double[]{38.4,1.8}));
+    targetingKeys.put("Cone Mid",(new Double[]{38.4,1.37}));
+    targetingKeys.put("Cone High",(new Double[]{0.0,0.3}));
 
-    targettingKeys.put("C1",(new Double[]{0.0,33.6,1.47}));
-    targettingKeys.put("C2",(new Double[]{0.0,33.6,0.95}));
-    targettingKeys.put("C3",(new Double[]{0.0,0.0,0.3}));
-
-    targettingKeys.put("L1",(new Double[]{-0.56,38.4,1.8}));
-    targettingKeys.put("L2",(new Double[]{-0.56,38.4,1.37}));
-    targettingKeys.put("L3",(new Double[]{-0.56,0.0,0.3}));
+    targetingKeys.put("Cube Low",(new Double[]{33.6,1.47}));
+    targetingKeys.put("Cube Mid",(new Double[]{33.6,0.95}));
+    targetingKeys.put("Cube High",(new Double[]{0.0,0.3}));
 
   }
 
 public void postTargetData(String target){
 
-  Double[] data=targettingKeys.get(target);
+  Double[] data=targetingKeys.get(target);
   if (data!=null) {
-    SmartDashboard.putNumber("Shift", data[0] );
-    SmartDashboard.putNumber("Pitch",data[1] );
-    SmartDashboard.putNumber("Length",data[2] );
+    SmartDashboard.putNumber("Pitch",data[0] );
+    SmartDashboard.putNumber("Length",data[1] );
   }
 }
+public void cancelAll(){
+  CommandScheduler.getInstance().cancelAll();
+}
+
 
 
 }
