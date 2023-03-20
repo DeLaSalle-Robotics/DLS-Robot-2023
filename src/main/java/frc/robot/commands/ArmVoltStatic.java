@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 
@@ -33,6 +34,9 @@ public class ArmVoltStatic extends CommandBase {
   public void execute() {
     currentVoltage = currentVoltage + interval;
     m_Arm.armSetVolts(currentVoltage);
+    SmartDashboard.putNumber("Arm Angle", m_Arm.ArmAngle());
+    SmartDashboard.putNumber("Arm Rate", m_Arm.ArmVelocity());
+    SmartDashboard.putNumber("Arm Volts", currentVoltage);
   }
 
   // Called once when the command ends or is interrupted.
