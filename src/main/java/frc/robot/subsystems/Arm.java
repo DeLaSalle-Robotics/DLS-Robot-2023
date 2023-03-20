@@ -105,8 +105,8 @@ public class Arm extends SubsystemBase {
   _armFalconL.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our arm. Other option is coast.
   _armFalconL.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
   _armFalconR.follow(_armFalconL);
-  _armFalconR.setInverted(true); // Not sure if this is right
-  
+  _armFalconR.setInverted(true); 
+
   _armFalconL.configOpenloopRamp(0.5);
   _armFalconR.configOpenloopRamp(0.5);
 
@@ -125,6 +125,14 @@ public class Arm extends SubsystemBase {
 
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
+    if (Math.toDegrees(this.ArmAngle()) < -35 & speed < 0) {
+      speed = 0.0;
+    }
+  
+  if (Math.toDegrees(this.ArmAngle())> 200 & speed > 0) {
+    speed = 0.0;
+  }
+
     _armFalconL.set( speed);
   }
 
@@ -136,10 +144,14 @@ public class Arm extends SubsystemBase {
 
   public double ArmAngle() {
     //This method returns the arm angle in radians
-    double vertical_radian = m_encoder.getDistance(); //<-- Returns in radians
-    double armAngleCorrection = Math.toRadians(0);
-    double correctedAngle = vertical_radian - armAngleCorrection;
-    return(correctedAngle);
+    if (Robot.isReal()) {
+      double vertical_radian = m_encoder.getDistance(); //<-- Returns in radians
+      double armAngleCorrection = Math.toRadians(70);
+      double correctedAngle = vertical_radian - armAngleCorrection;
+      return(correctedAngle); 
+    } else {
+      return m_encoder.getDistance();
+    }
   }
   public double ArmVelocity() {
 
@@ -178,11 +190,12 @@ return(feedForward);
     if (magSwitch.get()) {
       m_encoder.reset();
     }
-    SmartDashboard.putNumber("Current Arm Angle", Math.toDegrees(m_encoder.getDistance()));
+    
+    SmartDashboard.putNumber("Current Arm Angle", Math.toDegrees(this.ArmAngle()));
     //Create check on arm position and limit over extension <- create warning for Smart dashboard.
-    //Pretty complicated because it is dependent on current length 
+    //Pretty complicated because it is dependent on current length
+   
   }
-
   @Override
   public void simulationPeriodic() {
     

@@ -31,7 +31,7 @@ new ElevatorSim(
     _armExtend.configFactoryDefault();
     _armExtend.setNeutralMode(NeutralMode.Brake);
     _armExtend.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,30);
-    _armExtend.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 0, 30));
+    _armExtend.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 30));
   }
   public double getArmLength(){
     if (Robot.isReal()){
@@ -50,9 +50,6 @@ new ElevatorSim(
   
   public void ArmExtentionVolts(double volts) {
     //This method sets the speed of the arm extension motor
-    if (SmartDashboard.getNumber("Current Arm Angle", 0) < 90) {
-      //Do the thing to limit the angle where extension happens
-    }
     _armExtend.setVoltage(volts);
   }
 
@@ -75,7 +72,7 @@ new ElevatorSim(
 
   private int distanceToNativeUnits(double positionMeters){
     double drumRotations = positionMeters/(2 * Math.PI * 0.02);
-    double motorRotations = drumRotations * 4;
+    double motorRotations = drumRotations * 12;
     int sensorCounts = (int)(motorRotations * kCountsPerRev);
     return sensorCounts;
   }
