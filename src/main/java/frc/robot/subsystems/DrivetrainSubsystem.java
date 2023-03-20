@@ -222,7 +222,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   llCamera = new PhotonCamera("LimeLight");
   m_robotToLimeLight = new Transform3d(new Translation3d(0.5, 0.0, 0.5), 
                                           new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-  cubeCam = new PhotonCamera("Cube_cam");
+  cubeCam = new PhotonCamera("Cube_cam"); // Offset calculated in photonvision work flow.
 
     SmartDashboard.putData("Field", m_field);
   }
@@ -269,10 +269,6 @@ return array;
 
 public double targetRotation(double target) {
   double rotationSpeed = turnController.calculate(this.getHeading(),target);
-  System.out.print("Rotation Speed: ");
-  System.out.println(rotationSpeed);
-  System.out.print("Heading: ");
-  System.out.println(this.getHeading());
   return rotationSpeed;
 }
 
@@ -388,6 +384,13 @@ public Trajectory targetTrajectory() {
     m_field.setRobotPose(m_odometry.getPoseMeters());
     SmartDashboard.putBoolean("April Target", this.haveATTarget());
     SmartDashboard.putBoolean("Cube Target", this.have_target());
+    String scoreDirection;
+    if (Math.abs(this.getHeading()) < 45){
+      scoreDirection = "Front";
+    } else if (Math.abs(this.getHeading()) > 135) {
+      scoreDirection = "Back";
+    } else { scoreDirection = "None";}
+    SmartDashboard.putString("Score Direction", scoreDirection);
     }
 
   @Override
@@ -581,6 +584,10 @@ public double getPitch(){
 public void tipProtection(){
   //Method that will stop the robot if roll angle/accelleration gets to large
   // Protection during autonoums in case we get too close to the charging station - ?
+}
+
+public void postTrajectories (Trajectory traj){
+  m_field.getObject("Traj").setTrajectory(traj);
 }
 
 }
