@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -8,32 +10,39 @@ import frc.robot.subsystems.Intake;
 
 public class SpinIntake extends CommandBase {
     private Intake m_intake;
+    private DoubleSupplier outSpeed;
+    private DoubleSupplier inSpeed;
+    private boolean intake;
 
-    public SpinIntake(Intake _intake){
+    public SpinIntake(Intake _intake, DoubleSupplier _outSpeed, DoubleSupplier _inSpeed){
         m_intake = _intake;
-            
+        outSpeed = _outSpeed;
+        inSpeed = _inSpeed; 
+        addRequirements(_intake);
     }
     
     @Override
         public void execute() {
-           if (SmartDashboard.getBoolean("Have Piece", false)) {
-            m_intake.spinIntake(-Constants.IntakeSpeed);
+            if (inSpeed.getAsDouble() > outSpeed.getAsDouble()) {
+                m_intake.spinIntake(-inSpeed.getAsDouble() * Constants.IntakeSpeed); //negative pulls piece in
+                SmartDashboard.putNumber("Intake Speed", inSpeed.getAsDouble());//m_intake.spinVelocity());
             } else {
-                m_intake.spinIntake(-Constants.IntakeSpeed);
+                m_intake.spinIntake(outSpeed.getAsDouble() * Constants.IntakeSpeed);
             }
         }
     @Override
     public void end(boolean interrupted) {
-        if (SmartDashboard.getBoolean("Have Piece", false)) {
-            SmartDashboard.putBoolean("Have Piece", true);
-            } else {
-                SmartDashboard.putBoolean("Have Piece", false);
-            }
-
+        m_intake.spinIntake(0);
+    
     }
     @Override
     public boolean isFinished() {
-        if(Robot.isReal()) {return m_intake.getIntakeCurrent() > Constants.intakeCurrentThreshold;
-        } else {return true;}
+        if(Robot.isReal()) {
+            if (inSpeed.getAsDouble() > outSpeed.getAsDouble()) {
+                return SmartDashboard.getNumber("Intake Speed", 0) < Constants.intakeSpinThreshold;
+            } else {
+                return outSpeed.getAsDouble() < 0.2;
+            }
+        } else {return SmartDashboard.getBoolean("Have Piece", false);}
     }
 }

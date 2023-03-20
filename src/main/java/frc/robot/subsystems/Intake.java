@@ -8,12 +8,15 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -24,24 +27,28 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {  
+  private final PneumaticHub m_ph = new PneumaticHub();
   private final Compressor phCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
-  private final DoubleSolenoid grasperSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
-   1,
-   2);
-   private final DoubleSolenoid twisterSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM,
-   3,
-   4);
+  private final DoubleSolenoid grasperSolenoid = m_ph.makeDoubleSolenoid(1, 2);
+   private final DoubleSolenoid twisterSolenoid = m_ph.makeDoubleSolenoid(3, 4);
   private final CANSparkMax _IntakeNeo550 = new CANSparkMax(Constants.IntakeID, CANSparkMaxLowLevel.MotorType.kBrushless);
-
+  private RelativeEncoder m_encoder;
   private final PowerDistribution pdh; 
+  
   private boolean IntakeVertical;
+  private boolean grasperOpen;
+  private double intakeCurrent;
+
   //Declaration of subsystem and its components
   public Intake() {
+    
     grasperSolenoid.set(Value.kForward); // Should close the claw on startup
     twisterSolenoid.set(Value.kForward); // Should put claw horizontal to node
     _IntakeNeo550.setSmartCurrentLimit(10);
     _IntakeNeo550.setIdleMode(IdleMode.kBrake);
+    m_encoder = _IntakeNeo550.getEncoder();
     SmartDashboard.putBoolean("Claw Vertical", false);
+    SmartDashboard.putBoolean("Claw Open", grasperOpen);
     pdh = new PowerDistribution(1, ModuleType.kRev);
     SmartDashboard.putBoolean("Have Piece", true);
 }
@@ -58,26 +65,42 @@ public class Intake extends SubsystemBase {
   }
 
   public void closeGrasp() {
-    //Gets the climber motor position.
-    grasperSolenoid.set(Value.kForward);
-    SmartDashboard.putBoolean("Have Piece", true);
+    //Close Grapser Position.
+    grasperSolenoid.set(DoubleSolenoid.Value.kForward);
+    grasperOpen = false;
+    SmartDashboard.putBoolean("Claw Open", grasperOpen);
   }
 
   public void openGrasp() {
     //Allows climber position to be reset.
-    grasperSolenoid.set(Value.kReverse);
-    SmartDashboard.putBoolean("Have Piece", false);
+    grasperSolenoid.set(DoubleSolenoid.Value.kReverse);
+    grasperOpen = true;
+    SmartDashboard.putBoolean("Claw Open", grasperOpen);
   }
-
+  public void intakeFlip(){
+    //Turn the claw -may be punmatics or maybe a motor
+    if (twisterSolenoid.get() == DoubleSolenoid.Value.kForward){
+      twisterSolenoid.set(DoubleSolenoid.Value.kReverse);
+      IntakeVertical = false;
+      SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);
+    } else {
+      twisterSolenoid.set(DoubleSolenoid.Value.kForward);
+      IntakeVertical = true;
+      SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);
+    }
+    
+  }
   public void intakeHorizontal(){
     //Turn the claw -may be punmatics or maybe a motor
-    twisterSolenoid.set(Value.kForward);
-    SmartDashboard.putBoolean("Intake Vertical", false);
+    twisterSolenoid.set(DoubleSolenoid.Value.kForward);
+    IntakeVertical = false;
+    SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);
   }
   public void intakeVertical(){
-    //Turn the claw -may be punmatics or maybe a motor
-    twisterSolenoid.set(Value.kReverse);
-    SmartDashboard.putBoolean("Intake Vertical", true);
+    //Turn the ,,,,,,claw -may be punmatics or maybe a motor
+    twisterSolenoid.set(DoubleSolenoid.Value.kReverse);
+    IntakeVertical = true;
+    SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);
   }
 
   public double getIntakeCurrent() {
@@ -92,22 +115,41 @@ public void spinIntake(double speed){
   _IntakeNeo550.set(speed);
 }
 
+public void stopIntake() {
+  _IntakeNeo550.set(0);
+}
+
+public double spinVelocity() {
+  return m_encoder.getVelocity();
+}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
-    double intakeCurrent = pdh.getCurrent(Constants.intakeChannel);
-    SmartDashboard.putNumber("Intake Current", intakeCurrent);
-    if (intakeCurrent > Constants.intakeCurrentThreshold){
-      this.spinIntake(0.0);
-      SmartDashboard.putBoolean("Have Piece", true);
-    }
+    SmartDashboard.putNumber("Intake Voltage", _IntakeNeo550.getBusVoltage());
+    SmartDashboard.putNumber("Intake Speed", _IntakeNeo550.get());
 
+    SmartDashboard.putNumber("Compress Current", phCompressor.getCurrent());
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  public void scoreHigh(){
+    SmartDashboard.putString("Score Type", "High");
+  }
+  public void scoreMid(){
+    SmartDashboard.putString("Score Type", "Mid");
+  }
+  public void scoreLow(){
+    SmartDashboard.putString("Score Type", "Low");
+  }
+  public void scoreCone(){
+    SmartDashboard.putString("Piece Type", "Cone");
+  }
+  public void scoreCube(){
+    SmartDashboard.putString("Piece Type", "Cube");
   }
 }
