@@ -60,26 +60,22 @@ public class RobotContainer {
   private Trigger controller_Y = new JoystickButton(controller, 4);
   private Trigger controller_leftbumper = new JoystickButton(controller, 5);
   private Trigger controller_rightbumper = new JoystickButton(controller, 6);
-  //private Trigger controller_leftstickbutton = new JoystickButton(controller, 9);
-  //private Trigger controller_rightstickbutton = new JoystickButton(controller, 10);
-  private Joystick joystickA = new Joystick(1);
-  private Joystick joystickB = new Joystick(2);
-  private Trigger joystickB_1 = new JoystickButton(joystickB,1);
-  private Trigger joystickB_2 = new JoystickButton(joystickB, 2);
-  private Trigger joystickA_8 = new JoystickButton(joystickA, 8);
-  private Trigger joystickA_9 = new JoystickButton(joystickA, 9);
-  private Trigger joystickA_10 = new JoystickButton(joystickA, 10);
-  private Trigger joystickA_11 = new JoystickButton(joystickA, 11);
-  private Trigger joystickA_3 = new JoystickButton(joystickA, 3);
-  private Trigger joystickA_4 = new JoystickButton(joystickA, 4);
-  private Trigger joystickA_1 = new JoystickButton(joystickA, 1);
-  private Trigger joystickA_2 = new JoystickButton(joystickA, 2);
-
+  private Trigger controller_start = new JoystickButton(controller, 8);
+  private Trigger controller_back = new JoystickButton(controller, 7);
   //Defining POV buttons
   private POVButton controller_Up = new POVButton(controller, 0);
   private POVButton controller_Right = new POVButton(controller, 90);
   private POVButton controller_Down = new POVButton(controller, 180);
   private POVButton controller_Left = new POVButton(controller, 270);
+
+  //private Trigger controller_leftstickbutton = new JoystickButton(controller, 9);
+  //private Trigger controller_rightstickbutton = new JoystickButton(controller, 10);
+  private Joystick Left_joystick = new Joystick(1);
+  private Joystick Right_joystick = new Joystick(2);
+  private Trigger Left_joystick_1 = new JoystickButton(Left_joystick,1);
+  private Trigger Right_joystick_1 = new JoystickButton(Right_joystick,1);
+  
+  
 
   private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem, m_Arm, m_grasper, m_armExtend);
   private final Command m_red_Right_NoEngage = new Auto_Red_Right_NoEngage(m_drivetrainSubsystem);
@@ -94,12 +90,13 @@ public class RobotContainer {
     //Some subsystems have default commands. The () -> denotes a continous supply of data from 
     // the referenced value. Usually a joystick, but can be a constant.
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
-                                                            () -> joystickA.getX(),
-                                                            () -> joystickB.getY()));
+                                                            () -> Left_joystick.getX(),
+                                                            () -> Right_joystick.getY()));
                                                             
-     //m_Arm.setDefaultCommand(new KeepArmPosition( m_Arm));
-    m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> joystickB.getX(), m_armExtend));
-
+    m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> controller.getLeftY()));
+    m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> controller.getRightY(), m_armExtend));
+    m_grasper.setDefaultCommand(new SpinIntake(m_grasper, () -> controller.getLeftTriggerAxis(),
+                                                          () -> controller.getRightTriggerAxis()));
 
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
@@ -115,30 +112,35 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // controller_A.onTrue(new TestCommand(m_miniArm, () -> controller.getLeftY()));
-    controller_leftbumper.onTrue(Commands.runOnce(m_drivetrainSubsystem::getTrajectory, m_drivetrainSubsystem));
-    controller_B.onTrue(Commands.runOnce(m_Arm::ResetArmEncoder, m_Arm));
-    //controller_A.onTrue(Commands.runOnce(m_grasper::closeGrasp, m_grasper));
-    //controller_A.onFalse(Commands.runOnce(m_grasper::openGrasp, m_grasper));
-    //controller_X.onTrue(new ArmPlaceCommand(180, 0.3, m_Arm,m_armExtend));
-    //controller_Y.onTrue(new ArmPlaceCommand(0, 1.0, m_Arm, m_armExtend));
-    joystickB_1.whileTrue(new ArmVoltStatic(m_Arm));
-    joystickB_2.whileTrue(new ArmVoltQuasistatic(m_Arm));
-    
-    joystickA_1.onTrue(new ArmPlaceCommand(230, 0.35, m_Arm, m_armExtend));
-    joystickA_2.onTrue(new ArmPlaceCommand(30, 1.3, m_Arm, m_armExtend));
-    joystickA_3.onTrue(new KeepArmPosition(90, m_Arm));
-    joystickA_4.onTrue(new TargetedRotation(m_drivetrainSubsystem, m_Arm, m_grasper, m_armExtend));
-    
-    controller_Up.onTrue(new ArmLengthDrive(() -> Constants.ControlArmSpeed, m_armExtend));
-    controller_Down.onTrue(new ArmLengthDrive(() -> -Constants.ControlArmSpeed, m_armExtend));
-    controller_Left.onTrue(new DrivetrainControlRotate(Constants.ControlDriveSpeed, m_drivetrainSubsystem));
-    controller_Right.onTrue(new DrivetrainControlRotate(-Constants.ControlDriveSpeed, m_drivetrainSubsystem));
+  
+    //Floor Mode
+    controller_A.onTrue(new ArmPlaceCommand(
+        200,
+        0.3, m_Arm, m_armExtend));
+    //Score Mode
+    controller_X.onTrue(new ArmPlaceCommand(
+      SmartDashboard.getNumber("Pitch", 0),
+      SmartDashboard.getNumber("Length", 0), m_Arm, m_armExtend));
+    //Feeder
+    controller_B.onTrue(new ArmPlaceCommand(
+        165,
+        0.3, m_Arm, m_armExtend));
+    controller_Y.onTrue(new KeepArmPosition(0, m_Arm));
 
-    Tcontroller_A.onTrue(Commands.runOnce(m_grasper::openGrasp));
-    Tcontroller_B.onTrue(Commands.runOnce(m_grasper::closeGrasp));
-    Tcontroller_X.onTrue(Commands.runOnce(m_grasper::intakeHorizontal));
-    Tcontroller_Y.onTrue(Commands.runOnce(m_grasper::intakeVertical));
+    controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));
+    controller_Down.onTrue(Commands.runOnce(m_grasper::scoreLow));
+    controller_Left.onTrue(Commands.runOnce(m_grasper::scoreMid));
+    controller_Right.onTrue(Commands.runOnce(m_grasper::scoreMid));
+
+    controller_leftbumper.onTrue(Commands.runOnce(m_grasper::intakeFlip));
+    controller_rightbumper.onTrue(Commands.runOnce(m_grasper::openGrasp));
+    controller_start.onTrue(Commands.runOnce(m_grasper::scoreCube));
+    controller_back.onTrue(Commands.runOnce(m_grasper::scoreCone));
+
+    Tcontroller_A.whileTrue(new ArmVoltStatic(m_Arm));
+    Tcontroller_B.whileTrue(new ArmVoltQuasistatic(m_Arm));
+    Tcontroller_X.onTrue(Commands.runOnce(m_grasper::intakeFlip));
+    Tcontroller_Y.onTrue(Commands.runOnce(m_grasper::openGrasp));
     Tcontroller_leftbumper.onTrue(Commands.runOnce(m_grasper::enableCompressor));
     Tcontroller_rightbumper.onTrue(Commands.runOnce(m_grasper::disableCompressor));
     Tcontroller_leftbumper.onTrue(new DriveCommand(m_drivetrainSubsystem, 
