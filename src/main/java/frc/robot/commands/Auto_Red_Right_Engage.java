@@ -18,7 +18,7 @@ public class Auto_Red_Right_Engage extends SequentialCommandGroup{
     private Trajectory m_Trajectory1;
     private Trajectory m_Trajectory2;
     private Trajectory m_Trajectory3;
-    
+    DrivetrainSubsystem m_drivetrain;
 
     public Auto_Red_Right_Engage(DrivetrainSubsystem m_drivetrain, Arm m_arm, Intake m_intake, ArmExtend m_armExtend) {
         System.out.println("Auto Red Right Engage");
@@ -51,5 +51,9 @@ public class Auto_Red_Right_Engage extends SequentialCommandGroup{
                     new KeepArmPosition(120, m_arm))
                 )
             );
+    }
+
+    public void postTrajectories(){
+        m_drivetrain.postTrajectories(m_Trajectory1.concatenate(m_Trajectory2).concatenate(m_Trajectory3));
     }
 }

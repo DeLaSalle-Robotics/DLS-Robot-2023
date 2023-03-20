@@ -109,7 +109,7 @@ public final class Constants {
     public static double unbalanceSpeed = 0.9;
 
     //Intake Constants
-    public static double intakeCurrentThreshold = 5;
+    public static double intakeSpinThreshold = 5;
     public static int intakeChannel = 4; //<-- The channel on the pdh inwhich the intake motors are attached.
     public static double IntakeSpeed = 0.8;
 }
