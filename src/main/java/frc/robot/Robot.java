@@ -77,6 +77,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Current Target", currentFocus);
     SmartDashboard.putString("Score Type", "Mid");
     SmartDashboard.putString("Piece Type", "Cube");
+    SmartDashboard.putString("Score Direction", "None");
+    SmartDashboard.putString("Load Direction","None");
 
     SmartDashboard.putBoolean("Cone Low", false);
     SmartDashboard.putBoolean("Cone Mid", false);
@@ -85,14 +87,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Cube Mid", false);
     SmartDashboard.putBoolean("Cube High", false);
     
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
     
-
-// get a topic from a NetworkTableInstance
-// the topic name in this case is the full name
-    BooleanTopic AllianceTopic = inst.getBooleanTopic("/FMSInfo/IsRedAlliance");
-    boolean allBool = AllianceTopic.subscribe(false).get();
-    SmartDashboard.putBoolean("Alliance", allBool);
   }
 
   /**
@@ -110,24 +105,23 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     // Called every 20 miliseconds.
     CommandScheduler.getInstance().run();
+     currentFocus = String.format("%s %s", SmartDashboard.getString("Piece Type","Cube"),
+     SmartDashboard.getString("Score Type", "Mid"));
 
     // Check if a new boolean is activated
     for(String key : targetingKeys.keySet()){
 
       // Check if a boolean is true that does not match the current focus
-      if(SmartDashboard.getBoolean(key, false) && key != currentFocus){
-        currentFocus = key;
-
+      if(SmartDashboard.getBoolean(key, false) && key == currentFocus){
+        SmartDashboard.putBoolean(key, true); 
+      } else{
         // Change all other booleans to false as a failsafe
-        for (String key2 : targetingKeys.keySet()){
-          if (key2 != currentFocus){
-            SmartDashboard.putBoolean(key2, false);
+            SmartDashboard.putBoolean(key, false);
           }
         }
         // Break the loop as all other values should be false by now, so it won't find anything that's true
-        break;
-      }
-    }
+        //break;
+    
     SmartDashboard.putString("Current Target", currentFocus);
 
     // Failsafe to re-activate the current key if it got turned off
@@ -174,12 +168,20 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    
+
+// get a topic from a NetworkTableInstance
+// the topic name in this case is the full name
+    BooleanTopic AllianceTopic = inst.getBooleanTopic("/FMSInfo/IsRedAlliance");
+    boolean allBool = AllianceTopic.subscribe(false).get();
+    SmartDashboard.putBoolean("Red Alliance", allBool);
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    this.postTargetData(this.currentFocus);
+    this.postTargetData(SmartDashboard.getString("Current Target", "Cube Mid"));
   }
 
   @Override
@@ -194,25 +196,41 @@ public class Robot extends TimedRobot {
 
   private void setupTargeting() {
     targetingKeys=new HashMap<>();
-    //Targeting values are: arm angle, arm length
-    targetingKeys.put("Cone Low",(new Double[]{38.4,1.8}));
-    targetingKeys.put("Cone Mid",(new Double[]{38.4,1.37}));
-    targetingKeys.put("Cone High",(new Double[]{0.0,0.3}));
+    //Targeting values are: arm angle, arm length, arm angle (back score) <-- need to check
+    targetingKeys.put("Cone High",(new Double[]{38.4,1.8,141.6}));
+    targetingKeys.put("Cone Mid",(new Double[]{38.4,1.37,141.6}));
+    targetingKeys.put("Cone Low",(new Double[]{0.0,0.3,180.0}));
 
-    targetingKeys.put("Cube Low",(new Double[]{33.6,1.47}));
-    targetingKeys.put("Cube Mid",(new Double[]{33.6,0.95}));
-    targetingKeys.put("Cube High",(new Double[]{0.0,0.3}));
+    targetingKeys.put("Cube High",(new Double[]{33.6,1.47, 146.4}));
+    targetingKeys.put("Cube Mid",(new Double[]{33.6,0.95, 146.4}));
+    targetingKeys.put("Cube Low",(new Double[]{0.0,0.3, 180.0}));
 
   }
 
 public void postTargetData(String target){
 
   Double[] data=targetingKeys.get(target);
+  
+  boolean scoreFront = SmartDashboard.getBoolean("Score Front", true);
   if (data!=null) {
-    SmartDashboard.putNumber("Pitch",data[0] );
+    
+    if (scoreFront) {
+      SmartDashboard.putNumber("Pitch",data[0] );
+    } else {
+      SmartDashboard.putNumber("Pitch", data[2]);
+    }
     SmartDashboard.putNumber("Length",data[1] );
   }
+  boolean loadFront= SmartDashboard.getBoolean("Load Front", false);
+  //Setting load angles <--Need to be confirmed
+  if (loadFront){
+    SmartDashboard.putNumber("Load Angle", 15);
+  } else {
+    SmartDashboard.putNumber("Load Angle", 165);
+  }
 }
+
+
 public void cancelAll(){
   CommandScheduler.getInstance().cancelAll();
 }

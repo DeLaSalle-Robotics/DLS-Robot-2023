@@ -150,7 +150,7 @@ public class Arm extends SubsystemBase {
       double correctedAngle = vertical_radian - armAngleCorrection;
       return(correctedAngle); 
     } else {
-      return m_encoder.getDistance();
+      return m_armSim.getAngleRads();
     }
   }
   public double ArmVelocity() {

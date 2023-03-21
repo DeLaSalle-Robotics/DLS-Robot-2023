@@ -384,13 +384,31 @@ public Trajectory targetTrajectory() {
     m_field.setRobotPose(m_odometry.getPoseMeters());
     SmartDashboard.putBoolean("April Target", this.haveATTarget());
     SmartDashboard.putBoolean("Cube Target", this.have_target());
-    String scoreDirection;
-    if (Math.abs(this.getHeading()) < 45){
-      scoreDirection = "Front";
-    } else if (Math.abs(this.getHeading()) > 135) {
-      scoreDirection = "Back";
-    } else { scoreDirection = "None";}
-    SmartDashboard.putString("Score Direction", scoreDirection);
+    boolean scoreFront;
+    boolean loadFront;
+    double curHeading = this.getHeading();
+    if (Math.abs(curHeading) < 45){
+      scoreFront = true;
+    } else if (Math.abs(curHeading) > 135) {
+      scoreFront = false;
+    } else { scoreFront = false;}
+    SmartDashboard.putBoolean("Score Front", scoreFront);
+    if (SmartDashboard.getBoolean("Red Alliance", true)) {
+       if (curHeading <= 135 && curHeading >= 45) {
+        loadFront = false;
+      } else if (curHeading >= -135 && curHeading <= -45){
+        loadFront = true;
+      } else {loadFront = false;} 
+    } else {
+      //If Blue Alliance - everything is flipped
+      if (curHeading <= 135 && curHeading >= 45) {
+        loadFront = true;
+      } else if (curHeading >= -135 && curHeading <= -45){
+        loadFront = false ;
+      } else {loadFront = false;} 
+    }
+    SmartDashboard.putBoolean("Load Front", loadFront);
+
     }
 
   @Override

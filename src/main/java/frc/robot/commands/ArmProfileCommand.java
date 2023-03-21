@@ -49,7 +49,7 @@ public class ArmProfileCommand extends ProfiledPIDCommand {
     }
     @Override
     public boolean isFinished() {
-        System.out.println(Math.abs(m_Arm.ArmAngle() - target));
+        
         if (Math.abs(m_Arm.ArmAngle() - target) < Math.toRadians(Constants.angleTolerance)) { 
             System.out.println("Profiled Control Done");
             
