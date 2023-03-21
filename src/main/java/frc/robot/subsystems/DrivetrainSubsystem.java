@@ -598,6 +598,22 @@ try {
  }
 }
 
+public Trajectory refTraj(){
+  Trajectory autoTrajectory =
+  TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(5, 5, new Rotation2d(0)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of(new Translation2d(6.5, 5),
+       new Translation2d(8, 6),
+       new Translation2d(6.5,5)),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(5, 5, new Rotation2d(0)),
+      // Pass config
+      config);
+      return autoTrajectory;
+}
+
 public double getPitch(){
   return m_gyro.getRoll();
 }

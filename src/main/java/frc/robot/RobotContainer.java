@@ -139,9 +139,8 @@ public class RobotContainer {
     Tcontroller_Y.onTrue(Commands.runOnce(m_grasper::openGrasp));
     Tcontroller_leftbumper.onTrue(Commands.runOnce(m_grasper::enableCompressor));
     Tcontroller_rightbumper.onTrue(Commands.runOnce(m_grasper::disableCompressor));
-    Tcontroller_leftbumper.onTrue(new DriveCommand(m_drivetrainSubsystem, 
-                                    () -> Tcontroller.getLeftX(),
-                                    () -> Tcontroller.getRightY()));
+    
+    Tcontroller_Up.onTrue(new TrajectoryCalibrate(m_drivetrainSubsystem));
         /*
      * It is possible to string commands together from one button press. This might be useful for the
      * intake where we engage the pneumatics after the intake wheels are stopped. Example code:
