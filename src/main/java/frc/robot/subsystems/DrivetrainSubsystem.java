@@ -387,6 +387,9 @@ public Trajectory targetTrajectory() {
     boolean scoreFront;
     boolean loadFront;
     double curHeading = this.getHeading();
+    if (Math.abs(curHeading) > 180){
+      curHeading = curHeading % 360;
+    }
     if (Math.abs(curHeading) < 45){
       scoreFront = true;
     } else if (Math.abs(curHeading) > 135) {
