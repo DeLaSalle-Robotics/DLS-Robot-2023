@@ -31,7 +31,10 @@ new ElevatorSim(
     _armExtend.configFactoryDefault();
     _armExtend.setNeutralMode(NeutralMode.Brake);
     _armExtend.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,30);
-    _armExtend.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 30));
+    if( Constants.limitFalcons) { 
+      _armExtend.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
+       30, 0, 30));
+      }
   }
   public double getArmLength(){
     if (Robot.isReal()){
@@ -68,6 +71,12 @@ new ElevatorSim(
     m_armSim.update(0.02);
     sim_armExtend.setIntegratedSensorRawPosition(this.distanceToNativeUnits(m_armSim.getPositionMeters()));
     SmartDashboard.putNumber("Arm Length", m_armSim.getPositionMeters());
+  }
+
+  @Override
+  public void periodic() {
+      if (Constants.verbose && Robot.isReal()) {SmartDashboard.putNumber("Arm Length",this.getArmLength());}
+      SmartDashboard.putNumber("CoM", this.ArmComCalc());
   }
 
   private int distanceToNativeUnits(double positionMeters){

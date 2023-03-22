@@ -77,9 +77,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Current Target", currentFocus);
     SmartDashboard.putString("Score Type", "Mid");
     SmartDashboard.putString("Piece Type", "Cube");
-    SmartDashboard.putString("Score Direction", "None");
-    SmartDashboard.putString("Load Direction","None");
-
+    
     SmartDashboard.putBoolean("Cone Low", false);
     SmartDashboard.putBoolean("Cone Mid", false);
     SmartDashboard.putBoolean("Cone High", false);
@@ -105,8 +103,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     // Called every 20 miliseconds.
     CommandScheduler.getInstance().run();
-     currentFocus = String.format("%s %s", SmartDashboard.getString("Piece Type","Cube"),
-     SmartDashboard.getString("Score Type", "Mid"));
+     currentFocus = String.format("%s %s", 
+                                SmartDashboard.getString("Piece Type","Cube"),
+                                SmartDashboard.getString("Score Type", "Mid"));
 
     // Check if a new boolean is activated
     for(String key : targetingKeys.keySet()){

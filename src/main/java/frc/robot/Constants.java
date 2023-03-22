@@ -14,6 +14,11 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    
+    //Reporting
+    public static boolean verbose = true;
+    public static boolean limitFalcons = false;
+    
     //CAN 
     public static final int drive_falcon_0 = 1; //Drivetrain Left
     public static final int drive_falcon_1 = 2; //Drivetrain Right
@@ -41,6 +46,7 @@ public final class Constants {
     public static final double ArmLenKd = 0.0;
     public static final double ArmLenKi = 0.0;
 
+    public static final double Arm_Ramp = 0.5;
     public static final double ArmMaxRotVel = 2.0;
     public static final double ArmMaxRotAccel = 5.0;
     

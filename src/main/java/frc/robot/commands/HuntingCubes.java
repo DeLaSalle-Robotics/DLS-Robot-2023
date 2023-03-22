@@ -42,11 +42,10 @@ public class HuntingCubes extends CommandBase {
       forwardSpeed = 0;
       rotationSpeed = 0.3;
   }
-  SmartDashboard.putNumber("Cube Rotation", rotationSpeed);
+  if (Constants.verbose) {SmartDashboard.putNumber("Cube Rotation", rotationSpeed);}
 // Use our forward/turn speeds to control the drivetrain
 m_drive.drive_Arcade(forwardSpeed + 0.3, rotationSpeed );
 
-SmartDashboard.putBoolean("Has a Target", m_drive.have_target());
 
     
   }

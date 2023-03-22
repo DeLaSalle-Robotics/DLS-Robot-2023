@@ -100,15 +100,17 @@ public class Arm extends SubsystemBase {
  public Arm() {
   _armFalconR.configFactoryDefault(); //Resets any preexisting settings - good practice to prevent things from breaking unexpectedly.
   _armFalconR.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our arm. Other option is coast.
-  _armFalconR.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
   _armFalconL.configFactoryDefault(); //Resets any preexisting settings - good practice to prevent things from breaking unexpectedly.
   _armFalconL.setNeutralMode(NeutralMode.Brake); //Setting neutral mode to break, which is good for our arm. Other option is coast.
-  _armFalconL.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
+  if (Constants.limitFalcons) {
+    _armFalconR.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
+    _armFalconL.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
+  }
   _armFalconR.follow(_armFalconL);
   _armFalconR.setInverted(true); 
 
-  _armFalconL.configOpenloopRamp(0.5);
-  _armFalconR.configOpenloopRamp(0.5);
+  _armFalconL.configOpenloopRamp(Constants.Arm_Ramp);
+  _armFalconR.configOpenloopRamp(Constants.Arm_Ramp);
 
    m_encoder.setDistancePerPulse(2 * Math.PI /2048.0);
 
@@ -174,12 +176,13 @@ public double getFeedForward(double armAngle){
                       Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02; //Angular Momentum Calculation
   priorArmVelocity = this.ArmVelocity();
   //double feedForward = 0.0;
+  if (Constants.verbose) {
   SmartDashboard.putNumber("Ks", Ks * curDir);
   SmartDashboard.putNumber("Kg", Constants.arm_Kg * Math.cos(armAngle) * Arm_Com);
   SmartDashboard.putNumber("Kv", Constants.arm_Kv * curVel);
   SmartDashboard.putNumber("Ka", Constants.arm_Ka * Arm_Com* Arm_Com * (this.ArmVelocity() - priorArmVelocity)/0.02);
   SmartDashboard.putNumber("FeedForward", feedForward);
-  
+  }
 return(feedForward);
 }
 
@@ -201,7 +204,7 @@ return(feedForward);
     
     // This method will be called once per scheduler run during simulation
     m_armSim.setInput(_armFalconL.get() * RobotController.getBatteryVoltage());
-    SmartDashboard.putNumber("Sim Input", _armFalconL.get());
+    if (Constants.verbose) {SmartDashboard.putNumber("Sim Input", _armFalconL.get());}
     // Next, we update it. The standard loop time is 20ms.
     m_armSim.update(0.020);
 
@@ -225,10 +228,11 @@ return(feedForward);
   
   public void incrementVolts() {
     currentVoltage += incrementAmount;
+    if (Constants.verbose) {
     SmartDashboard.putNumber("ArmAngle", ArmAngle());
     SmartDashboard.putNumber("ArmRate", ArmVelocity());
     SmartDashboard.putNumber("Volts", currentVoltage);
-    
+    }
     _armFalconL.setVoltage(currentVoltage);
   }
   public void armSetVolts(double volts){

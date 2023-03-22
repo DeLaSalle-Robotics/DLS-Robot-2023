@@ -178,11 +178,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     _talon2.configFactoryDefault();
     _talon3.configFactoryDefault();
     _talon4.configFactoryDefault();
+    if (Constants.limitFalcons){
     //Current limiting drivetrain motors to limit brownout potential in a pushing match.
     _talon1.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
     _talon2.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
     _talon3.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
     _talon4.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 35, 0, 30));
+      }    
     //Defining encoders from each side of the robot.
     _talon1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
     _talon2.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
@@ -241,6 +243,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
 public boolean have_target(){
   var result = cubeCam.getLatestResult();
+  if (result.hasTargets()){
+    SmartDashboard.putBoolean("Cube Target", true);
+  } else {
+    SmartDashboard.putBoolean("Cube Target", true);
+  }
   return result.hasTargets();
 }
 
@@ -251,14 +258,12 @@ public double[] find_cube(){
   double rotationSpeed;
   double forwardSpeed;
   if (result.hasTargets()) {
-    SmartDashboard.putBoolean("Target", true);
       // Calculate angular turn power
       // -1.0 required to ensure positive PID controller effort _increases_ yaw
       forwardSpeed = forwardController.calculate(result.getBestTarget().getArea(), 15); //<-- The target area should be in the Constants class.
       rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0); // <-- Target Yaw will need to be updated once camera and intake are mounted. Also should be in Constants
       if (rotationSpeed > 0.5){rotationSpeed = 0.5;} // limit rotation speed
   } else {
-      SmartDashboard.putBoolean("Target", false);
       forwardSpeed = 0;
       rotationSpeed = 0;
   }
@@ -275,8 +280,10 @@ public double targetRotation(double target) {
 //This method returns if AT Target is acquired
 public boolean haveATTarget(){
   var result = llCamera.getLatestResult();
-  if (result.hasTargets()) {SmartDashboard.putBoolean("ATTarget", true);
-} else {SmartDashboard.putBoolean("ATTarget", false);}
+  if (result.hasTargets()) {
+    SmartDashboard.putBoolean("ATTarget", true);
+} else {
+  SmartDashboard.putBoolean("ATTarget", false);}
   return result.hasTargets();
 }
 
@@ -288,7 +295,7 @@ public Pose3d getobjectInFieldID(){
     objectID = result.getBestTarget().getFiducialId();
     return aprilTagFieldLayout.getTagPose(objectID).get();
   } else {
-    //For Testing always target aprilt tag 3 :
+    //For Testing always target aprilt tag 2 :
     if (Robot.isSimulation()) {return aprilTagFieldLayout.getTagPose(2).get();
     } else {
     return new Pose3d(m_odometry.getPoseMeters());}
@@ -355,7 +362,7 @@ public Trajectory targetTrajectory() {
                                       tarCenterPose.getY()+ SmartDashboard.getNumber("Shift", 0)),
                                       new Rotation2d(0.0));
   double needRot = Math.atan((curPose.getY() - tarPose.getY())/(curPose.getX() - tarPose.getX()));
-  SmartDashboard.putNumber("Need Rot", Math.toDegrees(needRot));
+  if (Constants.verbose) {SmartDashboard.putNumber("Need Rot", Math.toDegrees(needRot));}
   Pose2d startPose = new Pose2d(new Translation2d(curPose.getX(),curPose.getY()), new Rotation2d(needRot));
   Pose2d endPose = new Pose2d(new Translation2d(tarPose.getX(),tarPose.getY()), new Rotation2d(needRot));
 
@@ -366,8 +373,6 @@ public Trajectory targetTrajectory() {
   Trajectory traj = TrajectoryGenerator.generateTrajectory(
     startPose, interiorWaypoint, endPose, config);
     m_field.getObject("Target").setTrajectory(traj);
-    
-    System.out.println("Sent new traj");
     return traj;
 }
   @Override
@@ -379,11 +384,11 @@ public Trajectory targetTrajectory() {
       countToDistanceMeters(_talon1.getSelectedSensorPosition()),
       countToDistanceMeters(_talon2.getSelectedSensorPosition())
     );
-    SmartDashboard.putNumber("Robot Heading", m_gyro.getYaw());
+    if (Constants.verbose) {SmartDashboard.putNumber("Robot Heading", m_gyro.getYaw());}
     //Putting the robot on the field helps with planning.
-    m_field.setRobotPose(m_odometry.getPoseMeters());
     SmartDashboard.putBoolean("April Target", this.haveATTarget());
     SmartDashboard.putBoolean("Cube Target", this.have_target());
+    m_field.setRobotPose(m_odometry.getPoseMeters());
     boolean scoreFront;
     boolean loadFront;
     double curHeading = this.getHeading();
@@ -567,7 +572,6 @@ public Trajectory getTrajectory() {
       new Pose2d(8, 5, new Rotation2d(0)),
       // Pass config
       config);
-    System.out.println("Trajectory Created");
     m_field.getObject("Traj").setTrajectory(autoTrajectory);
     return autoTrajectory;
  }

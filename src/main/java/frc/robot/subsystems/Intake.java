@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase {
   
   private boolean IntakeVertical;
   private boolean grasperOpen;
-  private double intakeCurrent;
+  
 
   //Declaration of subsystem and its components
   public Intake() {
@@ -68,39 +68,39 @@ public class Intake extends SubsystemBase {
     //Close Grapser Position.
     grasperSolenoid.set(DoubleSolenoid.Value.kForward);
     grasperOpen = false;
-    SmartDashboard.putBoolean("Claw Open", grasperOpen);
+    if (Constants.verbose) {SmartDashboard.putBoolean("Claw Open", grasperOpen);}
   }
 
   public void openGrasp() {
     //Allows climber position to be reset.
     grasperSolenoid.set(DoubleSolenoid.Value.kReverse);
     grasperOpen = true;
-    SmartDashboard.putBoolean("Claw Open", grasperOpen);
+    if (Constants.verbose) {SmartDashboard.putBoolean("Claw Open", grasperOpen);}
   }
   public void intakeFlip(){
     //Turn the claw -may be punmatics or maybe a motor
     if (twisterSolenoid.get() == DoubleSolenoid.Value.kForward){
       twisterSolenoid.set(DoubleSolenoid.Value.kReverse);
       IntakeVertical = false;
-      SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);
+      
     } else {
       twisterSolenoid.set(DoubleSolenoid.Value.kForward);
       IntakeVertical = true;
-      SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);
+      
     }
-    
+    if (Constants.verbose) {SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);}
   }
   public void intakeHorizontal(){
     //Turn the claw -may be punmatics or maybe a motor
     twisterSolenoid.set(DoubleSolenoid.Value.kForward);
     IntakeVertical = false;
-    SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);
+    if (Constants.verbose) {SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);}
   }
   public void intakeVertical(){
     //Turn the ,,,,,,claw -may be punmatics or maybe a motor
     twisterSolenoid.set(DoubleSolenoid.Value.kReverse);
     IntakeVertical = true;
-    SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);
+    if (Constants.verbose) {SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);}
   }
 
   public double getIntakeCurrent() {
@@ -126,10 +126,11 @@ public double spinVelocity() {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Intake Voltage", _IntakeNeo550.getBusVoltage());
-    SmartDashboard.putNumber("Intake Speed", _IntakeNeo550.get());
-
-    SmartDashboard.putNumber("Compress Current", phCompressor.getCurrent());
+    if (Constants.verbose)
+      {SmartDashboard.putNumber("Intake Voltage", _IntakeNeo550.getBusVoltage());
+      SmartDashboard.putNumber("Compress Current", phCompressor.getCurrent());
+    }
+      SmartDashboard.putNumber("Intake Speed", _IntakeNeo550.get());
   }
 
   @Override
