@@ -75,11 +75,11 @@ public class Arm extends SubsystemBase {
    m_armLength, // <-- This might present a problem trying to alter the arm length in simulation
     Units.degreesToRadians(-75),  //<-- These need to be defined on the robot
     Units.degreesToRadians(255), //<-- These need to be defined on the robot
-     m_armMass,
+    // m_armMass,
      true,
      VecBuilder.fill(2 * Math.PI /2048.0)
      );
-  
+
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
 
        //Mechanism 2d Sim Setup
