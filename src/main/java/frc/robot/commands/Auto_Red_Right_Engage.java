@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -39,16 +40,17 @@ public class Auto_Red_Right_Engage extends SequentialCommandGroup{
             new ParallelCommandGroup(
                 new TrajectoryFollower(m_Trajectory2, m_drivetrain),
                 new ArmPlaceCommand(25, 1.3, m_arm, m_armExtend)),
-            //Place Cube Command
+            new SpinIntake(m_intake, () -> 0, () -> Constants.IntakeSpeed),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     new TrajectoryFollower(m_Trajectory3, m_drivetrain),
-                    new AlignToTarget(0, m_drivetrain)
-                    //Engage Command
+                    new AlignToTarget(0, m_drivetrain),
+                    new Balance(m_drivetrain)
                     ),
                 new SequentialCommandGroup(
-                    new ArmPlaceCommand(120, 0.3, m_arm, m_armExtend),    
-                    new KeepArmPosition(120, m_arm))
+                    new ArmPlaceCommand(90, 0.3, m_arm, m_armExtend),    
+                    new KeepArmPosition(90, m_arm)
+                )
                 )
             );
     }

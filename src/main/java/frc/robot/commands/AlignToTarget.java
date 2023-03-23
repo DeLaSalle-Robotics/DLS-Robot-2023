@@ -48,8 +48,9 @@ public class AlignToTarget extends CommandBase {
   @Override
   public boolean isFinished() {
     double error = Math.abs(m_drive.getHeading() - targetRotation);
-    System.out.print("HeadingError: ");
-    System.out.println(error);
+    if (Constants.verbose) {
+      SmartDashboard.putNumber("Heading Error", error);
+    }
     m_drive.driveVolts(0, 0);
     return error < Constants.angleTolerance;
   }

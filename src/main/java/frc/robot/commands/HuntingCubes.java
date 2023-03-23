@@ -57,11 +57,7 @@ m_drive.drive_Arcade(forwardSpeed + 0.3, rotationSpeed );
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (m_drive.have_target()) {
-      return false;
-    } else{
-      return true;
-    }
+    return(SmartDashboard.getBoolean("Have Piece", false));
 
     
   }

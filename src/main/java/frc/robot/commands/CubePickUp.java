@@ -20,7 +20,7 @@ public class CubePickUp extends SequentialCommandGroup{
 
         addCommands(
             new ArmPlaceCommand(230, .35, _arm, _armExtend),
-            new ParallelRaceGroup(
+            new ParallelCommandGroup(
                 new HuntingCubes(0, m_drive),
                 new SpinIntake(m_intake, ()->Constants.IntakeSpeed, ()->0)
             )
