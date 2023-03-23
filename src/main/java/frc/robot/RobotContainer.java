@@ -121,14 +121,10 @@ public class RobotContainer {
         200,
         0.3, m_Arm, m_armExtend));
     //Score Mode
-    controller_X.onTrue(new ArmPlaceCommand(
-      SmartDashboard.getNumber("Pitch", 0),
-      SmartDashboard.getNumber("Length", 0), m_Arm, m_armExtend));
+    controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend));
     //Feeder
-    controller_B.onTrue(new ArmPlaceCommand(
-        165,
-        0.3, m_Arm, m_armExtend));
-    controller_Y.onTrue(new KeepArmPosition(0, m_Arm));
+    controller_B.onTrue(new LoadArmCommand(m_Arm, m_armExtend));
+    controller_Y.onTrue(new NeutralArmCommand(m_Arm, m_armExtend));
 
     controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));
     controller_Down.onTrue(Commands.runOnce(m_grasper::scoreLow));
@@ -146,9 +142,8 @@ public class RobotContainer {
     Tcontroller_Y.onTrue(Commands.runOnce(m_grasper::openGrasp));
     Tcontroller_leftbumper.onTrue(Commands.runOnce(m_grasper::enableCompressor));
     Tcontroller_rightbumper.onTrue(Commands.runOnce(m_grasper::disableCompressor));
-    Tcontroller_leftbumper.onTrue(new DriveCommand(m_drivetrainSubsystem, 
-                                    () -> Tcontroller.getLeftX(),
-                                    () -> Tcontroller.getRightY()));
+    
+    Tcontroller_Up.onTrue(new TrajectoryCalibrate(m_drivetrainSubsystem));
         /*
      * It is possible to string commands together from one button press. This might be useful for the
      * intake where we engage the pneumatics after the intake wheels are stopped. Example code:

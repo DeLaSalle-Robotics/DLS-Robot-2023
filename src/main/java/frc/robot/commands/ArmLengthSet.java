@@ -26,7 +26,7 @@ public class ArmLengthSet extends PIDCommand {
     
     @Override
     public boolean isFinished() {
-        if (getController().atSetpoint()) {System.out.println("ArmLengthSet Finished");}
+        //if (getController().atSetpoint()) {System.out.println("ArmLengthSet Finished");}
         return getController().atSetpoint();
     }
 }
