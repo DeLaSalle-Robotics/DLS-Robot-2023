@@ -1,32 +1,34 @@
 //Start with our robot package
 package frc.robot;
 
+// Unused imports
+//import java.nio.file.Path;
+//import java.util.Arrays;
+//import java.util.List;
+//import java.io.IOException;
+//import edu.wpi.first.wpilibj.Filesystem;
+//import edu.wpi.first.wpilibj.DigitalOutput; //This class allows digital signals to be set out, useful to communicate with ardurino
+//import edu.wpi.first.wpilibj.DriverStation; //This class is necessary to control the robot.
+//import edu.wpi.first.math.trajectory.Trajectory;
+//import edu.wpi.first.math.trajectory.TrajectoryUtil;
+//import edu.wpi.first.networktables.NetworkTable;
+//import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+//import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
 //If we want to read files and deal with errors (useful for autonomus code), we need these libraries.
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 // This was never used and caused compilation errors, so it's disabled for now
 // import org.apache.commons.io.output.ThresholdingOutputStream;
 
-import java.io.IOException;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DigitalOutput; //This class allows digital signals to be set out, useful to communicate with ardurino
-import edu.wpi.first.wpilibj.DriverStation; //This class is necessary to control the robot.
 
 
 //Trajectory classes could be useful, but not fully implimented here.
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.networktables.BooleanTopic;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 //Main robot class
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //This class brings basic commands methods, including the ability to run them in parallel
 import edu.wpi.first.wpilibj2.command.Command; 

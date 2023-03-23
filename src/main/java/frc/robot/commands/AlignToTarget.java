@@ -1,9 +1,10 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// Unused imports
+//import edu.wpi.first.math.controller.PIDController;
+//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -24,7 +25,7 @@ public class AlignToTarget extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("yyyy");
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +35,6 @@ public class AlignToTarget extends CommandBase {
     double rotationSpeed = m_drive.targetRotation(targetRotation);
 //Should determine Ks and add/substract it to the output. Just to get it spinning
     m_drive.driveVolts(-rotationSpeed-3, rotationSpeed+3);
-    System.out.println("abidayabidabidedoo");
   }
 
   // Called once the command ends or is interrupted.
