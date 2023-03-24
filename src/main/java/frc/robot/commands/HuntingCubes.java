@@ -36,7 +36,12 @@ public class HuntingCubes extends CommandBase {
 
       forwardSpeed = fittingArray[0]/12;
       rotationSpeed = -fittingArray[1]/12;
-      if (rotationSpeed > 0.5){rotationSpeed = 0.5;}
+      if (Math.abs(rotationSpeed) > 0.5){
+        if (rotationSpeed <0) {
+          rotationSpeed = -0.5;
+        } else {
+          rotationSpeed = 0.5;
+        }
   } else {
       // If we have no targets, spin slowly.
       forwardSpeed = 0;
