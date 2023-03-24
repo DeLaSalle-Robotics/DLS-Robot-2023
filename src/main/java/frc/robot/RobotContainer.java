@@ -38,7 +38,7 @@ public class RobotContainer {
   private final ArmExtend m_armExtend = new ArmExtend();
   
   //Controllers and buttons. Buttons can be mapped using the DriversStation
-  private XboxController Tcontroller = new XboxController(4);
+  public XboxController Tcontroller = new XboxController(4);
 
   private Trigger Tcontroller_A = new JoystickButton(Tcontroller, 1);
   private Trigger Tcontroller_B = new JoystickButton(Tcontroller, 2);
@@ -94,6 +94,7 @@ public class RobotContainer {
                                                             () -> Right_joystick.getY()));
                                                             
     m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> controller.getLeftY()));
+    m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> Tcontroller.getLeftY()));
     m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> controller.getRightY(), m_armExtend));
     m_grasper.setDefaultCommand(new SpinIntake(m_grasper, () -> controller.getLeftTriggerAxis(),
                                                           () -> controller.getRightTriggerAxis()));
@@ -133,13 +134,15 @@ public class RobotContainer {
     controller_start.onTrue(Commands.runOnce(m_grasper::scoreCube));
     controller_back.onTrue(Commands.runOnce(m_grasper::scoreCone));
 
-    Tcontroller_A.whileTrue(new ArmVoltStatic(m_Arm));
-    Tcontroller_B.whileTrue(new ArmVoltQuasistatic(m_Arm));
+    Tcontroller_A.whileTrue(new ArmVoltQuasistatic(m_Arm));
+    Tcontroller_B.whileTrue(new ArmVoltStatic(m_Arm));
     Tcontroller_X.onTrue(Commands.runOnce(m_grasper::intakeFlip));
     Tcontroller_Y.onTrue(Commands.runOnce(m_grasper::openGrasp));
     Tcontroller_leftbumper.onTrue(Commands.runOnce(m_grasper::enableCompressor));
     Tcontroller_rightbumper.onTrue(Commands.runOnce(m_grasper::disableCompressor));
     
+    
+    Tcontroller_Down.onTrue(new CubePickUp(m_drivetrainSubsystem, m_grasper));
     Tcontroller_Up.onTrue(new TrajectoryCalibrate(m_drivetrainSubsystem));
         /*
      * It is possible to string commands together from one button press. This might be useful for the
