@@ -29,11 +29,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {  
-  private final PneumaticHub m_ph = new PneumaticHub();
+  private final PneumaticHub m_ph = new PneumaticHub(9);
   private final Compressor phCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
-  private final DoubleSolenoid grasperSolenoid = m_ph.makeDoubleSolenoid(1, 2);
-   private final DoubleSolenoid twisterSolenoid = m_ph.makeDoubleSolenoid(3, 4);
-  private final CANSparkMax _IntakeNeo550 = new CANSparkMax(Constants.IntakeID, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private final DoubleSolenoid grasperSolenoid = m_ph.makeDoubleSolenoid(1, 2);//
+  private final DoubleSolenoid twisterSolenoid = m_ph.makeDoubleSolenoid(0, 3);
+  private final CANSparkMax _IntakeNeo550 = new CANSparkMax(Constants.IntakeID, CANSparkMax.MotorType.kBrushless);
   private RelativeEncoder m_encoder;
   private final PowerDistribution pdh; 
   
@@ -74,7 +74,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void openGrasp() {
-    //Allows climber position to be reset.
+    
     if (grasperSolenoid.get() == DoubleSolenoid.Value.kForward){
       grasperSolenoid.set(DoubleSolenoid.Value.kReverse);
       grasperOpen = false;
@@ -84,6 +84,8 @@ public class Intake extends SubsystemBase {
       grasperOpen = true;
       
     }
+    System.out.print("DEBUG: ");
+    System.out.println(grasperSolenoid.get());
     if (Constants.verbose) {SmartDashboard.putBoolean("Claw Open", grasperOpen);}
   }
   public void intakeFlip(){
