@@ -43,7 +43,7 @@ new ElevatorSim(
     double armLength_clicks = _armExtend.getSelectedSensorPosition();
     //Conversion figure to convert length to sensor position
     double armlength_m = 3.068e-5 * armLength_clicks + .3; //<-- Estimate from radius needs to be confirmed.
-    return armlength_m;} else {
+    return armLength_clicks;} else {
        return m_armSim.getPositionMeters();
     }
   }

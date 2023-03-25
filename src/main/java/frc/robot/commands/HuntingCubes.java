@@ -56,6 +56,7 @@ m_drive.drive_Arcade(forwardSpeed + 0.3, rotationSpeed );
 
     
   }
+}
 
   // Called once the command ends or is interrupted.
   @Override

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 // Unused imports
+//import com.revrobotics.AbsoluteEncoder;
 //import com.ctre.phoenix.motorcontrol.ControlMode;
 //import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 //import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
@@ -12,7 +13,7 @@ package frc.robot.subsystems;
 //import com.revrobotics.CANSparkMax;
 //import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 //import edu.wpi.first.math.controller.PIDController;
-//import edu.wpi.first.wpilibj.DutyCycleEncoder;
+//import edu.wpi.first.wpilibj.DutyCycle;
 //import edu.wpi.first.wpilibj.Preferences;
 
 // Phoenix
@@ -24,7 +25,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
-
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 // Wipilibj
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
@@ -50,7 +51,7 @@ public class Arm extends SubsystemBase {
   private final WPI_TalonFX _armFalconL = new WPI_TalonFX(Constants.armFalconLeftID);
   
   private final Encoder m_encoder = new Encoder(7, 8,false, Encoder.EncodingType.k4X); //<-- put channels in the Constants class
-
+  private final DutyCycleEncoder m_abEncoder = new DutyCycleEncoder(2);
   //Setting Initial State for Arm Simulation
   private final DCMotor m_armGearbox = DCMotor.getFalcon500(2);
   private final double  m_armReduction = 280; // <-- Should be in the Constants class
@@ -75,7 +76,7 @@ public class Arm extends SubsystemBase {
    m_armLength, // <-- This might present a problem trying to alter the arm length in simulation
     Units.degreesToRadians(-75),  //<-- These need to be defined on the robot
     Units.degreesToRadians(255), //<-- These need to be defined on the robot
-    // m_armMass,
+     //m_armMass,
      true,
      VecBuilder.fill(2 * Math.PI /2048.0)
      );
@@ -121,6 +122,13 @@ public class Arm extends SubsystemBase {
 
 }
 
+public double GetABencoder(){
+  if (Constants.verbose){
+    SmartDashboard.putNumber("Absolute", m_abEncoder.getAbsolutePosition());
+  }
+  return m_abEncoder.getAbsolutePosition();
+}
+
 
   public void ResetArmEncoder(){
     m_encoder.reset();
@@ -128,6 +136,7 @@ public class Arm extends SubsystemBase {
 
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
+   /* 
     if (Math.toDegrees(this.ArmAngle()) < -35 & speed < 0) {
       speed = 0.0;
     }
@@ -135,7 +144,7 @@ public class Arm extends SubsystemBase {
   if (Math.toDegrees(this.ArmAngle())> 200 & speed > 0) {
     speed = 0.0;
   }
-
+  */
     _armFalconL.set( speed);
   }
 
@@ -151,7 +160,7 @@ public class Arm extends SubsystemBase {
       double vertical_radian = m_encoder.getDistance(); //<-- Returns in radians
       double armAngleCorrection = Math.toRadians(70);
       double correctedAngle = vertical_radian - armAngleCorrection;
-      return(correctedAngle); 
+      return(Math.toDegrees(this.GetABencoder())); 
     } else {
       return m_armSim.getAngleRads();
     }
@@ -192,10 +201,11 @@ return(feedForward);
     // This method will be called once per scheduler run
     //Check if the magnetic sensor passes the arm- 
     if (magSwitch.get()) {
-      m_encoder.reset();
+      //m_encoder.reset();
     }
     
     SmartDashboard.putNumber("Current Arm Angle", Math.toDegrees(this.ArmAngle()));
+    SmartDashboard.putNumber("Absolute Arm Angle", Math.toDegrees(this.GetABencoder()));
     //Create check on arm position and limit over extension <- create warning for Smart dashboard.
     //Pretty complicated because it is dependent on current length
    

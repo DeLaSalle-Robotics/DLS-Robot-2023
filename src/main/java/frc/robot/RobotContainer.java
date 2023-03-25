@@ -97,7 +97,7 @@ public class RobotContainer {
                                                             () -> Right_joystick.getY()));
                                                             
     m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> controller.getLeftY()));
-    m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> Tcontroller.getLeftY()));
+    //m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> Tcontroller.getLeftY()));
     m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> controller.getRightY(), m_armExtend));
     m_grasper.setDefaultCommand(new SpinIntake(m_grasper, () -> controller.getLeftTriggerAxis(),
                                                           () -> controller.getRightTriggerAxis()));
@@ -147,7 +147,9 @@ public class RobotContainer {
     
     Tcontroller_Down.onTrue(new CubePickUp(m_drivetrainSubsystem, m_grasper));
     Tcontroller_Up.onTrue(new TrajectoryCalibrate(m_drivetrainSubsystem));
-        /*
+    Tcontroller_Left.onTrue(Commands.runOnce(m_Arm::GetABencoder));
+       
+    /*
      * It is possible to string commands together from one button press. This might be useful for the
      * intake where we engage the pneumatics after the intake wheels are stopped. Example code:
      * exampleButtion.onTrue(Commands.run(m_grasper::RunIntake, m_grasper))
