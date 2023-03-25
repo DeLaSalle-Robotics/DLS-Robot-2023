@@ -11,7 +11,9 @@ import frc.robot.subsystems.Arm;
 /** An example command that uses an example subsystem. */
 public class ArmVoltQuasistatic extends CommandBase {
   private final Arm m_Arm;
-
+  private boolean armDirection;
+  private double interval;
+  private double currentVoltage;
   /**
    * Creates a new ExampleCommand.
    *
@@ -20,26 +22,33 @@ public class ArmVoltQuasistatic extends CommandBase {
   public ArmVoltQuasistatic(Arm subsystem) {
     m_Arm = subsystem;
     addRequirements(m_Arm);
+    interval = 0.01;
+    currentVoltage = 0;
   }
 
-  /*// Called once when the command is initially scheduled.
+  // Called once when the command is initially scheduled.
   @Override
   public void initialize() {
-
-  }*/ 
-
+    armDirection = SmartDashboard.getBoolean("Arm Calibration", false);
+    if (armDirection) {
+      interval = -0.01;
+    } else {interval = 0.01;}
+  } 
+ 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_Arm.armSetVolts(0.9);
+    currentVoltage = currentVoltage + interval;
+    m_Arm.armSetVolts(currentVoltage);
     SmartDashboard.putNumber("Arm Angle", m_Arm.ArmAngle());
     SmartDashboard.putNumber("Arm Rate", m_Arm.ArmVelocity());
-    SmartDashboard.putNumber("Arm Volts", 0.9);
+    SmartDashboard.putNumber("Arm Volts", currentVoltage);
   }
 
   // Called once when the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    currentVoltage = 0;
     m_Arm.armSetVolts(0.0);
   }
 

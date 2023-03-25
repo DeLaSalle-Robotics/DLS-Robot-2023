@@ -2,7 +2,7 @@ package frc.robot.commands;
 
 // Unused imports
 //import edu.wpi.first.math.controller.PIDController;
-//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -49,8 +49,9 @@ public class AlignToTarget extends CommandBase {
   @Override
   public boolean isFinished() {
     double error = Math.abs(m_drive.getHeading() - targetRotation);
-    System.out.print("HeadingError: ");
-    System.out.println(error);
+    if (Constants.verbose) {
+      SmartDashboard.putNumber("Heading Error", error);
+    }
     m_drive.driveVolts(0, 0);
     return error < Constants.angleTolerance;
   }

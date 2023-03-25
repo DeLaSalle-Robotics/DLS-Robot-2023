@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Cube Mid", false);
     SmartDashboard.putBoolean("Cube High", false);
     
-    
+    SmartDashboard.putBoolean("Arm Calibration", false);
   }
 
   /**

@@ -38,7 +38,12 @@ public class HuntingCubes extends CommandBase {
 
       forwardSpeed = fittingArray[0]/12;
       rotationSpeed = -fittingArray[1]/12;
-      if (rotationSpeed > 0.5){rotationSpeed = 0.5;}
+      if (Math.abs(rotationSpeed) > 0.5){
+        if (rotationSpeed <0) {
+          rotationSpeed = -0.5;
+        } else {
+          rotationSpeed = 0.5;
+        }
   } else {
       // If we have no targets, spin slowly.
       forwardSpeed = 0;
@@ -59,11 +64,7 @@ m_drive.drive_Arcade(forwardSpeed + 0.3, rotationSpeed );
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (m_drive.have_target()) {
-      return false;
-    } else{
-      return true;
-    }
+    return(SmartDashboard.getBoolean("Have Piece", false));
 
     
   }

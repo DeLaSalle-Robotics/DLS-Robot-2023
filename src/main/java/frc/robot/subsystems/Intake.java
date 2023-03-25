@@ -75,8 +75,15 @@ public class Intake extends SubsystemBase {
 
   public void openGrasp() {
     //Allows climber position to be reset.
-    grasperSolenoid.set(DoubleSolenoid.Value.kReverse);
-    grasperOpen = true;
+    if (grasperSolenoid.get() == DoubleSolenoid.Value.kForward){
+      grasperSolenoid.set(DoubleSolenoid.Value.kReverse);
+      grasperOpen = false;
+      
+    } else {
+      grasperSolenoid.set(DoubleSolenoid.Value.kForward);
+      grasperOpen = true;
+      
+    }
     if (Constants.verbose) {SmartDashboard.putBoolean("Claw Open", grasperOpen);}
   }
   public void intakeFlip(){
