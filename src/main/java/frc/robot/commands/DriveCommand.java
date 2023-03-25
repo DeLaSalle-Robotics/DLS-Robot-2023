@@ -4,9 +4,9 @@
 
 package frc.robot.commands;
 
+// Unused imports
+//import java.util.function.BooleanSupplier;
 import frc.robot.subsystems.DrivetrainSubsystem;
-
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 

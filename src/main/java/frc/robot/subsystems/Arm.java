@@ -4,28 +4,29 @@
 
 package frc.robot.subsystems;
 
+// Unused imports
+//import com.ctre.phoenix.motorcontrol.ControlMode;
+//import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+//import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
+//import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+//import com.revrobotics.CANSparkMax;
+//import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+//import edu.wpi.first.math.controller.PIDController;
+//import edu.wpi.first.wpilibj.DutyCycleEncoder;
+//import edu.wpi.first.wpilibj.Preferences;
+
 // Phoenix
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-// SparkMax
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+
 // Wipilibj
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
@@ -74,7 +75,7 @@ public class Arm extends SubsystemBase {
    m_armLength, // <-- This might present a problem trying to alter the arm length in simulation
     Units.degreesToRadians(-75),  //<-- These need to be defined on the robot
     Units.degreesToRadians(255), //<-- These need to be defined on the robot
-    // m_armMass,
+     m_armMass,
      true,
      VecBuilder.fill(2 * Math.PI /2048.0)
      );

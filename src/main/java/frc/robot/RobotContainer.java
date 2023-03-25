@@ -3,12 +3,17 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
+// Unused imports
+//import edu.wpi.first.math.trajectory.Trajectory;
+//import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+//import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+
 //Import all of the commands and subsystems. This is where you declare them.
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
 //Various libraries that add functionality to the robot.
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -17,8 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
