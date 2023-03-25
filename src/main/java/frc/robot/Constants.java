@@ -20,10 +20,10 @@ public final class Constants {
     public static boolean limitFalcons = false;
     
     //CAN 
-    public static final int drive_falcon_0 = 1; //Drivetrain Left
-    public static final int drive_falcon_1 = 2; //Drivetrain Right
-    public static final int drive_falcon_2 = 3; //Drivetrain Right
-    public static final int drive_falcon_3 = 4; //Drivetrain Left
+    public static final int drive_falcon_1 = 1; //Drivetrain Left
+    public static final int drive_falcon_2 = 2; //Drivetrain Right
+    public static final int drive_falcon_3 = 3; //Drivetrain Right
+    public static final int drive_falcon_4 = 4; //Drivetrain Left
     public static final int armFalconRightID = 7; // Falcon driving elevator
     public static final int armFalconLeftID = 6; // Falcon driving elevator
     public static final int armExtendID = 8; // Falcon driving arm extension

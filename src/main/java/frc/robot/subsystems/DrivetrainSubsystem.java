@@ -84,10 +84,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DrivetrainSubsystem extends SubsystemBase {  
   //Motor Parts
-  private final WPI_TalonFX _talon1 = new WPI_TalonFX(Constants.drive_falcon_0);
-  private final WPI_TalonFX _talon2 = new WPI_TalonFX(Constants.drive_falcon_1);
-  private final WPI_TalonFX _talon3 = new WPI_TalonFX(Constants.drive_falcon_2);
-  private final WPI_TalonFX _talon4 = new WPI_TalonFX(Constants.drive_falcon_3);
+  private final WPI_TalonFX _talon1 = new WPI_TalonFX(Constants.drive_falcon_1);
+  private final WPI_TalonFX _talon2 = new WPI_TalonFX(Constants.drive_falcon_2);
+  private final WPI_TalonFX _talon3 = new WPI_TalonFX(Constants.drive_falcon_3);
+  private final WPI_TalonFX _talon4 = new WPI_TalonFX(Constants.drive_falcon_4);
   //Motor Groups
   private final MotorControllerGroup _leftMotor = new MotorControllerGroup(_talon1, _talon4);
   private final MotorControllerGroup _rightMotor = new MotorControllerGroup(_talon2, _talon3);
