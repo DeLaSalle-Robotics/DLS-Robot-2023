@@ -37,7 +37,7 @@ public class Auto_Red_Right_Engage extends SequentialCommandGroup{
             new ParallelCommandGroup(
                 new TrajectoryFollower(m_Trajectory1, m_drivetrain),
                 new ArmPlaceCommand(230, .35, m_arm,m_armExtend)),
-            new CubePickUp(m_drivetrain, m_intake, m_arm, m_armExtend),
+            new CubePickUp(m_drivetrain, m_intake),
             new ParallelCommandGroup(
                 new TrajectoryFollower(m_Trajectory2, m_drivetrain),
                 new ArmPlaceCommand(25, 1.3, m_arm, m_armExtend)),
