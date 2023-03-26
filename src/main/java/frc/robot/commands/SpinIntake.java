@@ -23,12 +23,16 @@ public class SpinIntake extends CommandBase {
     
     @Override
         public void execute() {
-            if (inSpeed.getAsDouble() > outSpeed.getAsDouble()) {
-                m_intake.spinIntake(-inSpeed.getAsDouble() * Constants.IntakeSpeed); //negative pulls piece in
+            if (inSpeed.getAsDouble() > 0) {
+                m_intake.spinIntake(-1 * inSpeed.getAsDouble()); //negative pulls piece in
                 SmartDashboard.putNumber("Intake Speed", inSpeed.getAsDouble());//m_intake.spinVelocity());
             } else {
-                m_intake.spinIntake(outSpeed.getAsDouble() * Constants.IntakeSpeed);
+                m_intake.spinIntake(outSpeed.getAsDouble() );
+                SmartDashboard.putNumber("Intake Speed", outSpeed.getAsDouble());
             }
+            
+           
+            //SmartDashboard.putNumber("Intake Speed", inSpeed.getAsDouble());
         }
     @Override
     public void end(boolean interrupted) {
@@ -41,7 +45,8 @@ public class SpinIntake extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-        if(Robot.isReal()) {
+    return false;
+        /*    if(Robot.isReal()) {
             if (inSpeed.getAsDouble() > outSpeed.getAsDouble()) {
 
                 return SmartDashboard.getNumber("Intake Speed", 0) < Constants.intakeSpinThreshold;
@@ -49,5 +54,6 @@ public class SpinIntake extends CommandBase {
                 return outSpeed.getAsDouble() > 0.8 && SmartDashboard.getBoolean("Have Piece", false) ;
             }
         } else {return SmartDashboard.getBoolean("Have Piece", false);}
+    */
     }
 }

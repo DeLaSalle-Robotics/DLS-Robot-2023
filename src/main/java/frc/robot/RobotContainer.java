@@ -71,6 +71,8 @@ public class RobotContainer {
   private POVButton controller_Down = new POVButton(controller, 180);
   private POVButton controller_Left = new POVButton(controller, 270);
 
+  private POVButton controller_45 = new POVButton(controller, 45);
+
   //private Trigger controller_leftstickbutton = new JoystickButton(controller, 9);
   //private Trigger controller_rightstickbutton = new JoystickButton(controller, 10);
   private Joystick Left_joystick = new Joystick(1);
@@ -116,7 +118,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-  
+  /* 
     //Floor Mode
     controller_A.onTrue(new ArmPlaceCommand(
         200,
@@ -126,7 +128,7 @@ public class RobotContainer {
     //Feeder
     controller_B.onTrue(new LoadArmCommand(m_Arm, m_armExtend));
     controller_Y.onTrue(new NeutralArmCommand(m_Arm, m_armExtend));
-
+*/
     controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));
     controller_Down.onTrue(Commands.runOnce(m_grasper::scoreLow));
     controller_Left.onTrue(Commands.runOnce(m_grasper::scoreMid));
@@ -136,6 +138,8 @@ public class RobotContainer {
     controller_rightbumper.onTrue(Commands.runOnce(m_grasper::openGrasp));
     controller_start.onTrue(Commands.runOnce(m_grasper::scoreCube));
     controller_back.onTrue(Commands.runOnce(m_grasper::scoreCone));
+
+    controller_45.onTrue(Commands.runOnce(m_Arm::ResetArmEncoder));
 
     Tcontroller_A.whileTrue(new ArmVoltQuasistatic(m_Arm));
     Tcontroller_B.whileTrue(new ArmVoltStatic(m_Arm));

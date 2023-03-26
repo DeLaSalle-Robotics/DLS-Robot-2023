@@ -115,7 +115,8 @@ public class Arm extends SubsystemBase {
   _armFalconR.configOpenloopRamp(Constants.Arm_Ramp);
 
    m_encoder.setDistancePerPulse(2 * Math.PI /2048.0);
-
+  m_abEncoder.setPositionOffset(0.125);
+  m_abEncoder.setDistancePerRotation(360);
    // Put Mechanism 2d to SmartDashboard
  SmartDashboard.putData("Arm Sim", m_mech2d);
  m_armTower.setColor(new Color8Bit(Color.kBlue));
@@ -123,15 +124,21 @@ public class Arm extends SubsystemBase {
 }
 
 public double GetABencoder(){
+
+  double currentAngle =  360 * m_abEncoder.getAbsolutePosition() - 85;
   if (Constants.verbose){
-    SmartDashboard.putNumber("Absolute", m_abEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("Absolute", currentAngle);
   }
-  return m_abEncoder.getAbsolutePosition();
+
+
+  return currentAngle;
+
 }
 
 
   public void ResetArmEncoder(){
     m_encoder.reset();
+    m_abEncoder.reset();
   }
 
   public void ArmMove(Double speed) {
@@ -160,7 +167,7 @@ public double GetABencoder(){
       double vertical_radian = m_encoder.getDistance(); //<-- Returns in radians
       double armAngleCorrection = Math.toRadians(70);
       double correctedAngle = vertical_radian - armAngleCorrection;
-      return(Math.toDegrees(this.GetABencoder())); 
+      return(Math.toRadians(this.GetABencoder())); 
     } else {
       return m_armSim.getAngleRads();
     }

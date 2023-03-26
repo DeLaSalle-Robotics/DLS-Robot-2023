@@ -47,8 +47,8 @@ public final class Constants {
     public static final double ArmLenKi = 0.0;
 
     public static final double Arm_Ramp = 0.5;
-    public static final double ArmMaxRotVel = 2.0;
-    public static final double ArmMaxRotAccel = 5.0;
+    public static final double ArmMaxRotVel = 1.0;
+    public static final double ArmMaxRotAccel = 2.0;
     
     public static final double arm_Kg = 0.44;
     public static final double arm_Ks = 0.6;
