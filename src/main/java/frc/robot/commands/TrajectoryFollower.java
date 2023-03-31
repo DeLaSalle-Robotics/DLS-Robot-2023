@@ -51,9 +51,9 @@ public class TrajectoryFollower extends CommandBase{
         /*Creating the controller each time the command is called. */
         
         System.out.println("Initializing Command");
-        if (DriverStation.isTeleop()) {
-            this.m_trajectory = m_driveSubsystem.targetTrajectory();
-        }
+        // if (DriverStation.isTeleop()) {
+        //     this.m_trajectory = m_driveSubsystem.targetTrajectory();
+        // }
         /* Setting speeds and controllers to zero*/
         m_prevTime = -1;
         var initialState = m_trajectory.sample(0);

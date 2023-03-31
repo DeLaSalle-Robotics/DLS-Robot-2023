@@ -5,6 +5,7 @@ package frc.robot.commands;
 //import edu.wpi.first.wpilibj2.command.CommandBase;
 //import frc.robot.subsystems.Arm;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.ArmExtend;
@@ -23,7 +24,16 @@ public class ArmLengthSet extends PIDCommand {
               setTolerance(0.05);
               addRequirements(_ArmEx);
     }
-    
+    @Override
+    public void initialize() {
+        SmartDashboard.putBoolean("Compressor", false);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        SmartDashboard.putBoolean("Compressor", true);
+    }
+
     @Override
     public boolean isFinished() {
         //if (getController().atSetpoint()) {System.out.println("ArmLengthSet Finished");}

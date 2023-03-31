@@ -10,13 +10,13 @@ public class TrajectoryCalibrate extends CommandBase{
     DrivetrainSubsystem m_drive;
     Trajectory testTraj;
     public TrajectoryCalibrate(DrivetrainSubsystem _drive) {
-        testTraj = _drive.refTraj();
+        //testTraj = _drive.refTraj();
         m_drive = _drive;
     }
     @Override
     public void initialize() {
         CommandScheduler.getInstance().schedule(
-            new TrajectoryFollower(testTraj, m_drive)
+            //new TrajectoryFollower(testTraj, m_drive)
         );
     }
 }

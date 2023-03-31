@@ -29,7 +29,7 @@ public class ArmProfileCommand extends ProfiledPIDCommand {
             (output ,setpoint) -> _Arm.ArmMoveVolts(output.doubleValue()), 
             _Arm);
 
-        getController().enableContinuousInput(-180, 180);
+        //getController().enableContinuousInput(-180, 180);
         getController().
         setTolerance(Math.toRadians(Constants.angleTolerance));
         

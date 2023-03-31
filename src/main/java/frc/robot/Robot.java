@@ -65,29 +65,29 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
-    setupTargeting();
+    //setupTargeting();
     // Booleans for targetting nodes
-    for(String key : targetingKeys.keySet()){
-      if (key == currentFocus){
-        SmartDashboard.putBoolean(key, true);
-      } else {
-        SmartDashboard.putBoolean(key, false);
-      }
-    }
+    // for(String key : targetingKeys.keySet()){
+    //   if (key == currentFocus){
+    //     SmartDashboard.putBoolean(key, true);
+    //   } else {
+    //     SmartDashboard.putBoolean(key, false);
+    //   }
+    //}
     
     //This would be a good place to put the targetting code.
-    SmartDashboard.putString("Current Target", currentFocus);
-    SmartDashboard.putString("Score Type", "Mid");
-    SmartDashboard.putString("Piece Type", "Cube");
+    // SmartDashboard.putString("Current Target", currentFocus);
+    // SmartDashboard.putString("Score Type", "Mid");
+    // SmartDashboard.putString("Piece Type", "Cube");
     
-    SmartDashboard.putBoolean("Cone Low", false);
-    SmartDashboard.putBoolean("Cone Mid", false);
-    SmartDashboard.putBoolean("Cone High", false);
-    SmartDashboard.putBoolean("Cube Low", false);
-    SmartDashboard.putBoolean("Cube Mid", false);
-    SmartDashboard.putBoolean("Cube High", false);
+    // SmartDashboard.putBoolean("Cone Low", false);
+    // SmartDashboard.putBoolean("Cone Mid", false);
+    // SmartDashboard.putBoolean("Cone High", false);
+    // SmartDashboard.putBoolean("Cube Low", false);
+    // SmartDashboard.putBoolean("Cube Mid", false);
+    // SmartDashboard.putBoolean("Cube High", false);
     
-    SmartDashboard.putBoolean("Arm Calibration", false);
+    // SmartDashboard.putBoolean("Arm Calibration", false);
   }
 
   /**
@@ -110,25 +110,25 @@ public class Robot extends TimedRobot {
                                 SmartDashboard.getString("Score Type", "Mid"));
 
     // Check if a new boolean is activated
-    for(String key : targetingKeys.keySet()){
+    // for(String key : targetingKeys.keySet()){
 
-      // Check if a boolean is true that does not match the current focus
-      if(SmartDashboard.getBoolean(key, false) && key == currentFocus){
-        SmartDashboard.putBoolean(key, true); 
-      } else{
-        // Change all other booleans to false as a failsafe
-            SmartDashboard.putBoolean(key, false);
-          }
-        }
-        // Break the loop as all other values should be false by now, so it won't find anything that's true
+    //   // Check if a boolean is true that does not match the current focus
+    //   if(SmartDashboard.getBoolean(key, false) && key == currentFocus){
+    //     SmartDashboard.putBoolean(key, true); 
+    //   } else{
+    //     // Change all other booleans to false as a failsafe
+    //         SmartDashboard.putBoolean(key, false);
+    //       }
+    //     }
+    //     // Break the loop as all other values should be false by now, so it won't find anything that's true
         //break;
     
-    SmartDashboard.putString("Current Target", currentFocus);
+    //SmartDashboard.putString("Current Target", currentFocus);
 
     // Failsafe to re-activate the current key if it got turned off
-    if (!(SmartDashboard.getBoolean(currentFocus, false))){
-      SmartDashboard.putBoolean(currentFocus, true);
-    }
+    // if (!(SmartDashboard.getBoolean(currentFocus, false))){
+    //   SmartDashboard.putBoolean(currentFocus, true);
+    // }
 
 
   }
@@ -147,7 +147,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // If there is an autonomous command, schedule it.
-    if (m_autonomousCommand != null) {
+  if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
   }
@@ -210,25 +210,25 @@ public class Robot extends TimedRobot {
 
 public void postTargetData(String target){
 
-  Double[] data=targetingKeys.get(target);
+  //Double[] data=targetingKeys.get(target);
   
-  boolean scoreFront = SmartDashboard.getBoolean("Score Front", true);
-  if (data!=null) {
+  // boolean scoreFront = SmartDashboard.getBoolean("Score Front", true);
+  // if (data!=null) {
     
-    if (scoreFront) {
-      SmartDashboard.putNumber("Pitch",data[0] );
-    } else {
-      SmartDashboard.putNumber("Pitch", data[2]);
-    }
-    SmartDashboard.putNumber("Length",data[1] );
-  }
-  boolean loadFront= SmartDashboard.getBoolean("Load Front", false);
-  //Setting load angles <--Need to be confirmed
-  if (loadFront){
-    SmartDashboard.putNumber("Load Angle", 15);
-  } else {
-    SmartDashboard.putNumber("Load Angle", 165);
-  }
+  //   if (scoreFront) {
+  //     SmartDashboard.putNumber("Pitch",data[0] );
+  //   } else {
+  //     SmartDashboard.putNumber("Pitch", data[2]);
+  //   }
+  //   SmartDashboard.putNumber("Length",data[1] );
+  // }
+  // boolean loadFront= SmartDashboard.getBoolean("Load Front", false);
+  // //Setting load angles <--Need to be confirmed
+  // if (loadFront){
+  //   SmartDashboard.putNumber("Load Angle", 15);
+  // } else {
+  //   SmartDashboard.putNumber("Load Angle", 165);
+  // }
 }
 
 

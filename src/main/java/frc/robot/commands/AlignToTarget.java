@@ -32,7 +32,7 @@ public class AlignToTarget extends CommandBase {
   @Override
   public void execute() {
 
-    double rotationSpeed = m_drive.targetRotation(targetRotation);
+    double rotationSpeed = 0.5;//m_drive.targetRotation(targetRotation);
 //Should determine Ks and add/substract it to the output. Just to get it spinning
     m_drive.driveVolts(-rotationSpeed-3, rotationSpeed+3);
   }

@@ -37,13 +37,15 @@ new ElevatorSim(
       _armExtend.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
        30, 0, 30));
       }
+    _armExtend.setSelectedSensorPosition(0);
+  
   }
   public double getArmLength(){
     if (Robot.isReal()){
     double armLength_clicks = _armExtend.getSelectedSensorPosition();
     //Conversion figure to convert length to sensor position
-    double armlength_m = 3.068e-5 * armLength_clicks + .3; //<-- Estimate from radius needs to be confirmed.
-    return armLength_clicks;} else {
+    double armlength_m = 7.305E-6 * armLength_clicks + .3; //<-- Estimate from radius needs to be confirmed.
+    return armlength_m;} else {
        return m_armSim.getPositionMeters();
     }
   }

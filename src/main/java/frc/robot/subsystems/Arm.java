@@ -115,8 +115,8 @@ public class Arm extends SubsystemBase {
   _armFalconR.configOpenloopRamp(Constants.Arm_Ramp);
 
    m_encoder.setDistancePerPulse(2 * Math.PI /2048.0);
-  m_abEncoder.setPositionOffset(0.125);
-  m_abEncoder.setDistancePerRotation(360);
+  m_abEncoder.setPositionOffset(0.0);
+ // m_abEncoder.setDistancePerRotation(360);
    // Put Mechanism 2d to SmartDashboard
  SmartDashboard.putData("Arm Sim", m_mech2d);
  m_armTower.setColor(new Color8Bit(Color.kBlue));
@@ -125,7 +125,7 @@ public class Arm extends SubsystemBase {
 
 public double GetABencoder(){
 
-  double currentAngle =  360 * m_abEncoder.getAbsolutePosition() - 85;
+  double currentAngle =  360 * m_abEncoder.getAbsolutePosition() -14;
   if (Constants.verbose){
     SmartDashboard.putNumber("Absolute", currentAngle);
   }
@@ -144,11 +144,11 @@ public double GetABencoder(){
   public void ArmMove(Double speed) {
     //This method sets the speed of the active intake mechanism
    /* 
-    if (Math.toDegrees(this.ArmAngle()) < -35 & speed < 0) {
+    if (this.GetABencoder() < -10 & speed < 0) {
       speed = 0.0;
     }
   
-  if (Math.toDegrees(this.ArmAngle())> 200 & speed > 0) {
+  if (this.GetABencoder()> 190 & speed > 0) {
     speed = 0.0;
   }
   */
@@ -157,7 +157,7 @@ public double GetABencoder(){
 
   public void ArmMoveVolts(double volt){
     var m_feedForward = this.getFeedForward(this.ArmAngle());
-    _armFalconL.setVoltage(volt + m_feedForward);
+    _armFalconL.setVoltage(-1 * (volt + m_feedForward));
    
   }
 
@@ -212,7 +212,7 @@ return(feedForward);
     }
     
     SmartDashboard.putNumber("Current Arm Angle", Math.toDegrees(this.ArmAngle()));
-    SmartDashboard.putNumber("Absolute Arm Angle", Math.toDegrees(this.GetABencoder()));
+    SmartDashboard.putNumber("Absolute Arm Angle", this.GetABencoder());
     //Create check on arm position and limit over extension <- create warning for Smart dashboard.
     //Pretty complicated because it is dependent on current length
    

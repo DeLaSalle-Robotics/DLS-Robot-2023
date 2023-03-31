@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -68,7 +69,7 @@ public class Intake extends SubsystemBase {
 
   public void closeGrasp() {
     //Close Grapser Position.
-    grasperSolenoid.set(DoubleSolenoid.Value.kForward);
+    twisterSolenoid.set(DoubleSolenoid.Value.kReverse);
     grasperOpen = false;
     if (Constants.verbose) {SmartDashboard.putBoolean("Claw Open", grasperOpen);}
   }
@@ -84,8 +85,7 @@ public class Intake extends SubsystemBase {
       grasperOpen = true;
       
     }
-    System.out.print("DEBUG: ");
-    System.out.println(grasperSolenoid.get());
+    SmartDashboard.putBoolean("Claw Open", grasperOpen);
     if (Constants.verbose) {SmartDashboard.putBoolean("Claw Open", grasperOpen);}
   }
   public void intakeFlip(){
@@ -101,6 +101,10 @@ public class Intake extends SubsystemBase {
     }
     if (Constants.verbose) {SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);}
   }
+
+
+  
+
   public void intakeHorizontal(){
     //Turn the claw -may be punmatics or maybe a motor
     twisterSolenoid.set(DoubleSolenoid.Value.kForward);
@@ -137,11 +141,16 @@ public double spinVelocity() {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (Constants.verbose)
-      {SmartDashboard.putNumber("Intake Voltage", _IntakeNeo550.getBusVoltage());
-      SmartDashboard.putNumber("Compress Current", phCompressor.getCurrent());
-    }
-      SmartDashboard.putNumber("Intake Speed", _IntakeNeo550.get());
+    // if (Constants.verbose)
+    //   //{SmartDashboard.putNumber("Intake Voltage", _IntakeNeo550.getBusVoltage());
+    //   SmartDashboard.putNumber("Compress Current", phCompressor.getCurrent());
+    // }
+    //   SmartDashboard.putNumber("Intake Speed", _IntakeNeo550.get());
+    //   if (SmartDashboard.getBoolean("Compressor", true)){
+    //     phCompressor.enableDigital();
+    //   } else {
+    //     phCompressor.disable();
+    //   }
   }
 
   @Override

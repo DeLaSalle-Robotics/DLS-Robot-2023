@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmExtend;
 
@@ -16,5 +17,11 @@ public class ArmLengthDrive extends CommandBase{
     @Override
     public void execute() {
         m_armExtend.ArmExtention(speed.getAsDouble());
+        if (speed.getAsDouble() > 0.3) {
+        SmartDashboard.putBoolean("Compressor", false);
+        } else {
+            SmartDashboard.putBoolean("Compressor", true);
+        }
     }
+    
 }

@@ -18,7 +18,7 @@ public class CubePickUp extends SequentialCommandGroup{
 
         addCommands(
             new ParallelCommandGroup(
-                new HuntingCubes(0, m_drive),
+                //new HuntingCubes(0, m_drive),
                 new SpinIntake(m_intake, ()->Constants.IntakeSpeed, ()->0)
             )
         );
