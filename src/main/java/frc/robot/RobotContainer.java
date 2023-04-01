@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -66,6 +67,8 @@ public class RobotContainer {
   private Trigger controller_start = new JoystickButton(controller, 8);
   private Trigger controller_back = new JoystickButton(controller, 7);
   //Defining POV buttons
+
+
   private POVButton controller_Up = new POVButton(controller, 0);
   private POVButton controller_Right = new POVButton(controller, 90);
   private POVButton controller_Down = new POVButton(controller, 180);
@@ -79,11 +82,14 @@ public class RobotContainer {
   private Joystick Right_joystick = new Joystick(2);
   private Trigger Left_joystick_1 = new JoystickButton(Left_joystick,1);
   private Trigger Right_joystick_1 = new JoystickButton(Right_joystick,1);
+  private Trigger Right_joystick_9 = new JoystickButton(Right_joystick, 9);
   
-  
-
-  private final Command m_red_Right_Engage = new Auto_Red_Right_Engage(m_drivetrainSubsystem, m_Arm, m_grasper, m_armExtend);
-  private final Command m_red_Right_NoEngage = new Auto_Red_Right_NoEngage(m_drivetrainSubsystem);
+  private final Command SimpleAuto = new SimpleAuto(m_drivetrainSubsystem);
+  private final Command BalanceAuto = new Balance(m_drivetrainSubsystem);
+  private final Command simpleAuto = new SimpleAuto(m_drivetrainSubsystem);
+  private final Command balanceAuto = new BalanceAuto(m_drivetrainSubsystem);
+  private final Command shootConeAuto = new ShootConeAuto(m_grasper, m_drivetrainSubsystem);
+  private final Command doNothing = new DoNothing(m_drivetrainSubsystem);
 
   SendableChooser<Command> m_chooser = new SendableChooser();
 
@@ -106,8 +112,9 @@ public class RobotContainer {
 
     // Method to configure the buttons to perform commands.
     configureButtonBindings();
-    m_chooser.setDefaultOption("Red Right Engage", m_red_Right_Engage);
-    m_chooser.addOption("Red Right NoEngage", m_red_Right_NoEngage);
+    m_chooser.setDefaultOption("No Nothing", doNothing);
+    m_chooser.addOption("Simple Auto", simpleAuto);
+    m_chooser.addOption("Red Right NoEngage", balanceAuto);
     SmartDashboard.putData(m_chooser);
   }
 
@@ -118,26 +125,28 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-  /* 
+    //controller_A.onTrue(new SimpleAuto(m_drivetrainSubsystem));
+    //controller_B.onTrue(new BalanceAuto(m_drivetrainSubsystem));
+   /*
     //Floor Mode
     controller_A.onTrue(new ArmPlaceCommand(
-        200,
+        135,
         0.3, m_Arm, m_armExtend));
     //Score Mode
     controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend));
     //Feeder
     controller_B.onTrue(new LoadArmCommand(m_Arm, m_armExtend));
     controller_Y.onTrue(new NeutralArmCommand(m_Arm, m_armExtend));
-*/
+
     controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));
     controller_Down.onTrue(Commands.runOnce(m_grasper::scoreLow));
     controller_Left.onTrue(Commands.runOnce(m_grasper::scoreMid));
     controller_Right.onTrue(Commands.runOnce(m_grasper::scoreMid));
-
+*/
     controller_leftbumper.onTrue(Commands.runOnce(m_grasper::intakeFlip));
     controller_rightbumper.onTrue(Commands.runOnce(m_grasper::openGrasp));
-    controller_start.onTrue(Commands.runOnce(m_grasper::scoreCube));
-    controller_back.onTrue(Commands.runOnce(m_grasper::scoreCone));
+ //   controller_start.onTrue(Commands.runOnce(m_grasper::scoreCube));
+ //   controller_back.onTrue(Commands.runOnce(m_grasper::scoreCone));
 
     controller_45.onTrue(Commands.runOnce(m_Arm::ResetArmEncoder));
 
@@ -152,7 +161,7 @@ public class RobotContainer {
     Tcontroller_Down.onTrue(new CubePickUp(m_drivetrainSubsystem, m_grasper));
     Tcontroller_Up.onTrue(new TrajectoryCalibrate(m_drivetrainSubsystem));
     Tcontroller_Left.onTrue(Commands.runOnce(m_Arm::GetABencoder));
-       
+    Right_joystick_9.onTrue(new CancelAll());
     /*
      * It is possible to string commands together from one button press. This might be useful for the
      * intake where we engage the pneumatics after the intake wheels are stopped. Example code:
@@ -166,7 +175,9 @@ public class RobotContainer {
    * @return 
    */
   public Command getAutonomousCommand() {
-    return m_chooser.getSelected();
-    
+   return new ShootConeAuto(m_grasper, m_drivetrainSubsystem);
+   //return new PlaceCube(m_grasper); //return shootConeAuto;
+    //return m_chooser.getSelected();
+    //return new SimpleAuto(m_drivetrainSubsystem); 
   }
 }
