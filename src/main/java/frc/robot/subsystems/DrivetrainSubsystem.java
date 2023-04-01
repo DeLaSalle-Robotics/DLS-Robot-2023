@@ -172,7 +172,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
           // l and r position: 0.005 m
           VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
   
- 
+ //Auto balanve code:
+
+private int state;
+private int debounceCount;
+private double robotSpeedSlow;
+private double robotSpeedFast;
+private double onChargeStationDegree;
+private double levelDegree;
+private double debounceTime;
+private double singleTapTime;
+private double scoringBackUpTime;
+private double doubleTapTime;
+
   //Defining the drivetrain subsystem
   public DrivetrainSubsystem() {
     
@@ -229,6 +241,47 @@ public class DrivetrainSubsystem extends SubsystemBase {
   cubeCam = new PhotonCamera("Cube_cam"); // Offset calculated in photonvision work flow.
 
     SmartDashboard.putData("Field", m_field);
+
+    state = 0;
+    debounceCount = 0;
+    
+    /**********
+     * CONFIG *
+     **********/
+    // Speed the robot drived while scoring/approaching station, default = 0.4
+    robotSpeedFast = 0.4;
+    
+    // Speed the robot drives while balancing itself on the charge station.
+    // Should be roughly half the fast speed, to make the robot more accurate,
+    // default = 0.2
+    robotSpeedSlow = 0.2;
+    
+    // Angle where the robot knows it is on the charge station, default = 13.0
+    onChargeStationDegree = -13.0;
+    
+    // Angle where the robot can assume it is level on the charging station
+    // Used for exiting the drive forward sequence as well as for auto balancing,
+    // default = 6.0
+    levelDegree = -6.0;
+    
+    // Amount of time a sensor condition needs to be met before changing states in
+    // seconds
+    // Reduces the impact of sensor noice, but too high can make the auto run
+    // slower, default = 0.2
+    debounceTime = 0.2;
+    
+    // Amount of time to drive towards to scoring target when trying to bump the
+    // game piece off
+    // Time it takes to go from starting position to hit the scoring target
+    singleTapTime = 0.4;
+    
+    // Amount of time to drive away from knocked over gamepiece before the second
+    // tap
+    scoringBackUpTime = 0.2;
+    
+    // Amount of time to drive forward to secure the scoring of the gamepiece
+    doubleTapTime = 0.3;
+    
   }
 
 
@@ -633,5 +686,56 @@ public void postTrajectories (Trajectory traj){
   m_field.getObject("Traj").setTrajectory(traj);
 }
 
+public int secondsToTicks(double time) {
+  return (int) (time * 50);
+}
+
+
+
+
+public double autoBalanceRoutine() {
+  switch (state) {
+      // drive forwards to approach station, exit when tilt is detected
+      case 0:
+          if (getPitch() < onChargeStationDegree) {
+              debounceCount++;
+          }
+          if (debounceCount > secondsToTicks(debounceTime)) {
+              state = 1;
+              debounceCount = 0;
+              return robotSpeedSlow;
+          }
+          return robotSpeedFast;
+      // driving up charge station, drive slower, stopping when level
+      case 1:
+          if (getPitch() > levelDegree) {
+              debounceCount++;
+          }
+          if (debounceCount > secondsToTicks(debounceTime)) {
+              state = 2;
+              debounceCount = 0;
+              return 0;
+          }
+          return robotSpeedSlow;
+      // on charge station, stop motors and wait for end of auto
+      case 2:
+          if (Math.abs(getPitch()) <= levelDegree / 2) {
+              debounceCount++;
+          }
+          if (debounceCount > secondsToTicks(debounceTime)) {
+              state = 4;
+              debounceCount = 0;
+              return 0;
+          }
+          if (getPitch() >= levelDegree) {
+              return 0.1;
+          } else if (getPitch() <= -levelDegree) {
+              return -0.1;
+          }
+      case 3:
+          return 0;
+  }
+  return 0;
+}
 }
 
