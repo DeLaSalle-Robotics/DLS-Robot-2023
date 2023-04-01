@@ -46,7 +46,7 @@ public class Balance extends CommandBase {
     m_driveSubsystem.drive_Arcade(Constants.balanceSpeed, 0.0);
 
     isStart = true;
-
+    m_driveSubsystem.resetEncoders();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -59,11 +59,11 @@ public class Balance extends CommandBase {
         // Move wheels
     if(isStart){
       System.out.println("Executed!");
-      m_driveSubsystem.drive_Arcade(Constants.unbalanceSpeed, 0.0);
-    } else if (curPitch > 2.5 && !isStart) {
-      m_driveSubsystem.drive_Arcade(Constants.balanceSpeed, 0.0);
-    } else if (curPitch < -2.5){
-      m_driveSubsystem.drive_Arcade(-Constants.balanceSpeed, 0.0);
+      m_driveSubsystem.drive_Arcade(0.0, 0.3);
+    } else if (curPitch < -10.0 && !isStart) {
+      m_driveSubsystem.drive_Arcade(0, 0.2);
+    } else if (curPitch > 10.0){
+      m_driveSubsystem.drive_Arcade(0, -.2);
     } else {
       m_driveSubsystem.drive_Arcade(0.0, 0.0);
     }
@@ -99,8 +99,12 @@ public class Balance extends CommandBase {
   public boolean isFinished() {
     if(balanceCounter >= 25){
       System.out.println("Finished!");
+      m_driveSubsystem.drive_Arcade(0, 0);
       return true;
-    } else {
+    } else if (m_driveSubsystem.getAverageEncoderDistance() > 2) {
+        m_driveSubsystem.drive_Arcade(0, 0);
+        return true;
+    }else {
       return false;
     }
   }
