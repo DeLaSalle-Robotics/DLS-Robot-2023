@@ -172,7 +172,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
           // l and r position: 0.005 m
           VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
   
- 
+ //Auto balanve code:
+
+private int state;
+private int debounceCount;
+private double robotSpeedSlow;
+private double robotSpeedFast;
+private double onChargeStationDegree;
+private double levelDegree;
+private double debounceTime;
+private double singleTapTime;
+private double scoringBackUpTime;
+private double doubleTapTime;
+
   //Defining the drivetrain subsystem
   public DrivetrainSubsystem() {
     
@@ -231,52 +243,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   //                                         new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
   // cubeCam = new PhotonCamera("Cube_cam"); // Offset calculated in photonvision work flow.
 
-  //   SmartDashboard.putData("Field", m_field);
   }
-
-
-//Drivetrain Methods:
-
-  public void drive_Arcade(double speed, double rotation) {
-    //Sends speeds to tank drive. Considered implementing a reverse driving capacity, but eventually abandoned that.
-    // Note: tankdrive is a method of the DifferentialDrive class.
-    _drivetrain.arcadeDrive(speed, rotation);
-
-  }
-  
-//Camera Methods
-
-// public boolean have_target(){
-//   var result = cubeCam.getLatestResult();
-//   if (result.hasTargets()){
-//     SmartDashboard.putBoolean("Cube Target", true);
-//   } else {
-//     SmartDashboard.putBoolean("Cube Target", true);
-//   }
-//   return result.hasTargets();
-// }
-
-// //This method will return forward and rotation values- will need to be called by cube gathering command
-// public double[] find_cube(){
-    
-//   var result = cubeCam.getLatestResult();
-//   double rotationSpeed;
-//   double forwardSpeed;
-//   if (result.hasTargets()) {
-//       // Calculate angular turn power
-//       // -1.0 required to ensure positive PID controller effort _increases_ yaw
-//       forwardSpeed = forwardController.calculate(result.getBestTarget().getArea(), 15); //<-- The target area should be in the Constants class.
-//       rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0); // <-- Target Yaw will need to be updated once camera and intake are mounted. Also should be in Constants
-//       if (rotationSpeed > 0.5){rotationSpeed = 0.5;} // limit rotation speed
-//   } else {
-//       forwardSpeed = 0;
-//       rotationSpeed = 0;
-//   }
-// // Use our forward/turn speeds to control the drivetrain
-// double[] array = {forwardSpeed, rotationSpeed};
-// return array;
-// }
-
 // public double targetRotation(double target) {
 //   double rotationSpeed = turnController.calculate(this.getHeading(),target);
 //   return rotationSpeed;
@@ -648,5 +615,56 @@ public void postTrajectories (Trajectory traj){
   m_field.getObject("Traj").setTrajectory(traj);
 }
 
+public int secondsToTicks(double time) {
+  return (int) (time * 50);
+}
+
+
+
+
+public double autoBalanceRoutine() {
+  switch (state) {
+      // drive forwards to approach station, exit when tilt is detected
+      case 0:
+          if (getPitch() < onChargeStationDegree) {
+              debounceCount++;
+          }
+          if (debounceCount > secondsToTicks(debounceTime)) {
+              state = 1;
+              debounceCount = 0;
+              return robotSpeedSlow;
+          }
+          return robotSpeedFast;
+      // driving up charge station, drive slower, stopping when level
+      case 1:
+          if (getPitch() > levelDegree) {
+              debounceCount++;
+          }
+          if (debounceCount > secondsToTicks(debounceTime)) {
+              state = 2;
+              debounceCount = 0;
+              return 0;
+          }
+          return robotSpeedSlow;
+      // on charge station, stop motors and wait for end of auto
+      case 2:
+          if (Math.abs(getPitch()) <= levelDegree / 2) {
+              debounceCount++;
+          }
+          if (debounceCount > secondsToTicks(debounceTime)) {
+              state = 4;
+              debounceCount = 0;
+              return 0;
+          }
+          if (getPitch() >= levelDegree) {
+              return 0.1;
+          } else if (getPitch() <= -levelDegree) {
+              return -0.1;
+          }
+      case 3:
+          return 0;
+  }
+  return 0;
+}
 }
 
