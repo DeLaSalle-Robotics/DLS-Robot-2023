@@ -25,7 +25,7 @@ public class PlaceCube extends CommandBase {
   @Override
   public void initialize() {
       startTime = Timer.getFPGATimestamp();
-      m_intake.closeGrasp();
+      //m_intake.closeGrasp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -125,8 +125,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //controller_A.onTrue(new SimpleAuto(m_drivetrainSubsystem));
+    //controller_A.onTrue(new PlaceCube(m_grasper));
     //controller_B.onTrue(new BalanceAuto(m_drivetrainSubsystem));
+    //controller_X.onTrue(new BalanceAuto_2(m_drivetrainSubsystem));
    /*
     //Floor Mode
     controller_A.onTrue(new ArmPlaceCommand(
