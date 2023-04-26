@@ -60,9 +60,9 @@ public class Balance extends CommandBase {
     if(isStart){
       System.out.println("Executed!");
       m_driveSubsystem.drive_Arcade(0.0, 0.3);
-    } else if (curPitch < -10.0 && !isStart) {
+    } else if (curPitch < -7.0 && !isStart) {
       m_driveSubsystem.drive_Arcade(0, 0.2);
-    } else if (curPitch > 10.0){
+    } else if (curPitch > 7.0){
       m_driveSubsystem.drive_Arcade(0, -.2);
     } else {
       m_driveSubsystem.drive_Arcade(0.0, 0.0);
