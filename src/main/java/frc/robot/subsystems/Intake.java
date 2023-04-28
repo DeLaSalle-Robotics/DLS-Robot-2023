@@ -106,13 +106,13 @@ public class Intake extends SubsystemBase {
   
 
   public void intakeHorizontal(){
-    //Turn the claw -may be punmatics or maybe a motor
+    //Turn the claw 
     twisterSolenoid.set(DoubleSolenoid.Value.kForward);
     IntakeVertical = false;
     if (Constants.verbose) {SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);}
   }
   public void intakeVertical(){
-    //Turn the ,,,,,,claw -may be punmatics or maybe a motor
+    //Turn the claw
     twisterSolenoid.set(DoubleSolenoid.Value.kReverse);
     IntakeVertical = true;
     if (Constants.verbose) {SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);}

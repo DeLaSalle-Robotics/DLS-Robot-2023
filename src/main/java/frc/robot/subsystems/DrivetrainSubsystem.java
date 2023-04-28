@@ -140,8 +140,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private Transform3d m_robotToCubeCame;
      
   //Vision Components
-  //private PhotonCamera llCamera;
-  //private PhotonCamera cubeCam;
+  private PhotonCamera llCamera;
+  private PhotonCamera cubeCam;
 
   //PID controllers that find the cube
   final double ANGULAR_P = 1; //<-- should be moved to Constants class to allow it to be found.
@@ -239,12 +239,12 @@ private double doubleTapTime;
       aprilTagFieldLayout = null;
     }
 //Vision Components
-  // llCamera = new PhotonCamera("LimeLight");
-  // m_robotToLimeLight = new Transform3d(new Translation3d(0.5, 0.0, 0.5), 
-  //                                         new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-  // cubeCam = new PhotonCamera("Cube_cam"); // Offset calculated in photonvision work flow.
+  llCamera = new PhotonCamera("LimeLight");
+  m_robotToLimeLight = new Transform3d(new Translation3d(0.5, 0.0, 0.5), 
+                                          new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+  cubeCam = new PhotonCamera("Cube_cam"); // Offset calculated in photonvision work flow.
 
-  //   SmartDashboard.putData("Field", m_field);
+    SmartDashboard.putData("Field", m_field);
 
   state = 0;
     debounceCount = 0;
@@ -302,86 +302,86 @@ public void resetGyro() {
   
 //Camera Methods
 
-// public boolean have_target(){
-//   var result = cubeCam.getLatestResult();
-//   if (result.hasTargets()){
-//     SmartDashboard.putBoolean("Cube Target", true);
-//   } else {
-//     SmartDashboard.putBoolean("Cube Target", true);
-//   }
-//   return result.hasTargets();
-// }
+public boolean have_target(){
+  var result = cubeCam.getLatestResult();
+  if (result.hasTargets()){
+    SmartDashboard.putBoolean("Cube Target", true);
+  } else {
+    SmartDashboard.putBoolean("Cube Target", true);
+  }
+  return result.hasTargets();
+}
 
-// //This method will return forward and rotation values- will need to be called by cube gathering command
-// public double[] find_cube(){
+//This method will return forward and rotation values- will need to be called by cube gathering command
+public double[] find_cube(){
     
-//   var result = cubeCam.getLatestResult();
-//   double rotationSpeed;
-//   double forwardSpeed;
-//   if (result.hasTargets()) {
-//       // Calculate angular turn power
-//       // -1.0 required to ensure positive PID controller effort _increases_ yaw
-//       forwardSpeed = forwardController.calculate(result.getBestTarget().getArea(), 15); //<-- The target area should be in the Constants class.
-//       rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0); // <-- Target Yaw will need to be updated once camera and intake are mounted. Also should be in Constants
-//       if (rotationSpeed > 0.5){rotationSpeed = 0.5;} // limit rotation speed
-//   } else {
-//       forwardSpeed = 0;
-//       rotationSpeed = 0;
-//   }
-// // Use our forward/turn speeds to control the drivetrain
-// double[] array = {forwardSpeed, rotationSpeed};
-// return array;
-// }
+  var result = cubeCam.getLatestResult();
+  double rotationSpeed;
+  double forwardSpeed;
+  if (result.hasTargets()) {
+      // Calculate angular turn power
+      // -1.0 required to ensure positive PID controller effort _increases_ yaw
+      forwardSpeed = forwardController.calculate(result.getBestTarget().getArea(), 15); //<-- The target area should be in the Constants class.
+      rotationSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0); // <-- Target Yaw will need to be updated once camera and intake are mounted. Also should be in Constants
+      if (rotationSpeed > 0.5){rotationSpeed = 0.5;} // limit rotation speed
+  } else {
+      forwardSpeed = 0;
+      rotationSpeed = 0;
+  }
+// Use our forward/turn speeds to control the drivetrain
+double[] array = {forwardSpeed, rotationSpeed};
+return array;
+}
 
-// public double targetRotation(double target) {
-//   double rotationSpeed = turnController.calculate(this.getHeading(),target);
-//   return rotationSpeed;
-// }
+public double targetRotation(double target) {
+  double rotationSpeed = turnController.calculate(this.getHeading(),target);
+  return rotationSpeed;
+}
 
-// //This method returns if AT Target is acquired
-// public boolean haveATTarget(){
-//   var result = llCamera.getLatestResult();
-//   if (result.hasTargets()) {
-//     SmartDashboard.putBoolean("ATTarget", true);
-// } else {
-//   SmartDashboard.putBoolean("ATTarget", false);}
-//   return result.hasTargets();
-// }
+//This method returns if AT Target is acquired
+public boolean haveATTarget(){
+  var result = llCamera.getLatestResult();
+  if (result.hasTargets()) {
+    SmartDashboard.putBoolean("ATTarget", true);
+} else {
+  SmartDashboard.putBoolean("ATTarget", false);}
+  return result.hasTargets();
+}
 
-// //This method returns the position of the AT target, if none returns current position.
-// public Pose3d getobjectInFieldID(){
-//   var result = llCamera.getLatestResult();
-//   int objectID;
-//   if (result.hasTargets()) {
-//     objectID = result.getBestTarget().getFiducialId();
-//     return aprilTagFieldLayout.getTagPose(objectID).get();
-//   } else {
-//     //For Testing always target aprilt tag 2 :
-//     if (Robot.isSimulation()) {return aprilTagFieldLayout.getTagPose(2).get();
-//     } else {
-//     return new Pose3d(m_odometry.getPoseMeters());}
-//   }
+//This method returns the position of the AT target, if none returns current position.
+public Pose3d getobjectInFieldID(){
+  var result = llCamera.getLatestResult();
+  int objectID;
+  if (result.hasTargets()) {
+    objectID = result.getBestTarget().getFiducialId();
+    return aprilTagFieldLayout.getTagPose(objectID).get();
+  } else {
+    //For Testing always target aprilt tag 2 :
+    if (Robot.isSimulation()) {return aprilTagFieldLayout.getTagPose(2).get();
+    } else {
+    return new Pose3d(m_odometry.getPoseMeters());}
+  }
   
-// }
+}
 
-// public Pose2d visionPose(){
-//   Pose3d tarPose = this.getobjectInFieldID();
-//   var result = llCamera.getLatestResult();
-//   if (result.hasTargets()) {
-//     Pose2d newPose = tarPose.plus(result.getBestTarget().getBestCameraToTarget()).toPose2d();
-//     return newPose;
-//     } else {
-//       return m_odometry.getPoseMeters();
-//     }
+public Pose2d visionPose(){
+  Pose3d tarPose = this.getobjectInFieldID();
+  var result = llCamera.getLatestResult();
+  if (result.hasTargets()) {
+    Pose2d newPose = tarPose.plus(result.getBestTarget().getBestCameraToTarget()).toPose2d();
+    return newPose;
+    } else {
+      return m_odometry.getPoseMeters();
+    }
 
-// }
-// //Returns a pose that is slightly removed from the target in the x, aligned in the y, and oppisite in the rotation.
-// public Pose2d getPoseTarget(){
-//   Pose2d object =  this.getobjectInFieldID().toPose2d();
-//   //This transform moves the center of the robot away from the vision target and faces the target.
-//   Transform2d robotToTarget = new Transform2d(new Translation2d(0.75, 0.0), new Rotation2d(Math.PI));
-//   return object.transformBy(robotToTarget);
-// }
+}
+//Returns a pose that is slightly removed from the target in the x, aligned in the y, and oppisite in the rotation.
+public Pose2d getPoseTarget(){
+  Pose2d object =  this.getobjectInFieldID().toPose2d();
+  //This transform moves the center of the robot away from the vision target and faces the target.
+  Transform2d robotToTarget = new Transform2d(new Translation2d(0.75, 0.0), new Rotation2d(Math.PI));
+  return object.transformBy(robotToTarget);
+}
 
 //Creates the trajectory needed to get to the target pose.
 // public Trajectory targetTrajectoryold() {
@@ -404,38 +404,38 @@ public void resetGyro() {
 //     return traj;
 // }
 
-// public Trajectory targetTrajectory() {
-//   //Has issues if curPose.x is lower than tarPose.x, the trajectory moves past target.
-//   Pose2d curPose = m_odometry.getPoseMeters();
-//   Pose2d tarCenterPose = this.getPoseTarget();
-//   double tarRot = tarCenterPose.getRotation().getDegrees();
-//   double curRot = curPose.getRotation().getDegrees();
-//   SmartDashboard.putNumber("Tar Degree", tarRot);
-//   SmartDashboard.putNumber("Cur Degree", curRot);
-//   double placementOffset;
-//   //Changes the direction of offset dependent on alliance.
-//   if (SmartDashboard.getBoolean("Alliance", false)) {
-//     placementOffset = -0.5;
-//   } else {
-//     placementOffset = 0.5;
-//   }
-//   Pose2d tarPose = new Pose2d(new Translation2d(tarCenterPose.getX() + placementOffset,
-//                                       tarCenterPose.getY()+ SmartDashboard.getNumber("Shift", 0)),
-//                                       new Rotation2d(0.0));
-//   double needRot = Math.atan((curPose.getY() - tarPose.getY())/(curPose.getX() - tarPose.getX()));
-//   if (Constants.verbose) {SmartDashboard.putNumber("Need Rot", Math.toDegrees(needRot));}
-//   Pose2d startPose = new Pose2d(new Translation2d(curPose.getX(),curPose.getY()), new Rotation2d(needRot));
-//   Pose2d endPose = new Pose2d(new Translation2d(tarPose.getX(),tarPose.getY()), new Rotation2d(needRot));
+public Trajectory targetTrajectory() {
+  //Has issues if curPose.x is lower than tarPose.x, the trajectory moves past target.
+  Pose2d curPose = m_odometry.getPoseMeters();
+  Pose2d tarCenterPose = this.getPoseTarget();
+  double tarRot = tarCenterPose.getRotation().getDegrees();
+  double curRot = curPose.getRotation().getDegrees();
+  SmartDashboard.putNumber("Tar Degree", tarRot);
+  SmartDashboard.putNumber("Cur Degree", curRot);
+  double placementOffset;
+  //Changes the direction of offset dependent on alliance.
+  if (SmartDashboard.getBoolean("Alliance", false)) {
+    placementOffset = -0.5;
+  } else {
+    placementOffset = 0.5;
+  }
+  Pose2d tarPose = new Pose2d(new Translation2d(tarCenterPose.getX() + placementOffset,
+                                      tarCenterPose.getY()+ SmartDashboard.getNumber("Shift", 0)),
+                                      new Rotation2d(0.0));
+  double needRot = Math.atan((curPose.getY() - tarPose.getY())/(curPose.getX() - tarPose.getX()));
+  if (Constants.verbose) {SmartDashboard.putNumber("Need Rot", Math.toDegrees(needRot));}
+  Pose2d startPose = new Pose2d(new Translation2d(curPose.getX(),curPose.getY()), new Rotation2d(needRot));
+  Pose2d endPose = new Pose2d(new Translation2d(tarPose.getX(),tarPose.getY()), new Rotation2d(needRot));
 
-//   var interiorWaypoint = new ArrayList<Translation2d>();
-//   interiorWaypoint.add(new Translation2d((endPose.getX() - startPose.getX())/2 + startPose.getX(),
-//   (endPose.getY() - startPose.getY())/2 + startPose.getY() ));
+  var interiorWaypoint = new ArrayList<Translation2d>();
+  interiorWaypoint.add(new Translation2d((endPose.getX() - startPose.getX())/2 + startPose.getX(),
+  (endPose.getY() - startPose.getY())/2 + startPose.getY() ));
   
-//   Trajectory traj = TrajectoryGenerator.generateTrajectory(
-//     startPose, interiorWaypoint, endPose, config);
-//     m_field.getObject("Target").setTrajectory(traj);
-//     return traj;
-// }
+  Trajectory traj = TrajectoryGenerator.generateTrajectory(
+    startPose, interiorWaypoint, endPose, config);
+    m_field.getObject("Target").setTrajectory(traj);
+    return traj;
+}
 
 
 
@@ -632,65 +632,65 @@ public void zeroHeading() {
 
 //This method provides a means of exporting tragetories - primarily used for targetTrajectory during teleop
 //Autonomous commands will call the trajectories themselves.
-// public Trajectory getTrajectory() {
-//   if (DriverStation.isTeleop()) {
-//     return this.targetTrajectory();
-//   } else {
-//   Trajectory autoTrajectory =
-//   TrajectoryGenerator.generateTrajectory(
-//       // Start at the origin facing the +X direction
-//       new Pose2d(5, 5, new Rotation2d(0)),
-//       // Pass through these two interior waypoints, making an 's' curve path
-//       List.of(new Translation2d(6, 4), new Translation2d(7, 6)),
-//       // End 3 meters straight ahead of where we started, facing forward
-//       new Pose2d(8, 5, new Rotation2d(0)),
-//       // Pass config
-//       config);
-//     m_field.getObject("Traj").setTrajectory(autoTrajectory);
-//     return autoTrajectory;
-//  }
-//  }
+public Trajectory getTrajectory() {
+  if (DriverStation.isTeleop()) {
+    return this.targetTrajectory();
+  } else {
+  Trajectory autoTrajectory =
+  TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(5, 5, new Rotation2d(0)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of(new Translation2d(6, 4), new Translation2d(7, 6)),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(8, 5, new Rotation2d(0)),
+      // Pass config
+      config);
+    m_field.getObject("Traj").setTrajectory(autoTrajectory);
+    return autoTrajectory;
+ }
+ }
 
 
 // //Erases Trajectories on the simulated field
-// public void clearTrajectories(){
-//   Trajectory nullTrajectory = 
-//     TrajectoryGenerator.generateTrajectory(new Pose2d(0,0,new Rotation2d(0)), 
-//     List.of(new Translation2d(0.1, 0), new Translation2d(0, 0)),
-//     new Pose2d(0,0,new Rotation2d(0)), config);
-//     m_field.getObject("Traj").setTrajectory(nullTrajectory);
+public void clearTrajectories(){
+  Trajectory nullTrajectory = 
+    TrajectoryGenerator.generateTrajectory(new Pose2d(0,0,new Rotation2d(0)), 
+    List.of(new Translation2d(0.1, 0), new Translation2d(0, 0)),
+    new Pose2d(0,0,new Rotation2d(0)), config);
+    m_field.getObject("Traj").setTrajectory(nullTrajectory);
     
-// }
+}
 
-// // Returns a Trajectory object when given a trajectory path
-// public Trajectory getTrajectoryPath(String trajectoryJSON) {
-// try {
-//   Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-//   if (Files.exists(trajectoryPath)){System.out.println("Trajectory Exists");}
-//   Trajectory autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-//   return autoTrajectory;
-//  } catch (IOException ex) {
-//   DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-//   Trajectory autoTrajectory = this.getTrajectory();
-//   return autoTrajectory;
-//  }
-// }
+// Returns a Trajectory object when given a trajectory path
+public Trajectory getTrajectoryPath(String trajectoryJSON) {
+try {
+  Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+  if (Files.exists(trajectoryPath)){System.out.println("Trajectory Exists");}
+  Trajectory autoTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+  return autoTrajectory;
+ } catch (IOException ex) {
+  DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+  Trajectory autoTrajectory = this.getTrajectory();
+  return autoTrajectory;
+ }
+}
 
-// public Trajectory refTraj(){
-//   Trajectory autoTrajectory =
-//   TrajectoryGenerator.generateTrajectory(
-//       // Start at the origin facing the +X direction
-//       new Pose2d(5, 5, new Rotation2d(0)),
-//       // Pass through these two interior waypoints, making an 's' curve path
-//       List.of(new Translation2d(6.5, 5),
-//        new Translation2d(8, 6),
-//        new Translation2d(6.5,5)),
-//       // End 3 meters straight ahead of where we started, facing forward
-//       new Pose2d(5, 5, new Rotation2d(0)),
-//       // Pass config
-//       config);
-//       return autoTrajectory;
-// }
+public Trajectory refTraj(){
+  Trajectory autoTrajectory =
+  TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(5, 5, new Rotation2d(0)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of(new Translation2d(6.5, 5),
+       new Translation2d(8, 6),
+       new Translation2d(6.5,5)),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(5, 5, new Rotation2d(0)),
+      // Pass config
+      config);
+      return autoTrajectory;
+}
 
 public double getPitch(){
   return m_gyro.getPitch();
