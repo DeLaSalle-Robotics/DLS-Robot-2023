@@ -12,11 +12,11 @@ public class NeutralArmCommand extends SequentialCommandGroup{
 
     public NeutralArmCommand(Arm _arm, ArmExtend _armExtend) {
         armAngle = SmartDashboard.getNumber("Pitch", 0);
-        armLength = SmartDashboard.getNumber("Length", 0.3);
+        armLength = 0.3;
         addCommands(
             new ParallelCommandGroup(
-            new ArmProfileCommand(Math.toRadians(90), _arm), // angle must be in radians
-            new ArmLengthSet(armLength, _armExtend)), // length in meters
+                new ArmProfileCommand(Math.toRadians(90), _arm), // angle must be in radians
+                new ArmLengthSet(armLength, _armExtend)), // length in meters
             new KeepArmPosition(90, _arm)); 
     }
     
