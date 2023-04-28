@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 // Wipilibj
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -65,6 +66,9 @@ public class Arm extends SubsystemBase {
   public static final String kArmPositionKey = "ArmPosition";
   public static final String kArmPKey = "ArmP";
 
+  public static final double armOffset = 0.0;
+  public boolean encoderPresent = false;
+  
   private DigitalInput magSwitch = new DigitalInput(0);
 
   //Simulation Code
@@ -115,58 +119,86 @@ public class Arm extends SubsystemBase {
   _armFalconR.configOpenloopRamp(Constants.Arm_Ramp);
 
    m_encoder.setDistancePerPulse(2 * Math.PI /2048.0);
-  m_abEncoder.setPositionOffset(0.0);
+  m_abEncoder.setPositionOffset(armOffset);
+
  // m_abEncoder.setDistancePerRotation(360);
    // Put Mechanism 2d to SmartDashboard
  SmartDashboard.putData("Arm Sim", m_mech2d);
  m_armTower.setColor(new Color8Bit(Color.kBlue));
-
+ //Enocder Safety Features
+ SmartDashboard.putBoolean("Encoder_Present", false);
+ SmartDashboard.putNumber("Absolute", 70.0);
+ SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
 }
 
 public double GetABencoder(){
-
-  double currentAngle =  360 * m_abEncoder.getAbsolutePosition() -14;
-  if (Constants.verbose){
-    SmartDashboard.putNumber("Absolute", currentAngle);
+  
+  double currentAngle =  360 * m_abEncoder.getAbsolutePosition() ;
+  if ( m_abEncoder.getAbsolutePosition()==0){  //Need to define what the value is when unplugged
+    SmartDashboard.putBoolean("Encoder_Present", false);
+    encoderPresent = false;
   }
-
-
+  
+  SmartDashboard.putNumber("Absolute", currentAngle);
+  SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
   return currentAngle;
 
 }
 
+public boolean encoderTest() {
+  double oldAngle = SmartDashboard.getNumber("Absolute", 0.0);
+  double currentAngle =  360 * m_abEncoder.getAbsolutePosition() ;
+  if (currentAngle == oldAngle){
+    double angleTime = SmartDashboard.getNumber("AbsoluteTime",0.0); // set when values are not equal
+    if (Timer.getFPGATimestamp() - angleTime > 0.1) {
+      //Only get here if values are equal for more than 100 ms.
+      return false;
+    } else {return true;}
+  } else {
+    SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
+    return true;
+  }
+  
+  //assumes there is noise in the encoder and the only reason it would be equal for 100 ms is if its unplugged.
+}
 
-  public void ResetArmEncoder(){
+public void ResetArmEncoder(){
     m_encoder.reset();
     m_abEncoder.reset();
   }
 
   public void ArmMove(Double speed) {
-    //This method sets the speed of the active intake mechanism
-   /* 
+    //This method allows manual control of the arm within preset bounds.
+    encoderPresent = this.encoderTest();
+    SmartDashboard.putBoolean("Encoder_Present", encoderPresent);
+    if (encoderPresent) { 
     if (this.GetABencoder() < -10 & speed < 0) {
       speed = 0.0;
     }
   
   if (this.GetABencoder()> 190 & speed > 0) {
     speed = 0.0;
+    }
   }
-  */
     _armFalconL.set( speed);
-  }
+  
+}
 
   public void ArmMoveVolts(double volt){
+    if (encoderPresent) {
     var m_feedForward = this.getFeedForward(this.ArmAngle());
     _armFalconL.setVoltage(-1 * (volt + m_feedForward));
+  } else {
+    _armFalconL.setVoltage(0.0);
+  }
+
    
   }
 
   public double ArmAngle() {
     //This method returns the arm angle in radians
     if (Robot.isReal()) {
-      double vertical_radian = m_encoder.getDistance(); //<-- Returns in radians
-      double armAngleCorrection = Math.toRadians(70);
-      double correctedAngle = vertical_radian - armAngleCorrection;
+      
       return(Math.toRadians(this.GetABencoder())); 
     } else {
       return m_armSim.getAngleRads();
