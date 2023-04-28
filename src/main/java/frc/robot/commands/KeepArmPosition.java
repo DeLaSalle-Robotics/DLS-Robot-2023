@@ -20,7 +20,6 @@ public class KeepArmPosition extends PIDCommand{
              Math.toRadians(targetAngle),
               output -> arm.ArmMoveVolts(output), 
               arm);
-              getController().enableContinuousInput(-180, 180);
               getController().
               setTolerance(Math.toRadians(Constants.angleTolerance));
               addRequirements(arm);
