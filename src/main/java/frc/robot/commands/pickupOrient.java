@@ -25,7 +25,7 @@ public class pickupOrient extends CommandBase {
     if (angle > 20 & intakePos) {
       m_intake.intakeFlip();
     }
-    if (angle < 190 & !intakePos){
+    if (angle < 150 & !intakePos){
       m_intake.intakeFlip();
     }
   }
@@ -41,6 +41,6 @@ public class pickupOrient extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

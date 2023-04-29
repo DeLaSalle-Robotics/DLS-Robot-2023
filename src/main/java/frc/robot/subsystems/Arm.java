@@ -66,7 +66,7 @@ public class Arm extends SubsystemBase {
   public static final String kArmPositionKey = "ArmPosition";
   public static final String kArmPKey = "ArmP";
 
-  public static final double armOffset = 0.0;
+  public static final double armOffset = 83.0;
   public boolean encoderPresent = false;
   
   private DigitalInput magSwitch = new DigitalInput(0);
@@ -133,7 +133,7 @@ public class Arm extends SubsystemBase {
 
 public double GetABencoder(){
   
-  double currentAngle =  360 * m_abEncoder.getAbsolutePosition() ;
+  double currentAngle =  (360 * m_abEncoder.getAbsolutePosition()) - armOffset ;
   if ( m_abEncoder.getAbsolutePosition()==0){  //Need to define what the value is when unplugged
     SmartDashboard.putBoolean("Encoder_Present", false);
     encoderPresent = false;
@@ -172,11 +172,11 @@ public void ResetArmEncoder(){
     encoderPresent = this.encoderTest();
     SmartDashboard.putBoolean("Encoder_Present", encoderPresent);
     if (encoderPresent) { 
-    if (this.GetABencoder() < -10 & speed < 0) {
+    if (this.GetABencoder() < -10 & speed > 0) {
       speed = 0.0;
     }
   
-  if (this.GetABencoder()> 190 & speed > 0) {
+  if (this.GetABencoder()> 195 & speed < 0) {
     speed = 0.0;
     }
   }

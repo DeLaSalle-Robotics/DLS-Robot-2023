@@ -28,8 +28,8 @@ private double volts;
   public void initialize() {
     armDirection = SmartDashboard.getBoolean("Arm Calibration", false);
     if (armDirection) {
-      volts = -0.9;
-    } else {volts = 0.9;}
+      volts = -3;
+    } else {volts = 3;}
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,7 +38,7 @@ private double volts;
     m_Arm.armSetVolts(volts);
     SmartDashboard.putNumber("Arm Angle", m_Arm.ArmAngle());
     SmartDashboard.putNumber("Arm Rate", m_Arm.ArmVelocity());
-    SmartDashboard.putNumber("Arm Volts", 0.9);
+    SmartDashboard.putNumber("Arm Volts", 3.0);
   }
 
   // Called once when the command ends or is interrupted.

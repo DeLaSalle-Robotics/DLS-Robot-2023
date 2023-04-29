@@ -38,7 +38,7 @@ public class ArmVoltQuasistatic extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    currentVoltage = currentVoltage + interval;
+    currentVoltage = currentVoltage - interval;
     m_Arm.armSetVolts(currentVoltage);
     SmartDashboard.putNumber("Arm Angle", m_Arm.ArmAngle());
     SmartDashboard.putNumber("Arm Rate", m_Arm.ArmVelocity());

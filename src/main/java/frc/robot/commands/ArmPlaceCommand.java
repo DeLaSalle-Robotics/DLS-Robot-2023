@@ -1,11 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 // Unused imports
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj2.command.CommandBase;
 //import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 //import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmExtend;
@@ -25,9 +27,12 @@ public class ArmPlaceCommand extends SequentialCommandGroup{
         length = _length;
         addCommands(
             new ParallelCommandGroup(
-                new ArmProfileCommand(Math.toRadians(angle), m_arm),
+                new ParallelRaceGroup(
+                    new ArmProfileCommand(Math.toRadians(angle), m_arm),
+                    new WaitCommand(3)),
                 new pickupOrient(angle, m_intake)), // angle must be in radians
-            new ArmLengthSet(length, m_armExtend)); // length in meters
+            new ArmLengthSet(length, m_armExtend)
+            ); // length in meters
     }
 
     

@@ -34,11 +34,11 @@ public final class Constants {
     //Arm Constants
     public static final int miniFalcon = 8; // ID for test arm
     
-    public static final double ArmKp = 10;
+    public static final double ArmKp = 15;
     public static final double ArmKi = 0.0;
     public static final double ArmKd = 0.0;
 
-    public static final double ArmKp_static = 15;
+    public static final double ArmKp_static = 20;
     public static final double ArmKi_static = 0.0;
     public static final double ArmKd_static = 0.0;
 
@@ -50,12 +50,12 @@ public final class Constants {
     public static final double ArmMaxRotVel = 3.0;
     public static final double ArmMaxRotAccel = 5.0;
     
-    public static final double arm_Kg = 0.44;
-    public static final double arm_Ks = 0.6;
-    public static final double arm_Kv = 2;
+    public static final double arm_Kg = 0.24;
+    public static final double arm_Ks = 0.94;
+    public static final double arm_Kv = 1.71;
     public static final double arm_Ka = 0.05;
     
-    public static final double angleTolerance = 2.5;
+    public static final double angleTolerance = 5;
     public static final double armPositionDeg = 75.0; //Default arm position
  
     public static int drive_PDP = 1;           //Power Distribution Panal address
