@@ -45,8 +45,8 @@ public class SpinIntake extends CommandBase {
     }
     @Override
     public boolean isFinished() {
-    return false;
-        /*    if(Robot.isReal()) {
+    
+        if(Robot.isReal()) {
             if (inSpeed.getAsDouble() > outSpeed.getAsDouble()) {
 
                 return SmartDashboard.getNumber("Intake Speed", 0) < Constants.intakeSpinThreshold;
@@ -54,6 +54,6 @@ public class SpinIntake extends CommandBase {
                 return outSpeed.getAsDouble() > 0.8 && SmartDashboard.getBoolean("Have Piece", false) ;
             }
         } else {return SmartDashboard.getBoolean("Have Piece", false);}
-    */
+    
     }
 }

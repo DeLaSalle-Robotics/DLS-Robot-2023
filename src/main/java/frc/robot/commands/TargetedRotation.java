@@ -19,7 +19,7 @@ public class TargetedRotation extends SequentialCommandGroup{
                     //new TrajectoryFollower(m_drivetrain.getTrajectory(), m_drivetrain),
                     new AlignToTarget(0, m_drivetrain)),
             new ArmPlaceCommand(SmartDashboard.getNumber("Pitch", 0),
-            SmartDashboard.getNumber("Length", 0.3), m_arm, m_armExtend))
+            SmartDashboard.getNumber("Length", 0.3), m_arm, m_armExtend, m_intake))
             //Score Command
         );
     }

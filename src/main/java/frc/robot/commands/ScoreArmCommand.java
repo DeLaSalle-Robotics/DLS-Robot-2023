@@ -9,13 +9,15 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmExtend;
+import frc.robot.subsystems.Intake;
 
 public class ScoreArmCommand extends CommandBase{
     double armAngle;
     double armLength;
     Arm arm;
     ArmExtend armExtend;
-    public ScoreArmCommand(Arm _arm, ArmExtend _armExtend) {
+    Intake m_intake;
+    public ScoreArmCommand(Arm _arm, ArmExtend _armExtend, Intake _intake) {
         armAngle = SmartDashboard.getNumber("Pitch", 0);
         armLength = SmartDashboard.getNumber("Length", 0.3);
         arm = _arm;
@@ -28,7 +30,7 @@ public class ScoreArmCommand extends CommandBase{
         // TODO Auto-generated method stub
         armAngle = SmartDashboard.getNumber("Pitch", 0);
         armLength = SmartDashboard.getNumber("Length", 0.3);
-        CommandScheduler.getInstance().schedule(new ArmPlaceCommand(armAngle, armLength, arm, armExtend));
+        CommandScheduler.getInstance().schedule(new ArmPlaceCommand(armAngle, armLength, arm, armExtend, m_intake));
     }
     @Override
     public boolean isFinished() {

@@ -159,7 +159,7 @@ public class RobotContainer {
     Tcontroller_rightbumper.onTrue(Commands.runOnce(m_grasper::disableCompressor));
     
     
-    Tcontroller_Down.onTrue(new CubePickUp(m_drivetrainSubsystem, m_grasper));
+    Tcontroller_Down.onTrue(new CubePickUp(m_drivetrainSubsystem, m_grasper,m_Arm));
     Tcontroller_Up.onTrue(new TrajectoryCalibrate(m_drivetrainSubsystem));
     Tcontroller_Left.onTrue(Commands.runOnce(m_Arm::GetABencoder));
     Right_joystick_9.onTrue(new CancelAll());
