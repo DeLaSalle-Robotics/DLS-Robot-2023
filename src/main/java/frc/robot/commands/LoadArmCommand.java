@@ -5,20 +5,16 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.Intake;
 
 public class LoadArmCommand extends CommandBase{
     double armAngle;
-    double armLength;
     Arm arm;
-    ArmExtend armExtend;
     Intake m_intake;
-    public LoadArmCommand(Arm _arm, ArmExtend _armExtend, Intake _intake) {
+    public LoadArmCommand(Arm _arm, Intake _intake) {
         armAngle = SmartDashboard.getNumber("Load Angle", 0);
-        armLength = 0.3;
         arm = _arm;
-        armExtend = _armExtend;
+        
         m_intake = _intake;
         
     }
@@ -26,8 +22,8 @@ public class LoadArmCommand extends CommandBase{
     public void initialize() {
         // TODO Auto-generated method stub
         armAngle = SmartDashboard.getNumber("Load Angle", 0);
-        armLength = 0.3;
-        CommandScheduler.getInstance().schedule(new ArmPlaceCommand(armAngle, armLength, arm, armExtend, m_intake));
+        
+        CommandScheduler.getInstance().schedule(new ArmPlaceCommand(armAngle,  arm, m_intake));
     }
     @Override
     public boolean isFinished() {

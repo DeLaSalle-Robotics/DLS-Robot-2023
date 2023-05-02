@@ -30,7 +30,7 @@ public class ScoreArmCommand extends CommandBase{
         // TODO Auto-generated method stub
         armAngle = SmartDashboard.getNumber("Pitch", 0);
         armLength = SmartDashboard.getNumber("Length", 0.3);
-        CommandScheduler.getInstance().schedule(new ArmPlaceCommand(armAngle, armLength, arm, armExtend, m_intake));
+        CommandScheduler.getInstance().schedule(new ArmPlaceCommand(armAngle,  arm, m_intake));
     }
     @Override
     public boolean isFinished() {

@@ -130,14 +130,13 @@ public class RobotContainer {
     //controller_X.onTrue(new BalanceAuto_2(m_drivetrainSubsystem));
    
     //Floor Mode
-    controller_A.onTrue(new ArmPlaceCommand(
-        190,
-        0.3, m_Arm, m_armExtend,m_grasper));
+    controller_A.onTrue(new ArmLengthSet(
+        0.3, m_armExtend));
     //Score Mode
     controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend, m_grasper));
     //Feeder
-    controller_B.onTrue(new LoadArmCommand(m_Arm, m_armExtend,m_grasper));
-    controller_Y.onTrue(new NeutralArmCommand(m_Arm, m_armExtend));
+    controller_B.onTrue(new LoadArmCommand(m_Arm, m_grasper));
+    controller_Y.onTrue(new PickupArmCommand(m_Arm, m_armExtend,m_grasper));
 
     controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));
     controller_Down.onTrue(Commands.runOnce(m_grasper::scoreLow));
@@ -153,10 +152,10 @@ public class RobotContainer {
 
     Tcontroller_A.onTrue(new ArmPlaceCommand(
       135,
-      0.3, m_Arm, m_armExtend,m_grasper));
+      m_Arm,m_grasper));
     Tcontroller_B.onTrue(new ArmPlaceCommand(
       45,
-      0.3, m_Arm, m_armExtend,m_grasper));
+      m_Arm,m_grasper));
     Tcontroller_X.onTrue(Commands.runOnce(m_grasper::intakeFlip));
     Tcontroller_Y.onTrue(Commands.runOnce(m_grasper::openGrasp));
     Tcontroller_leftbumper.onTrue(Commands.runOnce(m_grasper::enableCompressor));

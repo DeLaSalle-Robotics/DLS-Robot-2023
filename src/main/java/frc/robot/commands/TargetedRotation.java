@@ -4,14 +4,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.Intake;
 
 public class TargetedRotation extends SequentialCommandGroup{
     //Goal of this class is to orient the robot into the desired rotation
     //simlar to HuntCube
-    public TargetedRotation(DrivetrainSubsystem m_drivetrain, Arm m_arm, Intake m_intake, ArmExtend m_armExtend) {
+    public TargetedRotation(DrivetrainSubsystem m_drivetrain, Arm m_arm, Intake m_intake) {
         addCommands(
             new ParallelCommandGroup( 
                 new SequentialCommandGroup( 
@@ -19,7 +18,7 @@ public class TargetedRotation extends SequentialCommandGroup{
                     //new TrajectoryFollower(m_drivetrain.getTrajectory(), m_drivetrain),
                     new AlignToTarget(0, m_drivetrain)),
             new ArmPlaceCommand(SmartDashboard.getNumber("Pitch", 0),
-            SmartDashboard.getNumber("Length", 0.3), m_arm, m_armExtend, m_intake))
+            m_arm, m_intake))
             //Score Command
         );
     }
