@@ -246,7 +246,8 @@ private double doubleTapTime;
 
     SmartDashboard.putData("Field", m_field);
 
-  state = 0;
+    //Balance Code
+    state = 0;
     debounceCount = 0;
     
     /**********
@@ -261,19 +262,19 @@ private double doubleTapTime;
     robotSpeedSlow = 0.4;
     
     // Angle where the robot knows it is on the charge station, default = 13.0
-    onChargeStationDegree = -10.0;
+    onChargeStationDegree =  13.0;
     
     // Angle where the robot can assume it is level on the charging station
     // Used for exiting the drive forward sequence as well as for auto balancing,
     // default = 6.0
 
-    levelDegree = -6.0;
+    levelDegree = 6.0;
     
     // Amount of time a sensor condition needs to be met before changing states in
     // seconds
     // Reduces the impact of sensor noice, but too high can make the auto run
     // slower, default = 0.2
-    debounceTime = 0.3;
+    debounceTime = 0.2;
     
     // Amount of time to drive towards to scoring target when trying to bump the
     // game piece off
@@ -708,7 +709,7 @@ public void postTrajectories (Trajectory traj){
 }
 
 public int secondsToTicks(double time) {
-  return (int) (time * 50);
+  return (int) (time / 0.02);
 }
 
 
@@ -718,7 +719,7 @@ public double autoBalanceRoutine(double init) {
   switch (state) {
       // drive forwards to approach station, exit when tilt is detected
       case 0:
-          if (this.getRoll()-init < onChargeStationDegree) {
+          if (Math.abs(this.getRoll()) > onChargeStationDegree) {
               debounceCount++;
           }
           if (debounceCount > this.secondsToTicks(debounceTime)) {
@@ -729,7 +730,7 @@ public double autoBalanceRoutine(double init) {
           return robotSpeedFast;
       // driving up charge station, drive slower, stopping when level
       case 1:
-          if (this.getRoll()-init > levelDegree) {
+          if (this.getRoll() < levelDegree) {
               debounceCount++;
           }
           if (debounceCount > this.secondsToTicks(debounceTime)) {
@@ -749,9 +750,11 @@ public double autoBalanceRoutine(double init) {
               return 0;
           }
           if (this.getRoll()-init >= levelDegree) {
-              return -0.3;
+              debounceCount = 0;
+              return -1 * robotSpeedSlow;
           } else if (this.getRoll()-init <= -levelDegree) {
-              return 0.3;
+              debounceCount = 0;
+              return robotSpeedSlow;
           }
       case 3:
           return 0;
