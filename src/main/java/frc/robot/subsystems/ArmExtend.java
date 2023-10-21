@@ -44,6 +44,7 @@ new ElevatorSim(
     if (Robot.isReal()){
     double armLength_clicks = _armExtend.getSelectedSensorPosition();
     //Conversion figure to convert length to sensor position
+    //Falcon 500 has 2048 "clicks" per full revolution
     double armlength_m = 7.305E-6 * armLength_clicks + .3; //<-- Estimate from radius needs to be confirmed.
     return armlength_m;} else {
        return m_armSim.getPositionMeters();
@@ -67,6 +68,41 @@ new ElevatorSim(
     double Arm_Com = this.getArmLength() * 0.5711 - 0.0639; 
     return Arm_Com;
   }
+
+public boolean moveToState(String key){
+  //2048 clicks in a rotation
+  double armLength_clicks = _armExtend.getSelectedSensorPosition();
+  double armBuffer = 500;
+  double armSpeed = 0.5;
+  double requestedArmPosition = 0;
+  switch(key){
+    case "low":
+    requestedArmPosition = 0;  
+
+    case "mid":
+    requestedArmPosition = 14000;
+   
+    case "high":
+    requestedArmPosition = 28000;
+  }
+
+
+if (requestedArmPosition + armBuffer > armLength_clicks && requestedArmPosition - armBuffer < armLength_clicks){
+  _armExtend.set(0.0);
+  return true;
+}
+else if (requestedArmPosition > armLength_clicks){
+  _armExtend.set(armSpeed);
+}
+else if (requestedArmPosition < armLength_clicks){
+  _armExtend.set(-1 * armSpeed);
+}
+return false;  
+
+}
+  
+
+
 
   public void simulationPeriodic(){
     sim_armExtend.setBusVoltage(RobotController.getBatteryVoltage());

@@ -34,7 +34,7 @@ public class SpinIntake extends CommandBase {
            
             //SmartDashboard.putNumber("Intake Speed", inSpeed.getAsDouble());
         }
-    @Override
+    /*@Override
     public void end(boolean interrupted) {
         m_intake.spinIntake(0);
         if (inSpeed.getAsDouble() > outSpeed.getAsDouble()) {
@@ -42,7 +42,7 @@ public class SpinIntake extends CommandBase {
         } else {
             SmartDashboard.putBoolean("Have Piece", false);
         }
-    }
+    }*/
     @Override
     public boolean isFinished() {
     

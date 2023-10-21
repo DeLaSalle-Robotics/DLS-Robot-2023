@@ -17,9 +17,10 @@ public class PickupArmCommand extends SequentialCommandGroup{
         addCommands(
             new ParallelCommandGroup(
                 new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
-                new pickupOrient(armAngle, _intake),
-                new ArmLengthSet(armLength, _armExtend)), // length in meters
-            new KeepArmPosition(90, _arm)); 
+                new pickupOrient(armAngle, _intake)
+               // new ArmLengthSet(armLength, _armExtend)) // length in meters
+            //new KeepArmPosition(90, _arm)
+            )); 
     }
     
 }

@@ -1,8 +1,0 @@
-counter = 0
-when butten presed
-    counter + 1
-    if counter >= 3
-        couter = 0
-    else 
-        exist
-0-2

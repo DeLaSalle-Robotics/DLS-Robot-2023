@@ -37,9 +37,13 @@
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
     },
     "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "height": 8.013699531555176,
-        "image": "/Users/town0045/Robotics/2023/DLS-Robot-2023/Games/2023-field2.png",
         "width": 16.541749954223633,
         "window": {
           "visible": true

@@ -76,8 +76,8 @@ public class RobotContainer {
 
   private POVButton controller_45 = new POVButton(controller, 45);
 
-  //private Trigger controller_leftstickbutton = new JoystickButton(controller, 9);
-  //private Trigger controller_rightstickbutton = new JoystickButton(controller, 10);
+  public XboxController Dcontroller = new XboxController(1);
+
   private Joystick Left_joystick = new Joystick(1);
   private Joystick Right_joystick = new Joystick(2);
   private Trigger Left_joystick_1 = new JoystickButton(Left_joystick,1);
@@ -103,9 +103,13 @@ public class RobotContainer {
     m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
                                                             () -> Left_joystick.getX(),
                                                             () -> Right_joystick.getY()));
-                                                            
-    //m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> controller.getLeftY()));
-    m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> Tcontroller.getLeftY()));
+    /*
+    m_drivetrainSubsystem.setDefaultCommand(new DriveCommand(m_drivetrainSubsystem, 
+                                                            () -> Dcontroller.getLeftX(),
+                                                            () -> Dcontroller.getRightY()));
+     */
+    m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> controller.getLeftY()));
+    //m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> Tcontroller.getLeftY()));
     m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> controller.getRightY(), m_armExtend));
     m_grasper.setDefaultCommand(new SpinIntake(m_grasper, () -> controller.getLeftTriggerAxis(),
                                                           () -> controller.getRightTriggerAxis()));
@@ -130,12 +134,12 @@ public class RobotContainer {
     //controller_X.onTrue(new BalanceAuto_2(m_drivetrainSubsystem));
    
     //Floor Mode
-    controller_A.onTrue(new ArmLengthSet(
-        0.3, m_armExtend));
+    //controller_A.onTrue(new ArmLengthSet(
+    //    0.3, m_armExtend));
     //Score Mode
     controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend, m_grasper));
     //Feeder
-    controller_B.onTrue(new LoadArmCommand(m_Arm, m_grasper));
+    //controller_B.onTrue(new LoadArmCommand(m_Arm, m_grasper));
     controller_Y.onTrue(new PickupArmCommand(m_Arm, m_armExtend,m_grasper));
 
     controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));
@@ -179,9 +183,9 @@ public class RobotContainer {
    * @return 
    */
   public Command getAutonomousCommand() {
-   return new ShootConeAuto(m_grasper, m_drivetrainSubsystem);
+   //return new ShootConeAuto(m_grasper, m_drivetrainSubsystem);
    //return new PlaceCube(m_grasper); //return shootConeAuto;
-    //return m_chooser.getSelected();
+    return m_chooser.getSelected();
     //return new SimpleAuto(m_drivetrainSubsystem); 
   }
 }

@@ -225,9 +225,9 @@ public void postTargetData(String target){
   boolean loadFront= SmartDashboard.getBoolean("Load Front", false);
   //Setting load angles <--Need to be confirmed
   if (loadFront){
-    SmartDashboard.putNumber("Load Angle", 15);
+    SmartDashboard.putNumber("Load Angle", 45);
   } else {
-     SmartDashboard.putNumber("Load Angle", 165);
+     SmartDashboard.putNumber("Load Angle", 135);
    }
 }
 
