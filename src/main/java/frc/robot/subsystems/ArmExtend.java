@@ -80,7 +80,7 @@ public boolean moveToState(String key){
     requestedArmPosition = 0;  
 
     case "mid":
-    requestedArmPosition = 14000;
+    requestedArmPosition = 17000;
    
     case "high":
     requestedArmPosition = 28000;
@@ -115,8 +115,11 @@ return false;
 
   @Override
   public void periodic() {
-      if (Constants.verbose && Robot.isReal()) {SmartDashboard.putNumber("Arm Length",this.getArmLength());}
+      if (Constants.verbose && Robot.isReal()) {
+        SmartDashboard.putNumber("Arm Length",this.getArmLength());
+      }
       SmartDashboard.putNumber("CoM", this.ArmComCalc());
+      SmartDashboard.putNumber("Arm Clicks", _armExtend.getSelectedSensorPosition());
   }
 
   private int distanceToNativeUnits(double positionMeters){

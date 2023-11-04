@@ -12,7 +12,7 @@ public class PickupArmCommand extends SequentialCommandGroup{
     double armLength;
 
     public PickupArmCommand(Arm _arm, ArmExtend _armExtend, Intake _intake) {
-        armAngle = 190;
+        armAngle = 193;
         armLength = 0.3;
         addCommands(
             new ParallelCommandGroup(
@@ -20,6 +20,10 @@ public class PickupArmCommand extends SequentialCommandGroup{
                 new pickupOrient(armAngle, _intake)
                // new ArmLengthSet(armLength, _armExtend)) // length in meters
             //new KeepArmPosition(90, _arm)
+            ),
+            new ParallelCommandGroup(
+                new KeepArmPosition(armAngle, _arm),
+                new ArmLengthSet(armLength, _armExtend)
             )); 
     }
     
