@@ -132,7 +132,7 @@ public class Arm extends SubsystemBase {
 }
 
 public double GetABencoder(){
-  
+  if (Robot.isReal()){
   double currentAngle =  (360 * m_abEncoder.getAbsolutePosition()) - armOffset ;
   if ( m_abEncoder.getAbsolutePosition()==0){  //Need to define what the value is when unplugged
     SmartDashboard.putBoolean("Encoder_Present", false);
@@ -142,22 +142,28 @@ public double GetABencoder(){
   SmartDashboard.putNumber("Absolute", currentAngle);
   SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
   return currentAngle;
-
+  } else {
+    double currentAngle = Math.toDegrees(m_armSim.getAngleRads());
+    return currentAngle;
+  }
 }
 
 public boolean encoderTest() {
   double oldAngle = SmartDashboard.getNumber("Absolute", 0.0);
   double currentAngle =  360 * m_abEncoder.getAbsolutePosition() ;
-  if (currentAngle == oldAngle){
-    double angleTime = SmartDashboard.getNumber("AbsoluteTime",0.0); // set when values are not equal
-    if (Timer.getFPGATimestamp() - angleTime > 0.1) {
-      //Only get here if values are equal for more than 100 ms.
-      return false;
-    } else {return true;}
-  } else {
-    SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
-    return true;
-  }
+  if (Robot.isReal()) {
+    if (currentAngle == oldAngle){
+      double angleTime = SmartDashboard.getNumber("AbsoluteTime",0.0); // set when values are not equal
+      if (Timer.getFPGATimestamp() - angleTime > 0.1) {
+        //Only get here if values are equal for more than 100 ms.
+        return false;
+      } else {return true;}
+    } else {
+      SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
+      return true;
+    }} else {
+      return true;
+    }
   
   //assumes there is noise in the encoder and the only reason it would be equal for 100 ms is if its unplugged.
 }
@@ -253,7 +259,7 @@ return(feedForward);
   public void simulationPeriodic() {
     
     // This method will be called once per scheduler run during simulation
-    m_armSim.setInput(_armFalconL.get() * RobotController.getBatteryVoltage());
+    m_armSim.setInput(-1 * _armFalconL.get() * RobotController.getBatteryVoltage());
     if (Constants.verbose) {SmartDashboard.putNumber("Sim Input", _armFalconL.get());}
     // Next, we update it. The standard loop time is 20ms.
     m_armSim.update(0.020);
