@@ -22,10 +22,10 @@ public class pickupOrient extends CommandBase {
   @Override
   public void initialize() {
     boolean intakePos = SmartDashboard.getBoolean("Intake Vertical", false);
-    if (angle > 20 & intakePos) {
+    if (angle > 20 & !intakePos) {
       m_intake.intakeFlip();
     }
-    if (angle < 150 & !intakePos){
+    if (angle < 150 & intakePos){
       m_intake.intakeFlip();
     }
   }
