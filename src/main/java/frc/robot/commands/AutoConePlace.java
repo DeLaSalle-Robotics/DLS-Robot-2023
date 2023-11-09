@@ -1,0 +1,43 @@
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmExtend;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.Intake;
+
+public class AutoConePlace extends SequentialCommandGroup{
+    double armAngle;
+    double armLength;
+
+    public AutoConePlace(Arm _arm, ArmExtend _armExtend, Intake m_grasper, DrivetrainSubsystem m_drive) {
+        armAngle = 33.6;
+        armLength = 0.949;
+        addCommands(
+            new ParallelCommandGroup(
+                new ParallelRaceGroup(
+                    new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
+                    new WaitCommand(2)),
+                new ArmLengthSet(armLength, _armExtend)), // length in meters
+            new ToggleClaw(m_grasper),
+            new ParallelCommandGroup(
+                new ShortDrive(m_drive), // Should edit to allow direction and time to be added.
+                new SequentialCommandGroup(
+                    new PickupArmCommand(_arm, _armExtend, m_grasper),
+                    new SpinIntake(m_grasper, () -> 0.0, () -> 1.0)
+                    )),
+            new ParallelCommandGroup(
+                new ShortDrive(m_drive),
+                new ParallelRaceGroup(
+                    new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
+                    new WaitCommand(2))),
+            new ToggleClaw(m_grasper),
+            new SpinIntake(m_grasper, () -> 0, () -> -1)); 
+    }
+    
+}

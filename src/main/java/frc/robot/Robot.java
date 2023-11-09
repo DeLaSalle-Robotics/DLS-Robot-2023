@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   // Tracks the current focus for targetting
-  String currentFocus = "Mid Cone";
+  String currentFocus = "Cone Mid";
   //Table to hold all keys
   //List[] targettingKeys = {"R1", "R2", "R3", "C1", "C2", "C3", "L1", "L2", "L3"};
   List<String> targettingKeys = Arrays.asList("R1", "R2", "R3", "C1", "C2", "C3", "L1", "L2", "L3");
@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
      if (!(SmartDashboard.getBoolean(currentFocus, false))){
        SmartDashboard.putBoolean(currentFocus, true);
      }
-
+     SmartDashboard.putString("Current Target", currentFocus);
 
   }
 
@@ -198,13 +198,13 @@ public class Robot extends TimedRobot {
   private void setupTargeting() {
     targetingKeys=new HashMap<>();
     //Targeting values are: arm angle, arm length, arm angle (back score) <-- need to check
-    targetingKeys.put("Cone High",(new Double[]{38.4,1.8,141.6}));
-    targetingKeys.put("Cone Mid",(new Double[]{38.4,19000.0,141.6}));
-    targetingKeys.put("Cone Low",(new Double[]{0.0,0.0,180.0}));
+    targetingKeys.put("Cone High",(new Double[]{38.4,0.949,141.6}));
+    targetingKeys.put("Cone Mid",(new Double[]{38.4,0.949,141.6}));
+    targetingKeys.put("Cone Low",(new Double[]{0.0,0.35,180.0}));
 
-    targetingKeys.put("Cube High",(new Double[]{33.6,1.47, 146.4}));
-    targetingKeys.put("Cube Mid",(new Double[]{33.6,19000.0, 146.4}));
-    targetingKeys.put("Cube Low",(new Double[]{0.0,0.0, 180.0}));
+    targetingKeys.put("Cube High",(new Double[]{33.6,1.02, 146.4}));
+    targetingKeys.put("Cube Mid",(new Double[]{33.6,0.949, 146.4}));
+    targetingKeys.put("Cube Low",(new Double[]{0.0,0.35, 180.0}));
 
   }
 
@@ -216,11 +216,11 @@ public void postTargetData(String target){
   if (data!=null) {
     
     if (scoreFront) {
-       SmartDashboard.putNumber("Pitch",data[0] );
+       SmartDashboard.putNumber("Score Pitch",data[0] );
      } else {
-       SmartDashboard.putNumber("Pitch", data[2]);
+       SmartDashboard.putNumber("Score Pitch", data[2]);
      }
-     SmartDashboard.putNumber("Length",data[1] );
+     SmartDashboard.putNumber("Score Length",data[1] );
    }
   boolean loadFront= SmartDashboard.getBoolean("Load Front", false);
   //Setting load angles <--Need to be confirmed

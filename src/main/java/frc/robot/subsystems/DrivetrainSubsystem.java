@@ -172,7 +172,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
           // l and r position: 0.005 m
           VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
   
- //Auto balanve code:
+ //Auto balance code:
 
 private int state;
 private int debounceCount;

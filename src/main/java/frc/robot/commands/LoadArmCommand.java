@@ -3,31 +3,22 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.Intake;
 
-public class LoadArmCommand extends CommandBase{
+public class LoadArmCommand extends ParallelCommandGroup{
     double armAngle;
-    Arm arm;
-    Intake m_intake;
-    public LoadArmCommand(Arm _arm, Intake _intake) {
+    double armLength = 0.35;
+    public LoadArmCommand(Arm _arm, ArmExtend _armExtend) {
         armAngle = SmartDashboard.getNumber("Load Angle", 0);
-        arm = _arm;
+        addCommands(
+            new ArmProfileCommand(Math.toRadians(armAngle), _arm),
+            new ArmLengthSet(armLength, _armExtend)
+        );
         
-        m_intake = _intake;
-        
-    }
-    @Override
-    public void initialize() {
-        // TODO Auto-generated method stub
-        armAngle = SmartDashboard.getNumber("Load Angle", 0);
-        
-        CommandScheduler.getInstance().schedule(new ArmPlaceCommand(armAngle,  arm, m_intake));
-    }
-    @Override
-    public boolean isFinished() {
-        return Math.abs(armAngle - SmartDashboard.getNumber("Current Arm Angle", 0)) < Constants.angleTolerance;
     }
     
 }

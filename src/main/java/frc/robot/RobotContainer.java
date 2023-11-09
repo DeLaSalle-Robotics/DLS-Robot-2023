@@ -149,8 +149,8 @@ public class RobotContainer {
 
     controller_leftbumper.onTrue(Commands.runOnce(m_grasper::intakeFlip));
     controller_rightbumper.onTrue(Commands.runOnce(m_grasper::openGrasp));
- //   controller_start.onTrue(Commands.runOnce(m_grasper::scoreCube));
- //   controller_back.onTrue(Commands.runOnce(m_grasper::scoreCone));
+    controller_start.onTrue(Commands.runOnce(m_grasper::scoreCube));
+    controller_back.onTrue(Commands.runOnce(m_grasper::scoreCone));
 
     controller_45.onTrue(Commands.runOnce(m_Arm::ResetArmEncoder));
 

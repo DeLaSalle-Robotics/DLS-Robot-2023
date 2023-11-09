@@ -95,7 +95,7 @@ public class Arm extends SubsystemBase {
        m_armPivot.append(
         new MechanismLigament2d(
           "Arm",
-          1.2, //<-- needs to be variable
+          SmartDashboard.getNumber("Arm Length", 0.35), //<-- needs to be variable
           m_armSim.getAngleRads(),
           6,
           new Color8Bit(Color.kPurple)

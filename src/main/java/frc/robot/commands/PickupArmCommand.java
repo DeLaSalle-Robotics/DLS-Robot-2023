@@ -7,24 +7,17 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.Intake;
 
-public class PickupArmCommand extends SequentialCommandGroup{
+public class PickupArmCommand extends ParallelCommandGroup{
     double armAngle;
     double armLength;
 
     public PickupArmCommand(Arm _arm, ArmExtend _armExtend, Intake _intake) {
         armAngle = 193;
-        armLength = 0.3;
+        armLength = 0.35;
         addCommands(
-            new ParallelCommandGroup(
                 new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
-                new pickupOrient(armAngle, _intake)
-               // new ArmLengthSet(armLength, _armExtend)) // length in meters
-            //new KeepArmPosition(90, _arm)
-            ),
-            new ParallelCommandGroup(
-                new KeepArmPosition(armAngle, _arm),
-                new ArmLengthSet(armLength, _armExtend)
-            )); 
+                new pickupOrient(armAngle, _intake),
+                new ArmLengthSet(armLength, _armExtend)); // length in meters 
     }
     
 }
