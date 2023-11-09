@@ -11,3 +11,5 @@ build/jni/release/wpimathjni.pdb
 build/
 *.wpilog
 bin/
+*.log
+*.class
