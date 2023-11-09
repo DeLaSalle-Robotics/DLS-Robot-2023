@@ -25,7 +25,7 @@ public class pickupOrient extends CommandBase {
     if (angle > 20 & !intakePos) {
       m_intake.intakeFlip();
     }
-    if (angle < 150 & intakePos){
+    if (angle < 160 & intakePos){
       m_intake.intakeFlip();
     }
   }
