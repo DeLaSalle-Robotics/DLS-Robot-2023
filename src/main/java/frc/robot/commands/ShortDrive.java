@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Robot;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class ShortDrive extends CommandBase {
@@ -33,9 +34,9 @@ public class ShortDrive extends CommandBase {
   @Override
   public void execute() {
     if (driveDirection){
-      m_drive.drive_Arcade(0, 0.5);
+      if (Robot.isReal()) {m_drive.drive_Arcade(0, 0.5);} else {m_drive.drive_Arcade(-0.5, 0);}
     } else {
-      m_drive.drive_Arcade(0, -0.5); 
+      if (Robot.isReal()) {m_drive.drive_Arcade(0, -0.5);} else {m_drive.drive_Arcade(0.5, 0);}
     }
   }
   //m_drive.driveVolts(6.0, 6.0);

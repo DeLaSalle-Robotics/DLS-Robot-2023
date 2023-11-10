@@ -55,29 +55,20 @@ new ElevatorSim(
     double armLength_clicks = _armExtend.getSelectedSensorPosition();
     //Conversion figure to convert length to sensor position
     //Falcon 500 has 2048 "clicks" per full revolution
-    double armlength_m = 3.526E-5 * armLength_clicks + .35; //<-- Estimate from radius needs to be confirmed.
     return armLength_clicks;
   } else {
-      double armLength_clicks = this.distanceToNativeUnits(m_armExSim.getPositionMeters());
+      double armLength_clicks = 0.0; //this.distanceToNativeUnits(m_armExSim.getPositionMeters());
 
     //Conversion figure to convert length to sensor position
     //Falcon 500 has 2048 "clicks" per full revolution
-    double armlength_m = 3.526E-5 * armLength_clicks + .35;
        return armLength_clicks;
     }
   }
 
   public void ArmExtention(double speed) {
     //This method sets the speed of the arm extension motor
-    double armLength = this.getArmLength();
-    if ( (armLength < 0.0) & (speed < 0.0)) {
-      speed = 0.0;
-    }  else if ( (armLength > 1.02) & (speed > 0.0)) {
-      speed = 0.0;
-    }  else {
+    
       _armExtend.set(speed);
-      
-  }
   
 }
   public void ArmExtentionVolts(double volts) {
@@ -86,10 +77,16 @@ new ElevatorSim(
   }
 
   public double ArmComCalc(){
-
+    double armLength_Clicks;
     //Function to convert total arm length to Center of Mass distance from pivot <- Derived from measurments
-      
-    double Arm_Com = this.getArmLength() * 0.5711 - 0.0639; 
+    if (this.getArmLength() < 0.0) {
+      armLength_Clicks = 0.0;
+    } else {
+      armLength_Clicks = this.getArmLength();
+    }
+
+    double  armlength_m = 3.526E-5 * armLength_Clicks + .35;
+    double Arm_Com =  armlength_m * 0.5711 - 0.0639; 
     return Arm_Com;
   }
 
@@ -130,7 +127,13 @@ return false;
 
 }
   
-
+public void ResetArm(){
+  if (Robot.isReal()) {
+    _armExtend.setSelectedSensorPosition(0.0);
+  } else {
+    sim_armExtend.setIntegratedSensorRawPosition(0);
+  }
+}
 
 
   public void simulationPeriodic(){
@@ -138,14 +141,14 @@ return false;
 
     m_armExSim.update(0.02);
     sim_armExtend.setIntegratedSensorRawPosition(this.distanceToNativeUnits(m_armExSim.getPositionMeters()));
-    SmartDashboard.putNumber("Arm Length", this.getArmLength());
+    SmartDashboard.putNumber("Arm Length", 3.526E-5 * this.getArmLength() + .35 );
     SmartDashboard.putNumber("Arm Clicks", this.distanceToNativeUnits(m_armExSim.getPositionMeters()));
   }
 
   @Override
   public void periodic() {
       if (Constants.verbose && Robot.isReal()) {
-        SmartDashboard.putNumber("Arm Length",this.getArmLength());
+        SmartDashboard.putNumber("Arm Length", 3.526E-5 * this.getArmLength() + .35 );
         SmartDashboard.putNumber("Arm Clicks", _armExtend.getSelectedSensorPosition());
       }
       SmartDashboard.putNumber("CoM", this.ArmComCalc());

@@ -85,7 +85,7 @@ public class RobotContainer {
   private Trigger Right_joystick_9 = new JoystickButton(Right_joystick, 9);
   
   private final Command SimpleAuto = new SimpleAuto(m_drivetrainSubsystem);
-  private final Command BalanceAuto = new Balance(m_drivetrainSubsystem);
+  private final Command AutoConePlace = new AutoConePlace(m_Arm, m_armExtend, m_grasper, m_drivetrainSubsystem);
   private final Command simpleAuto = new SimpleAuto(m_drivetrainSubsystem);
   private final Command balanceAuto = new BalanceAuto(m_drivetrainSubsystem);
   private final Command shootConeAuto = new ShootConeAuto(m_grasper, m_drivetrainSubsystem);
@@ -118,7 +118,7 @@ public class RobotContainer {
     configureButtonBindings();
     m_chooser.setDefaultOption("No Nothing", doNothing);
     m_chooser.addOption("Simple Auto", simpleAuto);
-    m_chooser.addOption("Red Right NoEngage", balanceAuto);
+    m_chooser.addOption("Auto Cone Cube Place", AutoConePlace);
     SmartDashboard.putData(m_chooser);
   }
 
@@ -138,12 +138,13 @@ public class RobotContainer {
     //Score Mode
     //Feeder
     controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend, m_grasper));
-    controller_B.onTrue(new ArmProfileCommand(Math.toRadians(33.6), m_Arm));//.andThen(
+    //controller_B.onTrue(new ArmProfileCommand(Math.toRadians(33.6), m_Arm));//.andThen(
     //  new ArmLengthSet(14000.0, m_armExtend).raceWith(
      //   new KeepArmPosition(33.6, m_Arm))));
-    //controller_B.onTrue(new AutoConePlace(m_Arm, m_armExtend, m_grasper, m_drivetrainSubsystem));
+    controller_B.onTrue(new AutoConePlace(m_Arm, m_armExtend, m_grasper, m_drivetrainSubsystem));
     controller_A.onTrue(new ArmLengthSet(0.0,m_armExtend));
     controller_Y.onTrue(new PickupArmCommand(m_Arm, m_armExtend,m_grasper));
+    //controller_X.onTrue(Commands.runOnce(m_armExtend::ResetArm));
 
     controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));
     controller_Down.onTrue(Commands.runOnce(m_grasper::scoreLow));
