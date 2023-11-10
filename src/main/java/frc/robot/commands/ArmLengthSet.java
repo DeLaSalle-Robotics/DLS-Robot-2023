@@ -21,7 +21,7 @@ public class ArmLengthSet extends PIDCommand {
               _ArmEx);
               //getController().enableContinuousInput(0, 1.7);
               getController().
-              setTolerance(0.05);
+              setTolerance(5000.0);
               addRequirements(_ArmEx);
     }
     @Override

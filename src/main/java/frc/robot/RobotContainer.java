@@ -110,7 +110,7 @@ public class RobotContainer {
      */
     m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> controller.getLeftY()));
     //m_Arm.setDefaultCommand(new ArmMoveCommand(m_Arm, () -> Tcontroller.getLeftY()));
-    m_armExtend.setDefaultCommand(new ArmLengthDrive(() -> controller.getRightY(), m_armExtend));
+    m_armExtend.setDefaultCommand(new ArmLengthDrive(() ->controller.getRightY(), m_armExtend));
     m_grasper.setDefaultCommand(new SpinIntake(m_grasper, () -> controller.getLeftTriggerAxis(),
                                                           () -> controller.getRightTriggerAxis()));
 
@@ -134,12 +134,15 @@ public class RobotContainer {
     //controller_X.onTrue(new BalanceAuto_2(m_drivetrainSubsystem));
    
     //Floor Mode
-    //controller_A.onTrue(new ArmLengthSet(
     //    0.3, m_armExtend));
     //Score Mode
-    controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend, m_grasper));
     //Feeder
-    //controller_B.onTrue(new LoadArmCommand(m_Arm, m_grasper));
+    controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend, m_grasper));
+    controller_B.onTrue(new ArmProfileCommand(Math.toRadians(33.6), m_Arm));//.andThen(
+    //  new ArmLengthSet(14000.0, m_armExtend).raceWith(
+     //   new KeepArmPosition(33.6, m_Arm))));
+    //controller_B.onTrue(new AutoConePlace(m_Arm, m_armExtend, m_grasper, m_drivetrainSubsystem));
+    controller_A.onTrue(new ArmLengthSet(0.0,m_armExtend));
     controller_Y.onTrue(new PickupArmCommand(m_Arm, m_armExtend,m_grasper));
 
     controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));

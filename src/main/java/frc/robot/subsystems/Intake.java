@@ -44,8 +44,8 @@ public class Intake extends SubsystemBase {
   //Declaration of subsystem and its components
   public Intake() {
     
-    grasperSolenoid.set(Value.kForward); // Should close the claw on startup
-    twisterSolenoid.set(Value.kForward); // Should put claw horizontal to node
+    grasperSolenoid.set(Value.kReverse); // Should close the claw on startup
+    twisterSolenoid.set(Value.kReverse); // Should put claw horizontal to node
     //_IntakeNeo550.setSmartCurrentLimit(10);
     _IntakeNeo550.setIdleMode(IdleMode.kBrake);
     m_encoder = _IntakeNeo550.getEncoder();

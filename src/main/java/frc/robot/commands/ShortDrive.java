@@ -12,10 +12,14 @@ public class ShortDrive extends CommandBase {
   /** Creates a new SimpleAuto. */
   DrivetrainSubsystem m_drive;
   double startTime;
+  boolean driveDirection;
+  double driveTime;
   
-  public ShortDrive(DrivetrainSubsystem _drive) {
+  public ShortDrive(DrivetrainSubsystem _drive, boolean dDirection, double dTime) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_drive = _drive;
+    driveDirection = dDirection;
+    driveTime = dTime;
     addRequirements(_drive);
   }
 
@@ -28,10 +32,14 @@ public class ShortDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      m_drive.drive_Arcade(0,0.5);
-      //m_drive.driveVolts(6.0, 6.0);
+    if (driveDirection){
+      m_drive.drive_Arcade(0, 0.5);
+    } else {
+      m_drive.drive_Arcade(0, -0.5); 
+    }
   }
-
+  //m_drive.driveVolts(6.0, 6.0);
+  
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}
@@ -39,7 +47,7 @@ public class ShortDrive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (Timer.getFPGATimestamp() - startTime > 1) {
+    if (Timer.getFPGATimestamp() - startTime > driveTime) {
       return true;
     } else {
     return false;

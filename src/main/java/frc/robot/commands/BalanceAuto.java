@@ -19,7 +19,7 @@ public class BalanceAuto extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new SimpleAuto(_drive),
-      new ShortDrive(_drive),
+      //new ShortDrive(_drive),
       new Balance(_drive)
 
     );

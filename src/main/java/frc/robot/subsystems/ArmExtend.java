@@ -56,14 +56,14 @@ new ElevatorSim(
     //Conversion figure to convert length to sensor position
     //Falcon 500 has 2048 "clicks" per full revolution
     double armlength_m = 3.526E-5 * armLength_clicks + .35; //<-- Estimate from radius needs to be confirmed.
-    return armlength_m;
+    return armLength_clicks;
   } else {
       double armLength_clicks = this.distanceToNativeUnits(m_armExSim.getPositionMeters());
 
     //Conversion figure to convert length to sensor position
     //Falcon 500 has 2048 "clicks" per full revolution
     double armlength_m = 3.526E-5 * armLength_clicks + .35;
-       return armlength_m;
+       return armLength_clicks;
     }
   }
 
@@ -146,7 +146,7 @@ return false;
   public void periodic() {
       if (Constants.verbose && Robot.isReal()) {
         SmartDashboard.putNumber("Arm Length",this.getArmLength());
-        // SmartDashboard.putNumber("Arm Clicks", _armExtend.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Arm Clicks", _armExtend.getSelectedSensorPosition());
       }
       SmartDashboard.putNumber("CoM", this.ArmComCalc());
       
