@@ -147,7 +147,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // If there is an autonomous command, schedule it.
-  if (m_autonomousCommand != null) {
+    if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
   }
@@ -172,8 +172,8 @@ public class Robot extends TimedRobot {
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     
 
-// get a topic from a NetworkTableInstance
-// the topic name in this case is the full name
+    // get a topic from a NetworkTableInstance
+    // the topic name in this case is the full name
     BooleanTopic AllianceTopic = inst.getBooleanTopic("/FMSInfo/IsRedAlliance");
     boolean allBool = AllianceTopic.subscribe(false).get();
     SmartDashboard.putBoolean("Red Alliance", allBool);
@@ -208,33 +208,33 @@ public class Robot extends TimedRobot {
 
   }
 
-public void postTargetData(String target){
+  public void postTargetData(String target){
 
-  Double[] data=targetingKeys.get(target);
-  
-  boolean scoreFront = SmartDashboard.getBoolean("Score Front", true);
-  if (data!=null) {
+    Double[] data=targetingKeys.get(target);
     
-    if (scoreFront) {
-       SmartDashboard.putNumber("Score Pitch",data[0] );
-     } else {
-       SmartDashboard.putNumber("Score Pitch", data[2]);
-     }
-     SmartDashboard.putNumber("Score Length",data[1] );
-   }
-  boolean loadFront= SmartDashboard.getBoolean("Load Front", false);
-  //Setting load angles <--Need to be confirmed
-  if (loadFront){
-    SmartDashboard.putNumber("Load Angle", 45);
-  } else {
-     SmartDashboard.putNumber("Load Angle", 135);
-   }
-}
+    boolean scoreFront = SmartDashboard.getBoolean("Score Front", true);
+    if (data!=null) {
+      
+      if (scoreFront) {
+        SmartDashboard.putNumber("Score Pitch",data[0] );
+      } else {
+        SmartDashboard.putNumber("Score Pitch", data[2]);
+      }
+      SmartDashboard.putNumber("Score Length",data[1] );
+    }
+    boolean loadFront= SmartDashboard.getBoolean("Load Front", false);
+    //Setting load angles <--Need to be confirmed
+    if (loadFront){
+      SmartDashboard.putNumber("Load Angle", 45);
+    } else {
+      SmartDashboard.putNumber("Load Angle", 135);
+    }
+  }
 
 
-public void cancelAll(){
-  CommandScheduler.getInstance().cancelAll();
-}
+  public void cancelAll(){
+    CommandScheduler.getInstance().cancelAll();
+  }
 
 
 

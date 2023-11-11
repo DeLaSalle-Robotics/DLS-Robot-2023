@@ -40,7 +40,7 @@ new ElevatorSim(
   public ArmExtend(){
     _armExtend.configFactoryDefault();
     _armExtend.setNeutralMode(NeutralMode.Brake);
-    _armExtend.configNeutralDeadband(0.001);
+    _armExtend.configNeutralDeadband(0.1);
     _armExtend.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,30);
     if( Constants.limitFalcons) { 
       _armExtend.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,
@@ -79,13 +79,8 @@ new ElevatorSim(
   public double ArmComCalc(){
     double armLength_Clicks;
     //Function to convert total arm length to Center of Mass distance from pivot <- Derived from measurments
-    if (this.getArmLength() < 0.0) {
-      armLength_Clicks = 0.0;
-    } else if (this.getArmLength() > 19000) {
-      armLength_Clicks = 19000;
-    } else {
-      armLength_Clicks = this.getArmLength();
-    }
+    armLength_Clicks = 0;
+  
 
     double  armlength_m = 3.526E-5 * armLength_Clicks + .35;
     double Arm_Com =  armlength_m * 0.5711 - 0.0639; 

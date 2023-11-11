@@ -19,9 +19,9 @@ public class NeutralArmCommand extends SequentialCommandGroup{
             new ParallelCommandGroup(
                 new ParallelRaceGroup(
                     new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
-                    new WaitCommand(3)),
-                new ArmLengthSet(armLength, _armExtend)), // length in meters
-            new KeepArmPosition(armAngle, _arm)); 
+                    new WaitCommand(2))
+                    ));
+
     }
     
 }

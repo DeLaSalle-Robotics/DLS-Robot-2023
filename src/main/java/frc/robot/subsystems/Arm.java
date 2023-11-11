@@ -133,15 +133,15 @@ public class Arm extends SubsystemBase {
 
 public double GetABencoder(){
   if (Robot.isReal()){
-  double currentAngle =  (360 * m_abEncoder.getAbsolutePosition()) - armOffset ;
-  if ( m_abEncoder.getAbsolutePosition()==0){  //Need to define what the value is when unplugged
-    SmartDashboard.putBoolean("Encoder_Present", false);
-    encoderPresent = false;
-  }
-  
-  SmartDashboard.putNumber("Absolute", currentAngle);
-  SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
-  return currentAngle;
+    double currentAngle =  (360 * m_abEncoder.getAbsolutePosition()) - armOffset ;
+    if ( m_abEncoder.getAbsolutePosition()==0){  //Need to define what the value is when unplugged
+      SmartDashboard.putBoolean("Encoder_Present", false);
+      encoderPresent = false;
+    }
+    
+    SmartDashboard.putNumber("Absolute", currentAngle);
+    SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
+    return currentAngle;
   } else {
     double currentAngle = Math.toDegrees(m_armSim.getAngleRads());
     return currentAngle;
@@ -161,14 +161,15 @@ public boolean encoderTest() {
     } else {
       SmartDashboard.putNumber("AbsoluteTime", Timer.getFPGATimestamp());
       return true;
-    }} else {
-      return true;
     }
+  } else {
+    return true;
+  }
   
   //assumes there is noise in the encoder and the only reason it would be equal for 100 ms is if its unplugged.
 }
 
-public void ResetArmEncoder(){
+  public void ResetArmEncoder(){
     m_encoder.reset();
     m_abEncoder.reset();
   }
@@ -182,7 +183,7 @@ public void ResetArmEncoder(){
       speed = 0.0;
     }
   
-  if (this.GetABencoder()> 195 & speed < 0) {
+  if (this.GetABencoder()> 200 & speed < 0) {
     speed = 0.0;
     }
   }

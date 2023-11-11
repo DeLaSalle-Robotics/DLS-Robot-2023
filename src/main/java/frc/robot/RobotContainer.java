@@ -137,11 +137,15 @@ public class RobotContainer {
     //    0.3, m_armExtend));
     //Score Mode
     //Feeder
-    controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend, m_grasper));
+    controller_X.onTrue(new ScoreArmCommand(m_Arm, m_armExtend, m_grasper));
     controller_B.onTrue(new LoadArmCommand(m_Arm, m_armExtend, m_grasper));
+    //controller_B.onTrue(new ArmProfileCommand(Math.toRadians(33.6), m_Arm));
+    //controller_Y.onTrue(new ArmProfileCommand(Math.toRadians(90), m_Arm));
+    //controller_A.onTrue(new ArmLengthSet(170000, m_armExtend));
+    //controller_X.onTrue(new ArmLengthSet(0.0, m_armExtend));
     //controller_B.onTrue(new AutoConePlace(m_Arm, m_armExtend, m_grasper, m_drivetrainSubsystem));
     controller_A.onTrue(new NeutralArmCommand(m_Arm, m_armExtend));
-    controller_Y.onTrue(new PickupArmCommand(m_Arm, m_armExtend,m_grasper));
+    controller_Y.onTrue(new PickupArmCommand(m_Arm, m_armExtend, m_grasper));
     //controller_X.onTrue(Commands.runOnce(m_armExtend::ResetArm));
 
     controller_Up.onTrue(Commands.runOnce(m_grasper::scoreHigh));

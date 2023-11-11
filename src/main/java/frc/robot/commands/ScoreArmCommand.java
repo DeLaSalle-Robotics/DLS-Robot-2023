@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmExtend;
@@ -21,9 +23,9 @@ public class ScoreArmCommand extends SequentialCommandGroup{
         armAngle = SmartDashboard.getNumber("Score Pitch", 33.6);
         armLength = SmartDashboard.getNumber("Score Length", 0.35);
         addCommands(
-            new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
-            //new pickupOrient(_intake),
-            new ArmLengthSet(armLength, _armExtend) // length in meters
+            new ParallelRaceGroup(
+                new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
+                new WaitCommand(2)) // length in meters
            ); 
     }
     
