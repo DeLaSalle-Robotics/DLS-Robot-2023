@@ -20,14 +20,8 @@ public class pickupOrient extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    double angle = SmartDashboard.getNumber("Arm Angle", 90);
-    if (angle < 100 ){
-      m_intake.IntakeOrient();
+    m_intake.IntakeOrient();
     }
-    if (angle > 75 ){
-      m_intake.LoadOrient();
-    }
-  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

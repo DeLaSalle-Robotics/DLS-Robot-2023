@@ -27,25 +27,23 @@ public class AutoConePlace extends SequentialCommandGroup{
             new ParallelRaceGroup(
                 new ArmLengthSet(armLength, _armExtend),
                 new KeepArmPosition(armAngle, _arm),
-                new WaitCommand(2)),
+                new WaitCommand(2.5)),
             new ToggleClaw(m_grasper),
+            new ParallelRaceGroup (
+                new WaitCommand(1),
+                new KeepArmPosition(armAngle, _arm)),
             new ParallelRaceGroup(
                 new ArmLengthSet(0.0, _armExtend),
-                new WaitCommand(2)),
-
-            new ParallelCommandGroup(
-                new ShortDrive(m_drive, true, 2.0), // Should edit to allow direction and time to be added.
-                new SequentialCommandGroup(
-                    new PickupArmCommand(_arm, _armExtend, m_grasper),
-                    new SpinIntake(m_grasper, () -> 0.0, () -> 1.0)
-                    )),
-            new ParallelCommandGroup(
-                new ShortDrive(m_drive, false, 2.0),
-                new ParallelRaceGroup(
-                    new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
-                    new WaitCommand(2))),
-            new ToggleClaw(m_grasper),
-            new SpinIntake(m_grasper, () -> 0, () -> -1)); 
+                new WaitCommand(1.5)),
+            new ParallelRaceGroup(
+                new ArmLengthDrive(() -> 0.0, _armExtend),
+                new WaitCommand(0.2)),
+                new pickupOrient(m_grasper),
+            new ParallelRaceGroup(
+                new WaitCommand(3),
+                new ArmProfileCommand(Math.toRadians(193), _arm)),
+            //new ShortDrive(m_drive, false, 2.0),
+            new WaitCommand(2)); 
     }
     
 }

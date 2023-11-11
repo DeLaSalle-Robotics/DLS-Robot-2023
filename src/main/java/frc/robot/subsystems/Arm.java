@@ -183,7 +183,7 @@ public boolean encoderTest() {
       speed = 0.0;
     }
   
-  if (this.GetABencoder()> 200 & speed < 0) {
+  if (this.GetABencoder()> 197 & speed < 0) {
     speed = 0.0;
     }
   }

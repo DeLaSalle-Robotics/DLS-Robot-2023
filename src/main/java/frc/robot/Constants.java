@@ -34,7 +34,7 @@ public final class Constants {
     //Arm Constants
     public static final int miniFalcon = 8; // ID for test arm
     
-    public static final double ArmKp = 10.0;
+    public static final double ArmKp = 15.0;
     public static final double ArmKi = 0.0;
     public static final double ArmKd = 0.0;
 
