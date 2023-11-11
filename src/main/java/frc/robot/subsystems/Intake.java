@@ -103,8 +103,12 @@ public class Intake extends SubsystemBase {
     if (Constants.verbose) {SmartDashboard.putBoolean("Intake Vertical", IntakeVertical);}
   }
 
-
-  
+  public void IntakeOrient() {
+    twisterSolenoid.set(DoubleSolenoid.Value.kForward);
+  }
+  public void LoadOrient() {
+    twisterSolenoid.set(DoubleSolenoid.Value.kReverse);
+  }
 
   public void intakeHorizontal(){
     //Turn the claw 
@@ -152,7 +156,10 @@ public double spinVelocity() {
     //   } else {
     //     phCompressor.disable();
     //   }
-    
+    double angle = SmartDashboard.getNumber("Arm Angle", 0.0);
+    if (angle > 160 ){
+      this.IntakeOrient();
+    }
   }
 
   @Override

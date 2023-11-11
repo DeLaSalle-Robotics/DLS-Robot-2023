@@ -12,21 +12,20 @@ public class pickupOrient extends CommandBase {
   Intake m_intake;
   double angle;
   /** Creates a new pickupOrient. */
-  public pickupOrient(double _angle, Intake _intake) {
+  public pickupOrient( Intake _intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_intake = _intake;
-    angle = _angle;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    boolean intakePos = SmartDashboard.getBoolean("Intake Vertical", false);
-    if (angle > 20 & !intakePos) {
-      m_intake.intakeFlip();
+    double angle = SmartDashboard.getNumber("Arm Angle", 90);
+    if (angle < 100 ){
+      m_intake.IntakeOrient();
     }
-    if (angle < 160 & intakePos){
-      m_intake.intakeFlip();
+    if (angle > 75 ){
+      m_intake.LoadOrient();
     }
   }
 

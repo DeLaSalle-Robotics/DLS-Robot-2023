@@ -24,12 +24,9 @@ public class ArmPlaceCommand extends SequentialCommandGroup{
         angle = _angle;
         
         addCommands(
-            new ParallelCommandGroup(
-                new ParallelRaceGroup(
-                    new ArmProfileCommand(Math.toRadians(angle), m_arm),
-                    new WaitCommand(3)),
-                new pickupOrient(angle, m_intake)) // angle must be in radians
-            
+            new ParallelRaceGroup(
+                new ArmProfileCommand(Math.toRadians(angle), m_arm),
+                new WaitCommand(3))
             ); // length in meters
     }
 

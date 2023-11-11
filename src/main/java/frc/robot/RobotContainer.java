@@ -138,7 +138,7 @@ public class RobotContainer {
     //Score Mode
     //Feeder
     controller_X.onTrue(new ScoreArmCommand( m_Arm, m_armExtend, m_grasper));
-    controller_B.onTrue(new LoadArmCommand(m_Arm, m_armExtend));
+    controller_B.onTrue(new LoadArmCommand(m_Arm, m_armExtend, m_grasper));
     //controller_B.onTrue(new AutoConePlace(m_Arm, m_armExtend, m_grasper, m_drivetrainSubsystem));
     controller_A.onTrue(new NeutralArmCommand(m_Arm, m_armExtend));
     controller_Y.onTrue(new PickupArmCommand(m_Arm, m_armExtend,m_grasper));

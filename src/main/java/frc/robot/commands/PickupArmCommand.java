@@ -16,7 +16,6 @@ public class PickupArmCommand extends ParallelCommandGroup{
         armLength = 0.35;
         addCommands(
                 new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
-                new pickupOrient(armAngle, _intake),
                 new ArmLengthSet(armLength, _armExtend)); // length in meters 
     }
     

@@ -13,8 +13,8 @@ public class NeutralArmCommand extends SequentialCommandGroup{
     double armLength;
 
     public NeutralArmCommand(Arm _arm, ArmExtend _armExtend) {
-        armAngle = 120.0;
-        armLength = 0.35;
+        armAngle = 60.0;
+        armLength = 0.0;
         addCommands(
             new ParallelCommandGroup(
                 new ParallelRaceGroup(

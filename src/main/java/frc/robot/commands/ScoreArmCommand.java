@@ -13,7 +13,7 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.Intake;
 
-public class ScoreArmCommand extends ParallelCommandGroup{
+public class ScoreArmCommand extends SequentialCommandGroup{
     double armAngle;
     double armLength;
     
@@ -22,9 +22,8 @@ public class ScoreArmCommand extends ParallelCommandGroup{
         armLength = SmartDashboard.getNumber("Score Length", 0.35);
         addCommands(
             new ArmProfileCommand(Math.toRadians(armAngle), _arm), // angle must be in radians
-            new pickupOrient(armAngle, _intake),
+            //new pickupOrient(_intake),
             new ArmLengthSet(armLength, _armExtend) // length in meters
-           //new KeepArmPosition(90, _arm)
            ); 
     }
     

@@ -82,7 +82,7 @@ new ElevatorSim(
     if (this.getArmLength() < 0.0) {
       armLength_Clicks = 0.0;
     } else if (this.getArmLength() > 19000) {
-      armLength_Clicks = 19000
+      armLength_Clicks = 19000;
     } else {
       armLength_Clicks = this.getArmLength();
     }
