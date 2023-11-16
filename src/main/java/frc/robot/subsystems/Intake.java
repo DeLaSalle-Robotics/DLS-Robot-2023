@@ -31,8 +31,8 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {  
   private final PneumaticHub m_ph = new PneumaticHub(9);
-  private final DoubleSolenoid grasperSolenoid = m_ph.makeDoubleSolenoid(0, 3);//
-  private final DoubleSolenoid twisterSolenoid = m_ph.makeDoubleSolenoid(1, 2);
+  private final DoubleSolenoid grasperSolenoid = m_ph.makeDoubleSolenoid(1, 2);//
+  private final DoubleSolenoid twisterSolenoid = m_ph.makeDoubleSolenoid(0, 3);
   private final CANSparkMax _IntakeNeo550 = new CANSparkMax(Constants.IntakeID, CANSparkMax.MotorType.kBrushless);
   private RelativeEncoder m_encoder;
   private final PowerDistribution pdh; 
