@@ -17,7 +17,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
-
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
@@ -40,6 +40,8 @@ public class Intake extends SubsystemBase {
   private boolean IntakeVertical;
   private boolean grasperOpen;
   
+  LinearFilter currentFilter = LinearFilter.movingAverage(10);
+  private double filteredCurrent;
 
   //Declaration of subsystem and its components
   public Intake() {
@@ -84,7 +86,7 @@ public class Intake extends SubsystemBase {
     } else {
       grasperSolenoid.set(DoubleSolenoid.Value.kForward);
       grasperOpen = true;
-      
+      SmartDashboard.putBoolean("Have Piece", false);
     }
     SmartDashboard.putBoolean("Claw Open", grasperOpen);
     if (Constants.verbose) {SmartDashboard.putBoolean("Claw Open", grasperOpen);}
@@ -124,7 +126,7 @@ public class Intake extends SubsystemBase {
   }
 
   public double getIntakeCurrent() {
-    return pdh.getCurrent(Constants.intakeChannel);
+    return filteredCurrent;
     
   }
 
@@ -132,7 +134,13 @@ public void spinIntake(double speed){
   //Spin the wheels at set speed
   //Need to monitor current going to intake motor, once a game piece is acquired, we should stop spinning and close clamp
   //This may be done at the Command level.
-  _IntakeNeo550.set(speed);
+  if (speed > 0){
+     _IntakeNeo550.set(speed);
+  } else if(grasperOpen) {
+    _IntakeNeo550.set(speed);
+  } else {
+    _IntakeNeo550.set(0);
+  }
 }
 
 public void stopIntake() {
@@ -160,6 +168,9 @@ public double spinVelocity() {
     if (angle > 160 ){
       this.IntakeOrient();
     }
+    filteredCurrent = currentFilter.calculate(_IntakeNeo550.getOutputCurrent());
+
+    SmartDashboard.putNumber("Intake Current", filteredCurrent);
   }
 
   @Override

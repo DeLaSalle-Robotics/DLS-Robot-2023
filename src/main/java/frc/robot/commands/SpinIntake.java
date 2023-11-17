@@ -4,6 +4,8 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.Intake;
@@ -13,14 +15,21 @@ public class SpinIntake extends CommandBase {
     private DoubleSupplier outSpeed;
     private DoubleSupplier inSpeed;
     private boolean intake;
+    Debouncer debounce = new Debouncer(1, Debouncer.DebounceType.kRising);
 
     public SpinIntake(Intake _intake, DoubleSupplier _outSpeed, DoubleSupplier _inSpeed){
+        
         m_intake = _intake;
         outSpeed = _outSpeed;
         inSpeed = _inSpeed; 
         addRequirements(_intake);
     }
     
+    @Override
+    public void initialize(){
+        debounce.calculate(false);
+    }
+
     @Override
         public void execute() {
             if (inSpeed.getAsDouble() > 0) {
@@ -45,15 +54,14 @@ public class SpinIntake extends CommandBase {
     }*/
     @Override
     public boolean isFinished() {
-    
-        if(Robot.isReal()) {
-            if (inSpeed.getAsDouble() > outSpeed.getAsDouble()) {
-
-                return SmartDashboard.getNumber("Intake Speed", 0) < Constants.intakeSpinThreshold;
-            } else {
-                return outSpeed.getAsDouble() > 0.8 && SmartDashboard.getBoolean("Have Piece", false) ;
-            }
-        } else {return SmartDashboard.getBoolean("Have Piece", false);}
+        if (debounce.calculate(m_intake.getIntakeCurrent() > 15.0)){
+            m_intake.closeGrasp();
+            m_intake.stopIntake();
+            SmartDashboard.putBoolean("Have Piece", true);
+            return true;
+        } else {
+            return false;
+        }
     
     }
 }
